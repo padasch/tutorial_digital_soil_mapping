@@ -1,9 +1,11 @@
 # Preface {.unnumbered}
 
-This is a Quarto book.
+This online book covers the tutorial on digital soil mapping from the course Applied Geodata Science 2 at the University of Bern. Material is adapted from work by [Madlene Nussbaum](https://www.bfh.ch/de/ueber-die-bfh/personen/3ipudkkxwe7z/).
 
-To learn more about Quarto books visit <https://quarto.org/docs/books>.
+# System Setup
 
-```{r}
-1 + 1
+If you want to replicate the code of this tutorial, we suggest to either load the latest `renv.lock` file from this tutorial's repository and load it using the {renv} package. Alternatively, the output below could be used to traceback and install the exact package versions that were used in this tutorial.
+
+```{r warning=FALSE}
+sessionInfo()
 ```

@@ -1,0 +1,386 @@
+# Fitting a Random Forest Model {#sec-modelfit}
+
+## Load data
+
+In the previous Chapter, we create a dataframe that holds information on the soil sampling locations and the covariates that we extracted for these positions. Let's load this datafarme into our environment
+
+```{r}
+data_clean <- readRDS(here::here("data/bern_sampling_locations_with_covariates.rds"))
+
+head(data_clean) |> knitr::kable()
+```
+
+## Preparations
+
+Before we can fit the model, we have to specify a few settings. First, we have to specify our response and predictor variables. Then, we have to split our dataset into a calibration and a validation set. Random Forest models cannot deal with `NA` values, so we have to remove these from our calibration set.
+
+```{r}
+# Specify response: The pH in the top 10cm
+response <- "ph.0.10"
+
+# Specify predictors: Remove soil sampling information
+predictors <- 
+  data_clean |> 
+  dplyr::select(-response,                             # Remove response variable
+                -site_id_unique,                       # Remove site ID (no information)
+                -tidyr::starts_with("ph"),             # No pH information
+                -tidyr::starts_with("waterlog"),       # No water-status information
+                -dclass,                               # No water-status information
+                -dataset) |>                           # Remove calibratoin/validation information
+  names()
+
+cat("The response is:", response,
+    "\nThe predictors are:", paste0(predictors[1:8], sep = ", "), "...")
+```
+
+```{r}
+# Split dataset into calibration and validation
+data_cal <- data_clean |> dplyr::filter(dataset == "calibration")
+data_val <- data_clean |> dplyr::filter(dataset == "validation")
+
+# Filter out any NA to avoid error when running a Random Forest
+data_cal <- data_cal |> tidyr::drop_na()
+data_val <- data_val |> tidyr::drop_na()
+
+# A little bit of verbose output:
+n_tot <- nrow(data_cal) + nrow(data_val)
+
+perc_cal <- (nrow(data_cal) / n_tot) |> round(2) * 100
+perc_val <- (nrow(data_val) / n_tot) |> round(2) * 100
+
+cat("For model training, we have a calibration / validation split of: ",
+    perc_cal, "/", perc_val, "%")
+```
+
+Alright, this looks all good. We have our response and predictor variables saved for easy access later on and the 75/25 split of calibration and validation data looks good too. We can now move on to model fitting!
+
+## Model fitting
+
+To fit a Random Forest model that predicts the soil pH in the top 10cm, we are looking at different model setups. These setups always train a Random Forest model but differ in the complexity that we intentionally add to improve the final model. If you need a recap on Random Forests, have a look at the introduction given in AGDS 1.
+
+### Basic model
+
+Let's start with the basic model, where we use the {ranger} package with the pre-defined hyperparameters.
+
+```{r}
+rf_basic <- ranger::ranger( 
+  y = data_cal[, response],   # Response variable
+  x = data_cal[, predictors], # Predictor variables
+  seed = 42,                  # Specify the seed for randomization to reproduce the same model again
+  num.threads = parallel::detectCores() - 1) # Use all but one CPU core for quick model training
+
+# Print a summary of fitted model
+rf_basic |> print()
+```
+
+> **Sidenote:** If our response variable was a categorical and not a continuous variable, we would have to set the argument `probability = TRUE`. The output would then be a probability map from 0-100%.
+>
+> **Sidenote:** `ranger()` crashes when using tibbles, so we are using the base R notation to enter the data
+
+Although we only used the pre-defined parameters, we already get a fairly good out-of-bag (OOB) $R^2$ of 0.53 and a MSE of 0.28. Let's see how we can improve our model further.
+
+### Model with weights
+
+Sometimes we know that a subset of our dataset is more trustworthy than the rest. For example, when you are using a gap-filling technique to interpolate data, that gap-filled data is less trustworthy than the actually measured data. Informing the model algorithm that it should weigh certain data entries more than other can change the importance of variables and the final model performance.
+
+In our dataset, we have information on whether the pH values were measured in the field - which is less precise - or in the lab. Also, we have to different lab methods. All of this information is held in the suffix of the `timeset` variable, so let's assign weights according on the quality of the pH data as follows: `1` for CaCl$_2$ lab measurement (no suffix), `0.9` for pedotransfer from another lab method (suffix `_ptf`), and `0.7` for field data (suffix `_field`). For this, we create a weight-matching vector:
+
+```{r}
+weights <- 
+  data_cal |>
+  dplyr::mutate(
+    # Create a new variable 'weight' which holds only 1's
+    w = 1,
+    # Check the suffix in each row and if true, give a new weight. If false, keep the old weight.
+    w = ifelse(stringr::str_detect(timeset, "_field"), 0.9, w),
+    w = ifelse(stringr::str_detect(timeset, "_ptf"), 0.7, w)
+  )
+
+# Quality check if everything worked:
+set.seed(42)
+
+weights |> 
+  dplyr::select(timeset, w) |> 
+  dplyr::slice_sample(n = 8) |>   # Pick 8 random rows
+  knitr::kable()
+```
+
+It is always a good idea to do quality checks when wrangling! Here we see that our weight attribution code worked as expected, so we can move on to model fitting.
+
+```{r}
+rf_weighted <- ranger::ranger( 
+  y = data_cal[, response],      # Response variable
+  x = data_cal[, predictors],    # Predictor variables
+  case.weights = weights[, "w"], # Add weights to input
+  seed = 42,                     # Specify seed for randomization to reproduce the same model again
+  num.threads = parallel::detectCores() - 1) # Use all but one CPU core for quick model training
+
+# Print a summary of fitted model
+rf_weighted |> print()
+```
+
+Not much has changed compared to our previous model. We see that the $R^2$ and MSE got negligibly worse but as a trade-off we gained more trust in our model.
+
+### Variables of importance
+
+Our model has 98 variables but we have no idea if each of them should really be in the model and if we are not just fitting noise in the dataset. To investigate this issue, the `ranger()` function takes an argument called `importance`. We can set this argument either to follow the `permutation` method, whereby the algorithm randomly permutes values of each variable and measures the resulting decrease in model accuracy. A larger decrease indicates a more important variable. If the code runs slow, you can also use the faster `impurity` method (see more information [here](https://bmcbioinformatics.biomedcentral.com/counter/pdf/10.1186/s12859-016-0995-8.pdf)).
+
+Assessing the variable importance gives us a feeling for what variables we should keep or drop from the dataset. The ranger-model stores this information if we enter a `importance` method. The code below accesses the model's variable importance and sorts the variables with decreasing importance.
+
+```{r fig.height=4, fig.width=12}
+# Let's run the weighted model again but with recording the variable importance
+rf_weighted <- ranger::ranger( 
+  y = data_cal[, response],     # Response variable
+  x = data_cal[, predictors],   # Predictor variables
+  case.weights = weights[, "w"],# Add weights to input
+  importance   = "permutation", # Pick permutation to calculate variable importance
+  seed = 42,                    # Specify seed for randomization to reproduce the same model again
+  num.threads = parallel::detectCores() - 1) # Use all but one CPU core for quick model training
+
+# Writing functions here for re-usability:
+get_vi <- function(rf_model){
+  
+  # Extract the variable importance and create a long tibble
+  vi <- 
+    rf_model$variable.importance |>
+    dplyr::bind_rows() |> 
+    tidyr::pivot_longer(cols = dplyr::everything(), names_to = "variable")
+  
+  return(vi)
+}
+
+plot_vi <- function(rf_model){
+  
+  # Plot variable importance, ordered by decreasing value
+  vi <- get_vi(rf_model)
+  
+  p <- 
+    vi |> 
+    ggplot2::ggplot(ggplot2::aes(x = reorder(variable, value), y = value)) +
+    ggplot2::geom_bar(stat = "identity", fill = "grey50", width = 0.75) + 
+    ggplot2::labs(
+      y = "Change in OOB MSE after permutation", 
+      x = "",
+      title = "Change in OOB MSE after permutation") +
+    # ggplot2::coord_flip() +
+    ggplot2::theme_classic() +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust=1))
+  
+  return(p)
+}
+
+plot_vi(rf_weighted)
+```
+
+What do we see here? The y-axis shows the decrease in model performance when the respective variable is randomly permuted and, therefore, denotes the importance of a variable. The higher the value, the stronger the effect of permutation on the model performance, the more important the variable. Also, we see that a large part of our covariates have practically no power to predict the pH and can therefore be removed from the model. But how do we determine what variable to pick for our final model? Do we want a maximum number of predictors? Do we want a set of the top n predictors that make up a certain percentage of the total variable importance?
+
+One common option to generalize variable selection is the "Boruta-Algorithm", which itself is based Random Forests. In essence, the algorithm creates "shadows" of your original data, where each of the predictor value is randomly permuted, which destroys the predictive power of the variable. Then, the algorithm iterates over these "shadows" and assess for each variable whether its permutation has a substantial effect on the model performance or not. E.g., if a model trained on a variable's shadow performs constantly worse than when trained on the original values, that variable is assessed as important. The algorithm categorizes all variables into "to reject", "to consider", and "to keep". Luckily, we do not have to write this algorithm ourselves but can use the {Boruta} package:
+
+```{r fig.height=8, fig.width=12}
+set.seed(42)
+bor <- 
+  Boruta::Boruta(
+    y = data_cal[, response], 
+    x = data_cal[, predictors],
+    maxRuns = 50, # Number of iterations. Set to 30 or lower if it takes too long
+    num.threads = parallel::detectCores()-1)
+
+# Plot variable importance, the Boruta-output can be directly fed into base R plot()
+par(oma = c(8,3,2,2)) # enlarge plot below for long variable labels
+plot(bor, 
+     xlab = "", 
+     ylab = "Importance",
+     las = 2,
+     )
+```
+
+```{r}
+# Check whether the most important variables from Boruta-Algorithm are similar as the
+# important variables from the weighted Random Forest model
+bor_top10 <- 
+  Boruta::attStats(bor) |> 
+  tibble::rownames_to_column() |> 
+  dplyr::arrange(dplyr::desc(meanImp)) |> 
+  dplyr::slice_head(n = 10) |> 
+  dplyr::pull(rowname)
+
+vi <- get_vi(rf_weighted)
+vi_top10 <- 
+  vi |> 
+  dplyr::slice_head(n = 10) |> 
+  dplyr::pull(variable)
+
+cbind(vi_top10, bor_top10) |> 
+  knitr::kable(col.names = c("RF Top 10", "Boruta Top 10"))
+```
+
+We see that apart from the `timeset` variable, the variable importance calculated by the Boruta-Algorithm differs quite a bit, compared to the simple variable importance assessment built into the `ranger()` function. To move forward, let's only keep variables that were classified as "to keep" or "to consider" by the Boruta-Algorithm.
+
+```{r}
+predictors_bor <- 
+  bor$finalDecision |> 
+  as.data.frame(nm = "assessment") |> 
+  tibble::rownames_to_column(var = "variable") |> 
+  dplyr::filter(assessment != "Rejected") |> 
+  dplyr::pull(variable)
+```
+
+### Hyperparameter Tuning
+
+A Random Forest model has multiple hyperparameters that we can tune to improve the model performance. Commonly, we are tuning the numbers of variables that are considered at each node `mtry` and the minimum number of observations in a leaf node `min.node.size`. To facilitate the tuning routine, we are using the {caret} package, which is a wrapper for many different statistical models. Also, we are adding a 5-fold cross-validation to improve model performance.
+
+```{r}
+opt_mtry <- (floor(length(predictors_bor) / 3))
+
+tune_grid <- 
+  expand.grid(
+    splitrule = "variance", # Keep split rule the same
+    min.node.size = c(5, 10),
+    mtry = seq(opt_mtry - 12,
+                opt_mtry + 12,
+                6)
+    )
+
+tune_grid |> knitr::kable()
+```
+
+```{r}
+# Model training with cv
+rf_caret_cv <- 
+    caret::train(
+        y = data_cal[, response], 
+        x = data_cal[, predictors_bor],
+        # case.weights = weights[, "w"],
+        tuneGrid = tune_grid,
+        method = "ranger",
+        trControl = caret::trainControl(method = "cv", number = 5)
+    )
+
+rf_caret_cv
+
+# Model training with weights
+# rf_caret_w <- 
+#     caret::train(
+#       y = data_cal[, response], 
+#       x = data_cal[, predictors_bor],
+#       case.weights = weights[, "w"],
+#       tuneGrid = tune_grid,
+#       method = "ranger",
+#       # trControl = caret::trainControl(method = "cv", number = 5)
+#   )
+# rf_caret_w$bestTune
+```
+
+> **Note:** Unfortuntately, {caret} handles the weights wrong during CV and throws an [error](https://github.com/imbs-hl/ranger/issues/419) when trying to use weights alongside CV. As a work-around, one could write the CV by hand and run caret with the weights as input. As we aim for generalizability of our model, we are preferring the cross-validated over the weighted model.
+
+From this model output, we can see that the best model had a `mtry = 31`, a `min.node.size = 10`. Since we are going to use functions from the {ranger} package for the model interpretation in the next Chapter, we have to first rerun our final model with `range()` and then save all relevant data for further analysis.
+
+```{r}
+rf_final <- 
+  ranger::ranger( 
+    y = data_cal[, response],         # Response variable
+    x = data_cal[, predictors_bor],   # Predictor variables
+    case.weights = weights[, "w"],# Add weights to input
+    importance   = "permutation", # Pick permutation to calculate variable importance
+    mtry = rf_caret_cv$finalModel$mtry,
+    min.node.size = rf_caret_cv$finalModel$min.node.size,
+    splitrule = "variance",
+    seed = 42,                    # Specify seed for randomization to reproduce the same model again
+    num.threads = parallel::detectCores() - 1 # Use all but one CPU core for quick model training
+  )
+
+print(rf_final)
+```
+
+## Model interpretation
+
+### Variable importance
+
+{Similar as already done above for variable selection.}
+
+```{r}
+plot_vi(rf_final)
+```
+
+### Partial dependence plots
+
+Partial dependence plots (PDP) show the marginal effect that a given predictor has on the response, when the effects of all other predictors are accounted for. We know that not all variables are very influential, so we look only at the top give variables:
+
+```{r}
+# Get the names of the 5 most important variables
+
+# Top n variables to create PDPs for
+top_n <- 5
+
+# Get top variables
+top_vars <- 
+  get_vi(rf_final) |> 
+  dplyr::slice_head(n = top_n) |> 
+  dplyr::pull(variable)
+
+# Create a small loop to extract the predictor values and y_hat
+# Create separate df for numerical and for categorical variables
+pdp_data_num <- tibble::tibble()
+pdp_data_cat <- tibble::tibble()
+
+for (i_var in top_vars) {
+  i_data <- 
+    pdp::partial(rf_final, 
+                 pred.var = i_var, # select one variable you are interessted in 
+                 train = data_cal[, c(response, predictors_bor)]) |> 
+    tidyr::pivot_longer(cols = i_var, names_to = "variable", values_to = "x")
+  
+  if (is.character(i_data[['x']])) {
+    pdp_data_cat <- rbind(pdp_data_cat, i_data)  
+    
+  } else {
+    pdp_data_num <- rbind(pdp_data_num, i_data)  
+    
+  }
+}
+
+# Plot numerical variables
+pdp_data_num |> 
+  ggplot2::ggplot() +
+  ggplot2::geom_line(aes(x = x, y = yhat)) +
+  ggplot2::facet_wrap(~variable, scales = "free_x", nrow = 1) +
+  ggplot2::theme_linedraw() +
+  ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = 1),
+                 panel.grid.minor.x = element_blank()) +
+  ggplot2::labs(y = "Response [unit of response]",
+                x = NULL)
+```
+
+```{r}
+# Plot categorical variables
+pdp_data_cat |> 
+  ggplot2::ggplot() +
+  ggplot2::geom_point(aes(x = x, y = yhat)) +
+  ggplot2::facet_wrap(~variable, scales = "free_x", nrow = 1) +
+  ggplot2::theme_linedraw() +
+  ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = 1),
+                 panel.grid.minor.x = element_blank()) +
+  ggplot2::labs(y = "Response [unit of response]",
+                x = NULL)
+```
+
+### Save outputs for evaluation
+
+```{r}
+# Save all relevant data for model interpretation
+saveRDS(rf_final,                   
+        here::here("data/rf_for_ph0-10.rds"))
+
+saveRDS(data_cal[, c(response, predictors_bor)],
+        here::here("data/cal_for_ph0-10.rds"))
+
+saveRDS(data_val[, c(response, predictors_bor)],
+        here::here("data/val_for_ph0-10.rds"))
+
+saveRDS(weights[, "w"],
+        here::here("data/weights_for_ph0-10.rds"))
+```
+
+> TODO: Think about whether we should center and scale the data. Is not needed for RF per se but it could help with model interpretability and variable importance assessment.
+
+> TODO: Add interpretation of variable importance and of PDP plots

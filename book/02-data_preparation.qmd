@@ -1,0 +1,355 @@
+# Preparing Raster Data {#sec-dataprep}
+
+```{r}
+# load_packages()
+```
+
+## Load data
+
+### Sampling location data
+
+```{r}
+# Load soil data from sampling locations
+bern_data <- readr::read_csv(
+  here::here("data-raw/soildata/berne_soil_sampling_locations.csv")
+  )
+
+# Display data
+head(bern_data) |> knitr::kable()
+```
+
+The dataset on soil samples from Bern holds `r dim(bern_data)[2]` variables for `r dim(bern_data)[1]` entries (more information [here](https://rdrr.io/cran/geoGAM/man/berne.html)):
+
+-   `site_id_unique`: The location's unique site id.
+
+-   `timeset`: The sampling year and information on sampling type for soil pH (no label: CaCl$_2$ laboratory measurement, field: indicator solution used in field, ptf: H$_2$O laboratory measurement transferred by pedotransfer function).
+
+-   `x`: The x (easting) coordinates in meters following the (CH1903/LV03) system.
+
+-   `y`: The y (northing) coordinates in meters following the (CH1903/LV03) system.
+
+-   `dataset`: Specification whether a sample is used for model calibration or validation (this is based on randomization to ensure even spatial coverage).
+
+-   `dclass`: Soil drainage class
+
+-   `waterlog.30`, `waterlog.50`, `waterlog.100`: Specification whether soil was water logged at 30, 50, or 100 cm depth (0 = No, 1 = Yes).
+
+-   `ph.0.10`, `ph.10.30`, `ph.30.50`, `ph.50.100`: Average soil pH between 0-10, 10-30, 30-50, and 50-100 cm depth.
+
+### Raster data of covariates
+
+Now, let's load all the covariates that we want to produce our soil maps.
+
+```{r}
+# Get a list with the path to all raster files
+list_raster <- 
+  base::list.files(
+    here::here("data-raw/geodata/covariates/"),
+    full.names = T
+  )
+
+# Display data (lapply to clean names)
+lapply(
+  list_raster, 
+  function(x) sub(".*/(.*)", "\\1", x)
+  ) |> 
+  unlist() |> 
+  head(5) |> 
+  print()
+```
+
+The output above shows the first five raster files with rather cryptic names. For this tutorial, we do not need to know all of the 91 rasters files that we are loading here but in a scientific context, you should know your data better of course. Let's look at one of these raster files to get a better feeling for our data:
+
+```{r}
+# Load a raster file as example: Picking the slope profile at 2m resolution
+raster_example <- terra::rast(list_raster[74])
+raster_example
+```
+
+As shown in the output, a raster object has the following properties (among others, see `?terra::rast`):
+
+-   class: The class of the file, here a SpatRaster.
+
+-   dimensions: The number of rows, columns, years (if temporal encoding).
+
+-   resolution: The resolution of the coordinate system, here it is 20 in both axes.
+
+-   extent: The extent of the coordinate system defined by min and max values on the x and y axes.
+
+-   coord. ref.: Reference coordinate system. Here, the raster is encoded using the LV95 geodetic reference system from which the projected coordinate system CH1903+ is derived.
+
+-   source: The name of the source file.
+
+-   names: The name of the raster file (mostly the file name without file-specific ending)
+
+-   min value: The lowest value of all cells.
+
+-   max value: The highest value of all cells.
+
+Now, let's look at a visualisation of this raster file. Since we selected the slope at 2m resolution, we expect a relief-like map with a color gradient that indicates the steepness of the terrain.
+
+```{r}
+# Plot raster example
+terra::plot(raster_example)
+```
+
+```{r}
+# To have some more flexibility, we can plot this in the ggplot-style as such:
+ggplot2::ggplot() +
+  tidyterra::geom_spatraster(data = raster_example) +
+  ggplot2::scale_fill_viridis_c(
+    na.value = NA,
+    option = "magma",
+    name = "Slope (%) \n"
+    ) +
+  ggplot2::theme_bw() +
+  ggplot2::scale_x_continuous(expand = c(0, 0)) +  # avoid gap between plotting area and axis
+  ggplot2::scale_y_continuous(expand = c(0, 0)) +
+  ggplot2::labs(title = "Slope of the Study Area")
+```
+
+::: callout-note
+Note that the second plot has different coordinates that the upper one. That is because the data was automatically projected to the World Geodetic System (WGS84, ESPG: 4326).
+:::
+
+This looks already interesting but we can put our data into a bit more context. For example, a larger map background would be useful to get a better orientation of our location. Also, it would be nice to see where our sampling locations are and to differentiate these locations by whether they are part of the calibration or validation dataset. Bringing this all together requires some more understanding of plotting maps in `R`. So, don't worry if you do not understand everything in the code chunk below and enjoy the visualisations:
+
+```{r collapse=TRUE}
+# To get our map working correctly, we have to ensure that all the input data
+# is in the same coordinate system. Since our Berne data is in the Swiss 
+# coordinate system, we have to transform the sampling locations to the 
+# World Geodetic System first.
+
+# For the raster:
+r <- terra::project(raster_example, "+init=EPSG:4326")
+
+# For the sampling locations:
+# Function from Stackoverflow:
+# https://stackoverflow.com/questions/49536664/r-transforming-coordinates-inside-the-data-frame
+change_coords <-function(data, from_CRS, to_CRS) {
+  
+  # Load required package
+  require(sp)
+  
+  # Turn string into CRS
+  from_CRS = CRS(from_CRS)
+  to_CRS   = CRS(to_CRS)
+  
+  new <- 
+    as.data.frame(
+      spTransform(
+        SpatialPointsDataFrame(
+          coords = data.frame(
+            lon = data$lon,
+            lat = data$lat),
+          
+          data = data.frame(
+            id = data$id,
+            lon_old = data$lon,
+            lat_old = data$lat),
+          proj4string = from_CRS), 
+        to_CRS
+        )
+      )
+  
+  new <- 
+    new |> 
+    dplyr::select(coords.x1, coords.x2, id) |> 
+    dplyr::rename(lon = coords.x1,
+                  lat = coords.x2)
+  
+  return(new)
+}
+
+# Transform dataframes
+coord_cal <- 
+  bern_data |> 
+  dplyr::filter(dataset == "calibration") |> 
+  dplyr::select(site_id_unique, x, y) |> 
+  dplyr::rename(id = site_id_unique, lon = x, lat = y) |> 
+  change_coords(
+    from_CRS = "+init=epsg:2056", 
+    to_CRS = "+init=epsg:4326"
+    )
+
+coord_val <- 
+  bern_data |> 
+  dplyr::filter(dataset == "validation") |> 
+  dplyr::select(site_id_unique, x, y) |> 
+  dplyr::rename(id = site_id_unique, lon = x, lat = y) |> 
+  change_coords(
+    from_CRS = "+init=epsg:2056", 
+    to_CRS = "+init=epsg:4326"
+    )
+
+```
+
+```{r collapse=TRUE}
+# Loading packages to improve code readabilibty
+# Note: This code may only work when installing the development branch of {leaflet}:
+# remotes::install_github('rstudio/leaflet')
+library(leaflet)
+library(terra)
+
+# Let's get a nice color palette now for easy reference
+pal <- colorNumeric(
+  "magma",
+  values(r),
+  na.color = "transparent"
+  )
+
+# Next, we build a leaflet map
+leaflet() |> 
+  # As base maps, use two provided by ESRI
+  addProviderTiles(providers$Esri.WorldImagery, group = "World Imagery") |>
+  addProviderTiles(providers$Esri.WorldTopoMap, group = "World Topo") |>
+  # Add our raster file
+  addRasterImage(
+    r,
+    colors = pal,
+    opacity = 0.6,
+    group = "raster"
+    ) |>
+  # Add markers for sampling locations
+  leaflet::addCircleMarkers(
+    data = coord_cal,
+    lng = ~lon,  # Column name for x coordinates
+    lat = ~lat,  # Column name for y coordinates
+    group = "training",
+    color = "black"
+  ) |>
+    leaflet::addCircleMarkers(
+    data = coord_val,
+    lng = ~lon,  # Column name for x coordinates
+    lat = ~lat,  # Column name for y coordinates
+    group = "validation",
+    color = "red"
+  ) |>
+  # Add some layout and legend
+  addLayersControl(
+    baseGroups = c("World Imagery","World Topo"),
+    position = "topleft",
+    options = layersControlOptions(collapsed = FALSE),
+    overlayGroups = c("raster", "training", "validation")
+    ) |>
+  addLegend(
+    pal = pal,
+    values = values(r),
+    title = "Slope (%)")
+```
+
+::: callout-note
+## Note
+
+This plotting example is based to the one shown in the AGDS 2 tutorial "Handful of Pixels" on phenology and more information on using spatial data in R can be found in the Chapter on [Geospatial data in R](https://geco-bern.github.io/handfull_of_pixels/geospatial_R.html).
+:::
+
+That looks great! At first glance, it is a bit crowded but once you scroll in you can investigate our study area quite nicely. You can check whether the slope raster file makes sense by comparing it against the base maps. Can you see how cliffs along the Aare river, hills, and even gravel quarries show high slopes? We also see that our validation dataset is nicely distributed across the area covered by the training dataset.
+
+<!--# TODO: For some reason, I could not reproduce Koen's example with the addRasterImage() command... Always got an error that my raster file is not recognised as such. `inherits(x, "RasterLayer") is not TRUE` -->
+
+<!--# TODO: Alternatively, we could also change the projection of the leaflet map instead of changing the CRS of raster and sampling sites. However, that did not work for me... -->
+
+Now that we have played with a few visualizations, let's get back to preparing our data. The {terra} package comes with the very useful tool to stack multiple raster on top of each other, if they are of the same spatial format. To do so, we just have to feed in the vector of file names `list_raster`:
+
+```{r}
+# Load all files as one batch
+all_rasters <- terra::rast(list_raster)
+all_rasters
+```
+
+Now, we do not want to have the covariates' data from all cells in the raster file. Rather, we want to reduce our stacked rasters to the x and y coordinates for which we have soil sampling data. We can do this using the `terra::extract()` function. Then, we want to merge the two dataframes of soil data and covariates data by their coordinates. Since the order of the covariate data is the same as the Bern data, we can simply bind their columns with `cbind()`:
+
+```{r}
+# Extract coordinates from sampling locations
+sampling_xy <- bern_data |> dplyr::select(x, y)
+
+# From all rasters, extract values for sampling coordinates
+covar_data <- 
+  terra::extract(all_rasters,  # The raster we want to extract from
+                 sampling_xy,  # A matrix of x and y values to extract for
+                 ID = FALSE    # To not add a default ID column to the output
+                 )
+
+merged_data <- cbind(bern_data, covar_data)
+head(merged_data) |> knitr::kable() 
+```
+
+> TODO: I DID NOT UNDERSTAND THESE POLAR COORDINATES THAT ARE ADDED
+
+Great that worked without problems. Now, to allow spatial trend in more directions than only in a north-south and east-west direction, we have to add polar coordinates:
+
+```{r}
+final_data <- 
+  merged_data |> 
+    dplyr::mutate(
+      x30 = x*cos(30/180*pi) - y*sin(30/180*pi),
+      y30 = x*sin(30/180*pi) + y*cos(30/180*pi),
+      x60 = x*cos(60/180*pi) - y*sin(60/180*pi),
+      y60 = x*sin(60/180*pi) + y*cos(60/180*pi)
+    )
+```
+
+Not all our covariates may be continuous variables and therefore have should be encoded as factors. As an easy check, we can take the original corvariates data and check for the number of unique values in each raster. If the variable is continuous, we expect that there are a lot of different values - at maximum 1052 different values because we have that many entries. So, let's have a look and assume that variables with 10 or less different values are categorical variables.
+
+```{r}
+cat_vars <- 
+  covar_data |> 
+  # Get number of distinct values per variable
+  dplyr::summarise(dplyr::across(dplyr::everything(), ~ dplyr::n_distinct(.))) |> 
+  # Turn df into long format for easy filtering
+  tidyr::pivot_longer(dplyr::everything(), 
+                      names_to = "variable", 
+                      values_to = "n") |> 
+  # Filter out variables with 10 or less distinct values
+  dplyr::filter(n <= 10) |>
+  # Extract the names of these variables
+  dplyr::pull('variable')
+
+cat("Variables with less than 10 distinct values:", cat_vars)
+```
+
+Now that we have the names of the categorical values, we can mutate these columns in our df using the base function `as.factor()`:
+
+```{r}
+final_data <- 
+  final_data |> 
+  dplyr::mutate(dplyr::across(cat_vars, ~ as.factor(.)))
+```
+
+## Checking missing data
+
+We are almost done with our data preparation, we just need to reduce it to sampling locations for which we have a decent amount of data on the covariates. Else, we blow up the model calibration with data that is not informative enough.
+
+```{r}
+# Get number of rows to calculate percentages
+n_rows <- nrow(final_data)
+
+# Get number of distinct values per variable
+final_data |> 
+  dplyr::summarise(dplyr::across(dplyr::everything(), 
+                                 ~ length(.) - sum(is.na(.)))) |> 
+  tidyr::pivot_longer(dplyr::everything(), 
+                      names_to = "variable", 
+                      values_to = "n") |>
+  dplyr::mutate(perc_available = round(n/n_rows *100)) |> 
+  dplyr::arrange(perc_available) |> 
+  head(10) |> 
+  knitr::kable()
+```
+
+This looks good, we have no variable with a substantial amount of missing data. Generally, only pH measurements are lacking, which we should keep in mind when making predictions and inferences. Another great way to explore your data, is using the {visdat} package:
+
+```{r}
+final_data |> visdat::vis_miss()
+```
+
+Alright, we see that we are not missing a lot of data for any variable and in total only 1% of our data is `NA`. That is good enough! We do not have to modify the dataframe any further and can save it for further analysis.
+
+## Save data
+
+```{r}
+saveRDS(final_data, 
+        here::here("data/bern_sampling_locations_with_covariates.rds"))
+
+```

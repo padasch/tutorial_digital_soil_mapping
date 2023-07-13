@@ -1,0 +1,17 @@
+# Exercise {#sec-exercise}
+
+After reading through this tutorial, you should have a solid understanding of how we can use Random Forest models for digital soil mapping. Based on the provided knowledge and code, it is now your task to improve and expand the analysis.
+
+As a first task and to deepen your understanding, you have to answer the following questions:
+
+-   @sec-intro holds a list of requirements for our statistical model. Here, we picked Random Forests but without explicitly stating why this is a suitable model choice. Your task is to give reasonable answer to why Random Forests are meeting the listed requirements.
+
+As a second task, you have to expand the analysis. You are absolutely free to come up with your own ideas but here are a few primers to get you started:
+
+-   TODO
+
+::: callout-tip
+## A note on reproducibility
+
+As taught extensively in [Applied Geodata Science I](https://geco-bern.github.io/agds/), we value reproducible and open workflows. Therefore, we strongly advice you to create a suitable work environment. This includes proper version control of your code via git and GitHub, package version control via {renv}, and general best-practices in organizing your files and code.
+:::
