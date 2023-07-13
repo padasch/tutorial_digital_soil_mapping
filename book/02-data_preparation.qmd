@@ -185,8 +185,9 @@ coord_val <-
 ```
 
 ```{r collapse=TRUE}
-# Loading packages to improve code readability and avoid ::-notation
-
+# Loading packages to improve code readbility to avoid :: notation
+# Note: This code may only work when installing the development branch of {leaflet}:
+# remotes::install_github('rstudio/leaflet')
 library(leaflet)
 library(terra)
 
