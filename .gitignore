@@ -6,3 +6,6 @@
 /.quarto/
 _book/
 local/
+
+book/_book
+book/_freeze
