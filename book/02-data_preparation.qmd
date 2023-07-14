@@ -109,7 +109,7 @@ ggplot2::ggplot() +
 ```
 
 ::: callout-note
-Note that the second plot has different coordinates that the upper one. That is because the data was automatically projected to the World Geodetic System (WGS84, ESPG: 4326).
+Note that the second plot has different coordinates than the upper one. That is because the data was automatically projected to the World Geodetic System (WGS84, ESPG: 4326).
 :::
 
 This looks already interesting but we can put our data into a bit more context. For example, a larger map background would be useful to get a better orientation of our location. Also, it would be nice to see where our sampling locations are and to differentiate these locations by whether they are part of the calibration or validation dataset. Bringing this all together requires some more understanding of plotting maps in `R`. So, don't worry if you do not understand everything in the code chunk below and enjoy the visualisations:
