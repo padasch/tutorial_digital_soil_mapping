@@ -114,6 +114,8 @@ Note that the second plot has different coordinates than the upper one. That is 
 
 This looks already interesting but we can put our data into a bit more context. For example, a larger map background would be useful to get a better orientation of our location. Also, it would be nice to see where our sampling locations are and to differentiate these locations by whether they are part of the calibration or validation dataset. Bringing this all together requires some more understanding of plotting maps in `R`. So, don't worry if you do not understand everything in the code chunk below and enjoy the visualisations:
 
+<!-- TODO: Consider moving these code chunks into sepeare files under ./R -->
+
 ```{r collapse=TRUE}
 # To get our map working correctly, we have to ensure that all the input data
 # is in the same coordinate system. Since our Berne data is in the Swiss 
@@ -238,6 +240,10 @@ leaflet() |>
     title = "Slope (%)")
 ```
 
+<!--# TODO: For some reason, I could not reproduce Koen's example with the addRasterImage() command... Always got an error that my raster file is not recognised as such. `inherits(x, "RasterLayer") is not TRUE` -->
+
+<!--# TODO: Alternatively, we could also change the projection of the leaflet map instead of changing the CRS of raster and sampling sites. However, that did not work for me... -->
+
 ::: callout-note
 ## Note
 
@@ -245,10 +251,6 @@ This plotting example is based to the one shown in the AGDS 2 tutorial "Handful 
 :::
 
 That looks great! At first glance, it is a bit crowded but once you scroll in you can investigate our study area quite nicely. You can check whether the slope raster file makes sense by comparing it against the base maps. Can you see how cliffs along the Aare river, hills, and even gravel quarries show high slopes? We also see that our validation dataset is nicely distributed across the area covered by the training dataset.
-
-<!--# TODO: For some reason, I could not reproduce Koen's example with the addRasterImage() command... Always got an error that my raster file is not recognised as such. `inherits(x, "RasterLayer") is not TRUE` -->
-
-<!--# TODO: Alternatively, we could also change the projection of the leaflet map instead of changing the CRS of raster and sampling sites. However, that did not work for me... -->
 
 Now that we have played with a few visualizations, let's get back to preparing our data. The {terra} package comes with the very useful tool to stack multiple raster on top of each other, if they are of the same spatial format. To do so, we just have to feed in the vector of file names `list_raster`:
 
@@ -275,7 +277,7 @@ merged_data <- cbind(bern_data, covar_data)
 head(merged_data) |> knitr::kable() 
 ```
 
-> TODO: I DID NOT UNDERSTAND THESE POLAR COORDINATES THAT ARE ADDED
+<!-- > TODO: Add explanation that rotated coordinates are added to avoid chess-board prediction maps -->
 
 Great that worked without problems. Now, to allow spatial trend in more directions than only in a north-south and east-west direction, we have to add polar coordinates:
 
@@ -351,5 +353,4 @@ Alright, we see that we are not missing a lot of data for any variable and in to
 ```{r}
 saveRDS(final_data, 
         here::here("data/bern_sampling_locations_with_covariates.rds"))
-
 ```
