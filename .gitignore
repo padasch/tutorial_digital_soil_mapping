@@ -7,8 +7,9 @@
 _book/
 local/
 
+book/_site
 book/_book
-book/_freeze
+#book/_freeze
 
 data/
 data-raw/
