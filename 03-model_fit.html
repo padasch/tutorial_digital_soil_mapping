@@ -1,0 +1,2063 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.433">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>AGDS 2: Digital Soil Mapping - 3&nbsp; Fitting a Random Forest Model</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./04-model_eval.html" rel="next">
+<link href="./02-data_preparation.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./03-model_fit.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Fitting a Random Forest Model</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">AGDS 2: Digital Soil Mapping</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01-introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02-data_preparation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Preparing Raster Data</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03-model_fit.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Fitting a Random Forest Model</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04-model_eval.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Model Analysis</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./99-exercise.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Exercise</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#load-data" id="toc-load-data" class="nav-link active" data-scroll-target="#load-data"><span class="header-section-number">3.1</span> Load data</a></li>
+  <li><a href="#preparations" id="toc-preparations" class="nav-link" data-scroll-target="#preparations"><span class="header-section-number">3.2</span> Preparations</a></li>
+  <li><a href="#model-fitting" id="toc-model-fitting" class="nav-link" data-scroll-target="#model-fitting"><span class="header-section-number">3.3</span> Model fitting</a>
+  <ul class="collapse">
+  <li><a href="#basic-model" id="toc-basic-model" class="nav-link" data-scroll-target="#basic-model"><span class="header-section-number">3.3.1</span> Basic model</a></li>
+  <li><a href="#model-with-weights" id="toc-model-with-weights" class="nav-link" data-scroll-target="#model-with-weights"><span class="header-section-number">3.3.2</span> Model with weights</a></li>
+  <li><a href="#variables-of-importance" id="toc-variables-of-importance" class="nav-link" data-scroll-target="#variables-of-importance"><span class="header-section-number">3.3.3</span> Variables of importance</a></li>
+  <li><a href="#hyperparameter-tuning" id="toc-hyperparameter-tuning" class="nav-link" data-scroll-target="#hyperparameter-tuning"><span class="header-section-number">3.3.4</span> Hyperparameter Tuning</a></li>
+  </ul></li>
+  <li><a href="#model-interpretation" id="toc-model-interpretation" class="nav-link" data-scroll-target="#model-interpretation"><span class="header-section-number">3.4</span> Model interpretation</a>
+  <ul class="collapse">
+  <li><a href="#variable-importance" id="toc-variable-importance" class="nav-link" data-scroll-target="#variable-importance"><span class="header-section-number">3.4.1</span> Variable importance</a></li>
+  <li><a href="#partial-dependence-plots" id="toc-partial-dependence-plots" class="nav-link" data-scroll-target="#partial-dependence-plots"><span class="header-section-number">3.4.2</span> Partial dependence plots</a></li>
+  <li><a href="#save-outputs-for-evaluation" id="toc-save-outputs-for-evaluation" class="nav-link" data-scroll-target="#save-outputs-for-evaluation"><span class="header-section-number">3.4.3</span> Save outputs for evaluation</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span id="sec-modelfit" class="quarto-section-identifier"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Fitting a Random Forest Model</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="load-data" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="load-data"><span class="header-section-number">3.1</span> Load data</h2>
+<p>In the previous Chapter, we create a dataframe that holds information on the soil sampling locations and the covariates that we extracted for these positions. Let’s load this datafarme into our environment</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>data_clean <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data/bern_sampling_locations_with_covariates.rds"</span>))</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(data_clean) <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 1%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 0%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 0%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 0%">
+<col style="width: 1%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 0%">
+<col style="width: 1%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 0%">
+<col style="width: 1%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 1%">
+<col style="width: 0%">
+<col style="width: 1%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 0%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 1%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 1%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">site_id_unique</th>
+<th style="text-align: left;">timeset</th>
+<th style="text-align: right;">x</th>
+<th style="text-align: right;">y</th>
+<th style="text-align: left;">dataset</th>
+<th style="text-align: left;">dclass</th>
+<th style="text-align: right;">waterlog.30</th>
+<th style="text-align: right;">waterlog.50</th>
+<th style="text-align: right;">waterlog.100</th>
+<th style="text-align: right;">ph.0.10</th>
+<th style="text-align: right;">ph.10.30</th>
+<th style="text-align: right;">ph.30.50</th>
+<th style="text-align: right;">ph.50.100</th>
+<th style="text-align: right;">be_gwn25_hdist</th>
+<th style="text-align: right;">be_gwn25_vdist</th>
+<th style="text-align: right;">cindx10_25</th>
+<th style="text-align: right;">cindx50_25</th>
+<th style="text-align: left;">geo500h1id</th>
+<th style="text-align: left;">geo500h3id</th>
+<th style="text-align: left;">lgm</th>
+<th style="text-align: right;">lsf</th>
+<th style="text-align: right;">mrrtf25</th>
+<th style="text-align: right;">mrvbf25</th>
+<th style="text-align: right;">mt_gh_y</th>
+<th style="text-align: right;">mt_rr_y</th>
+<th style="text-align: right;">mt_td_y</th>
+<th style="text-align: right;">mt_tt_y</th>
+<th style="text-align: right;">mt_ttvar</th>
+<th style="text-align: right;">NegO</th>
+<th style="text-align: right;">PosO</th>
+<th style="text-align: right;">protindx</th>
+<th style="text-align: right;">Se_alti2m_std_50c</th>
+<th style="text-align: right;">Se_conv2m</th>
+<th style="text-align: right;">Se_curv25m</th>
+<th style="text-align: right;">Se_curv2m_fmean_50c</th>
+<th style="text-align: right;">Se_curv2m_fmean_5c</th>
+<th style="text-align: right;">Se_curv2m_s60</th>
+<th style="text-align: right;">Se_curv2m_std_50c</th>
+<th style="text-align: right;">Se_curv2m_std_5c</th>
+<th style="text-align: right;">Se_curv2m</th>
+<th style="text-align: right;">Se_curv50m</th>
+<th style="text-align: right;">Se_curv6m</th>
+<th style="text-align: right;">Se_curvplan25m</th>
+<th style="text-align: right;">Se_curvplan2m_fmean_50c</th>
+<th style="text-align: right;">Se_curvplan2m_fmean_5c</th>
+<th style="text-align: right;">Se_curvplan2m_s60</th>
+<th style="text-align: right;">Se_curvplan2m_s7</th>
+<th style="text-align: right;">Se_curvplan2m_std_50c</th>
+<th style="text-align: right;">Se_curvplan2m_std_5c</th>
+<th style="text-align: right;">Se_curvplan2m</th>
+<th style="text-align: right;">Se_curvplan50m</th>
+<th style="text-align: right;">Se_curvprof25m</th>
+<th style="text-align: right;">Se_curvprof2m_fmean_50c</th>
+<th style="text-align: right;">Se_curvprof2m_fmean_5c</th>
+<th style="text-align: right;">Se_curvprof2m_s60</th>
+<th style="text-align: right;">Se_curvprof2m_s7</th>
+<th style="text-align: right;">Se_curvprof2m_std_50c</th>
+<th style="text-align: right;">Se_curvprof2m_std_5c</th>
+<th style="text-align: right;">Se_curvprof2m</th>
+<th style="text-align: right;">Se_curvprof50m</th>
+<th style="text-align: right;">Se_diss2m_50c</th>
+<th style="text-align: right;">Se_diss2m_5c</th>
+<th style="text-align: right;">Se_e_aspect25m</th>
+<th style="text-align: right;">Se_e_aspect2m_5c</th>
+<th style="text-align: right;">Se_e_aspect2m</th>
+<th style="text-align: right;">Se_e_aspect50m</th>
+<th style="text-align: right;">Se_MRRTF2m</th>
+<th style="text-align: right;">Se_MRVBF2m</th>
+<th style="text-align: right;">Se_n_aspect2m_50c</th>
+<th style="text-align: right;">Se_n_aspect2m_5c</th>
+<th style="text-align: right;">Se_n_aspect2m</th>
+<th style="text-align: right;">Se_n_aspect50m</th>
+<th style="text-align: right;">Se_n_aspect6m</th>
+<th style="text-align: right;">Se_NO2m_r500</th>
+<th style="text-align: right;">Se_PO2m_r500</th>
+<th style="text-align: right;">Se_rough2m_10c</th>
+<th style="text-align: right;">Se_rough2m_5c</th>
+<th style="text-align: right;">Se_rough2m_rect3c</th>
+<th style="text-align: right;">Se_SAR2m</th>
+<th style="text-align: right;">Se_SCA2m</th>
+<th style="text-align: right;">Se_slope2m_fmean_50c</th>
+<th style="text-align: right;">Se_slope2m_fmean_5c</th>
+<th style="text-align: right;">Se_slope2m_s60</th>
+<th style="text-align: right;">Se_slope2m_s7</th>
+<th style="text-align: right;">Se_slope2m_std_50c</th>
+<th style="text-align: right;">Se_slope2m_std_5c</th>
+<th style="text-align: right;">Se_slope2m</th>
+<th style="text-align: right;">Se_slope50m</th>
+<th style="text-align: right;">Se_slope6m</th>
+<th style="text-align: right;">Se_toposcale2m_r3_r50_i10s</th>
+<th style="text-align: right;">Se_tpi_2m_50c</th>
+<th style="text-align: right;">Se_tpi_2m_5c</th>
+<th style="text-align: right;">Se_tri2m_altern_3c</th>
+<th style="text-align: right;">Se_tsc10_2m</th>
+<th style="text-align: right;">Se_TWI2m_s15</th>
+<th style="text-align: right;">Se_TWI2m_s60</th>
+<th style="text-align: right;">Se_TWI2m</th>
+<th style="text-align: right;">Se_vrm2m_r10c</th>
+<th style="text-align: right;">Se_vrm2m</th>
+<th style="text-align: right;">terrTextur</th>
+<th style="text-align: right;">tsc25_18</th>
+<th style="text-align: right;">tsc25_40</th>
+<th style="text-align: right;">vdcn25</th>
+<th style="text-align: left;">vszone</th>
+<th style="text-align: right;">x30</th>
+<th style="text-align: right;">y30</th>
+<th style="text-align: right;">x60</th>
+<th style="text-align: right;">y60</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">4_26-In-005</td>
+<td style="text-align: left;">d1968_1974_ptf</td>
+<td style="text-align: right;">2571994</td>
+<td style="text-align: right;">1203001</td>
+<td style="text-align: left;">validation</td>
+<td style="text-align: left;">poor</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6.071733</td>
+<td style="text-align: right;">6.227780</td>
+<td style="text-align: right;">7.109235</td>
+<td style="text-align: right;">7.214589</td>
+<td style="text-align: right;">234.39087</td>
+<td style="text-align: right;">1.2986320</td>
+<td style="text-align: right;">-10.62191</td>
+<td style="text-align: right;">-6.9658718</td>
+<td style="text-align: left;">6</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">7</td>
+<td style="text-align: right;">0.0770846</td>
+<td style="text-align: right;">0.0184651</td>
+<td style="text-align: right;">4.977099</td>
+<td style="text-align: right;">1316.922</td>
+<td style="text-align: right;">9931.120</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">98</td>
+<td style="text-align: right;">183</td>
+<td style="text-align: right;">1.569110</td>
+<td style="text-align: right;">1.534734</td>
+<td style="text-align: right;">0.0159717</td>
+<td style="text-align: right;">0.3480562</td>
+<td style="text-align: right;">-40.5395088</td>
+<td style="text-align: right;">-0.0014441</td>
+<td style="text-align: right;">-0.0062570</td>
+<td style="text-align: right;">0.0175912</td>
+<td style="text-align: right;">0.0002296</td>
+<td style="text-align: right;">2.9204133</td>
+<td style="text-align: right;">1.1769447</td>
+<td style="text-align: right;">-1.9364884</td>
+<td style="text-align: right;">0.0031319</td>
+<td style="text-align: right;">-0.5886537</td>
+<td style="text-align: right;">-0.0042508</td>
+<td style="text-align: right;">-0.0445323</td>
+<td style="text-align: right;">-0.0481024</td>
+<td style="text-align: right;">-0.0504083</td>
+<td style="text-align: right;">-0.1655090</td>
+<td style="text-align: right;">1.5687343</td>
+<td style="text-align: right;">0.6229440</td>
+<td style="text-align: right;">-1.0857303</td>
+<td style="text-align: right;">0.0007920</td>
+<td style="text-align: right;">-0.0028067</td>
+<td style="text-align: right;">-0.0382753</td>
+<td style="text-align: right;">-0.0656936</td>
+<td style="text-align: right;">-0.0506380</td>
+<td style="text-align: right;">-0.0732220</td>
+<td style="text-align: right;">1.6507173</td>
+<td style="text-align: right;">0.7082230</td>
+<td style="text-align: right;">0.8507581</td>
+<td style="text-align: right;">-0.0023399</td>
+<td style="text-align: right;">0.3934371</td>
+<td style="text-align: right;">0.1770810</td>
+<td style="text-align: right;">-0.9702092</td>
+<td style="text-align: right;">-0.7929600</td>
+<td style="text-align: right;">-0.5661940</td>
+<td style="text-align: right;">-0.9939429</td>
+<td style="text-align: right;">5.930607</td>
+<td style="text-align: right;">6.950892</td>
+<td style="text-align: right;">-0.2840056</td>
+<td style="text-align: right;">-0.6084610</td>
+<td style="text-align: right;">-0.2402939</td>
+<td style="text-align: right;">-0.0577110</td>
+<td style="text-align: right;">-0.7661251</td>
+<td style="text-align: right;">1.562085</td>
+<td style="text-align: right;">1.548762</td>
+<td style="text-align: right;">0.3228087</td>
+<td style="text-align: right;">0.2241062</td>
+<td style="text-align: right;">0.2003846</td>
+<td style="text-align: right;">4.000910</td>
+<td style="text-align: right;">16.248077</td>
+<td style="text-align: right;">0.9428899</td>
+<td style="text-align: right;">0.6683306</td>
+<td style="text-align: right;">0.9333237</td>
+<td style="text-align: right;">0.7310556</td>
+<td style="text-align: right;">0.8815832</td>
+<td style="text-align: right;">0.3113754</td>
+<td style="text-align: right;">1.1250136</td>
+<td style="text-align: right;">0.3783818</td>
+<td style="text-align: right;">0.5250366</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-0.0940372</td>
+<td style="text-align: right;">-0.0583917</td>
+<td style="text-align: right;">10.319408</td>
+<td style="text-align: right;">0.4645128</td>
+<td style="text-align: right;">0.0032796</td>
+<td style="text-align: right;">0.0049392</td>
+<td style="text-align: right;">0.0011592</td>
+<td style="text-align: right;">0.000125</td>
+<td style="text-align: right;">0.0002450</td>
+<td style="text-align: right;">0.6248673</td>
+<td style="text-align: right;">0.3332805</td>
+<td style="text-align: right;">1.784737</td>
+<td style="text-align: right;">65.62196</td>
+<td style="text-align: left;">6</td>
+<td style="text-align: right;">1625912</td>
+<td style="text-align: right;">2327826</td>
+<td style="text-align: right;">244167.6</td>
+<td style="text-align: right;">2828913</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">4_26-In-006</td>
+<td style="text-align: left;">d1974_1978</td>
+<td style="text-align: right;">2572149</td>
+<td style="text-align: right;">1202965</td>
+<td style="text-align: left;">calibration</td>
+<td style="text-align: left;">poor</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6.900000</td>
+<td style="text-align: right;">6.947128</td>
+<td style="text-align: right;">7.203502</td>
+<td style="text-align: right;">7.700000</td>
+<td style="text-align: right;">127.41681</td>
+<td style="text-align: right;">1.7064546</td>
+<td style="text-align: right;">-10.87862</td>
+<td style="text-align: right;">-11.8201790</td>
+<td style="text-align: left;">6</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">7</td>
+<td style="text-align: right;">0.0860347</td>
+<td style="text-align: right;">0.0544361</td>
+<td style="text-align: right;">4.975796</td>
+<td style="text-align: right;">1317.000</td>
+<td style="text-align: right;">9931.672</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">98</td>
+<td style="text-align: right;">183</td>
+<td style="text-align: right;">1.568917</td>
+<td style="text-align: right;">1.533827</td>
+<td style="text-align: right;">0.0204794</td>
+<td style="text-align: right;">0.1484705</td>
+<td style="text-align: right;">19.0945148</td>
+<td style="text-align: right;">-0.0190294</td>
+<td style="text-align: right;">0.0021045</td>
+<td style="text-align: right;">0.0221433</td>
+<td style="text-align: right;">0.0000390</td>
+<td style="text-align: right;">3.8783867</td>
+<td style="text-align: right;">4.3162045</td>
+<td style="text-align: right;">2.1377332</td>
+<td style="text-align: right;">-0.0171786</td>
+<td style="text-align: right;">0.1278165</td>
+<td style="text-align: right;">-0.0119618</td>
+<td style="text-align: right;">-0.0501855</td>
+<td style="text-align: right;">-0.3270764</td>
+<td style="text-align: right;">-0.1004921</td>
+<td style="text-align: right;">-0.5133076</td>
+<td style="text-align: right;">2.0736780</td>
+<td style="text-align: right;">2.2502327</td>
+<td style="text-align: right;">-0.3522736</td>
+<td style="text-align: right;">-0.0073879</td>
+<td style="text-align: right;">0.0070676</td>
+<td style="text-align: right;">-0.0522900</td>
+<td style="text-align: right;">-0.3492197</td>
+<td style="text-align: right;">-0.1005311</td>
+<td style="text-align: right;">-0.4981292</td>
+<td style="text-align: right;">2.1899190</td>
+<td style="text-align: right;">2.4300070</td>
+<td style="text-align: right;">-2.4900069</td>
+<td style="text-align: right;">0.0097907</td>
+<td style="text-align: right;">0.4014700</td>
+<td style="text-align: right;">0.7360508</td>
+<td style="text-align: right;">0.5683194</td>
+<td style="text-align: right;">0.8753148</td>
+<td style="text-align: right;">-0.3505180</td>
+<td style="text-align: right;">0.3406741</td>
+<td style="text-align: right;">5.984921</td>
+<td style="text-align: right;">6.984581</td>
+<td style="text-align: right;">-0.5732749</td>
+<td style="text-align: right;">0.4801802</td>
+<td style="text-align: right;">0.4917848</td>
+<td style="text-align: right;">-0.4550385</td>
+<td style="text-align: right;">0.7722272</td>
+<td style="text-align: right;">1.543384</td>
+<td style="text-align: right;">1.558683</td>
+<td style="text-align: right;">0.2730940</td>
+<td style="text-align: right;">0.2489859</td>
+<td style="text-align: right;">0.2376962</td>
+<td style="text-align: right;">4.001326</td>
+<td style="text-align: right;">3.357315</td>
+<td style="text-align: right;">1.0895698</td>
+<td style="text-align: right;">0.9857153</td>
+<td style="text-align: right;">1.0231543</td>
+<td style="text-align: right;">1.0398037</td>
+<td style="text-align: right;">1.0152543</td>
+<td style="text-align: right;">0.5357812</td>
+<td style="text-align: right;">1.3587183</td>
+<td style="text-align: right;">0.0645478</td>
+<td style="text-align: right;">0.5793087</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-0.0014692</td>
+<td style="text-align: right;">0.0180000</td>
+<td style="text-align: right;">12.603136</td>
+<td style="text-align: right;">0.5536283</td>
+<td style="text-align: right;">0.0070509</td>
+<td style="text-align: right;">0.0067992</td>
+<td style="text-align: right;">0.0139006</td>
+<td style="text-align: right;">0.000300</td>
+<td style="text-align: right;">0.0005389</td>
+<td style="text-align: right;">0.7573612</td>
+<td style="text-align: right;">0.3395441</td>
+<td style="text-align: right;">1.832904</td>
+<td style="text-align: right;">69.16074</td>
+<td style="text-align: left;">6</td>
+<td style="text-align: right;">1626064</td>
+<td style="text-align: right;">2327873</td>
+<td style="text-align: right;">244276.3</td>
+<td style="text-align: right;">2829029</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">4_26-In-012</td>
+<td style="text-align: left;">d1974_1978</td>
+<td style="text-align: right;">2572937</td>
+<td style="text-align: right;">1203693</td>
+<td style="text-align: left;">calibration</td>
+<td style="text-align: left;">moderate</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6.200000</td>
+<td style="text-align: right;">6.147128</td>
+<td style="text-align: right;">5.603502</td>
+<td style="text-align: right;">5.904355</td>
+<td style="text-align: right;">143.41533</td>
+<td style="text-align: right;">0.9372618</td>
+<td style="text-align: right;">22.10210</td>
+<td style="text-align: right;">0.2093917</td>
+<td style="text-align: left;">6</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">7</td>
+<td style="text-align: right;">0.0737963</td>
+<td style="text-align: right;">3.6830916</td>
+<td style="text-align: right;">4.986864</td>
+<td style="text-align: right;">1315.134</td>
+<td style="text-align: right;">9935.438</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">98</td>
+<td style="text-align: right;">183</td>
+<td style="text-align: right;">1.569093</td>
+<td style="text-align: right;">1.543057</td>
+<td style="text-align: right;">0.0048880</td>
+<td style="text-align: right;">0.1112066</td>
+<td style="text-align: right;">-9.1396294</td>
+<td style="text-align: right;">0.0039732</td>
+<td style="text-align: right;">0.0009509</td>
+<td style="text-align: right;">0.0431735</td>
+<td style="text-align: right;">0.0034232</td>
+<td style="text-align: right;">0.7022317</td>
+<td style="text-align: right;">0.4170935</td>
+<td style="text-align: right;">-0.4178924</td>
+<td style="text-align: right;">-0.0026431</td>
+<td style="text-align: right;">-0.0183221</td>
+<td style="text-align: right;">0.0015183</td>
+<td style="text-align: right;">-0.0079620</td>
+<td style="text-align: right;">0.0053904</td>
+<td style="text-align: right;">-0.0091239</td>
+<td style="text-align: right;">-0.0110896</td>
+<td style="text-align: right;">0.3974485</td>
+<td style="text-align: right;">0.2292406</td>
+<td style="text-align: right;">-0.2168447</td>
+<td style="text-align: right;">-0.0013561</td>
+<td style="text-align: right;">-0.0024548</td>
+<td style="text-align: right;">-0.0089129</td>
+<td style="text-align: right;">-0.0377831</td>
+<td style="text-align: right;">-0.0125471</td>
+<td style="text-align: right;">-0.0052359</td>
+<td style="text-align: right;">0.4158890</td>
+<td style="text-align: right;">0.2700820</td>
+<td style="text-align: right;">0.2010477</td>
+<td style="text-align: right;">0.0012870</td>
+<td style="text-align: right;">0.6717541</td>
+<td style="text-align: right;">0.4404107</td>
+<td style="text-align: right;">-0.6987815</td>
+<td style="text-align: right;">-0.3866692</td>
+<td style="text-align: right;">-0.1960597</td>
+<td style="text-align: right;">-0.7592779</td>
+<td style="text-align: right;">5.953919</td>
+<td style="text-align: right;">6.990917</td>
+<td style="text-align: right;">-0.3006475</td>
+<td style="text-align: right;">-0.9221049</td>
+<td style="text-align: right;">-0.9633239</td>
+<td style="text-align: right;">-0.3257418</td>
+<td style="text-align: right;">-0.9502072</td>
+<td style="text-align: right;">1.565405</td>
+<td style="text-align: right;">1.563151</td>
+<td style="text-align: right;">0.2305476</td>
+<td style="text-align: right;">0.2182523</td>
+<td style="text-align: right;">0.1434273</td>
+<td style="text-align: right;">4.000320</td>
+<td style="text-align: right;">11.330072</td>
+<td style="text-align: right;">0.5758902</td>
+<td style="text-align: right;">0.5300468</td>
+<td style="text-align: right;">0.5107915</td>
+<td style="text-align: right;">0.5744110</td>
+<td style="text-align: right;">0.4975456</td>
+<td style="text-align: right;">0.2001768</td>
+<td style="text-align: right;">0.7160403</td>
+<td style="text-align: right;">0.1311051</td>
+<td style="text-align: right;">0.4620202</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.0340407</td>
+<td style="text-align: right;">-0.0145804</td>
+<td style="text-align: right;">7.100000</td>
+<td style="text-align: right;">0.4850160</td>
+<td style="text-align: right;">0.0021498</td>
+<td style="text-align: right;">0.0017847</td>
+<td style="text-align: right;">0.0011398</td>
+<td style="text-align: right;">0.000000</td>
+<td style="text-align: right;">0.0000124</td>
+<td style="text-align: right;">0.7978453</td>
+<td style="text-align: right;">0.4455501</td>
+<td style="text-align: right;">1.981526</td>
+<td style="text-align: right;">63.57096</td>
+<td style="text-align: left;">6</td>
+<td style="text-align: right;">1626382</td>
+<td style="text-align: right;">2328897</td>
+<td style="text-align: right;">244039.8</td>
+<td style="text-align: right;">2830075</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">4_26-In-014</td>
+<td style="text-align: left;">d1974_1978</td>
+<td style="text-align: right;">2573374</td>
+<td style="text-align: right;">1203710</td>
+<td style="text-align: left;">validation</td>
+<td style="text-align: left;">well</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6.600000</td>
+<td style="text-align: right;">6.754607</td>
+<td style="text-align: right;">7.200000</td>
+<td style="text-align: right;">7.151129</td>
+<td style="text-align: right;">165.80418</td>
+<td style="text-align: right;">0.7653937</td>
+<td style="text-align: right;">-20.11569</td>
+<td style="text-align: right;">-7.7729993</td>
+<td style="text-align: left;">6</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">7</td>
+<td style="text-align: right;">0.0859686</td>
+<td style="text-align: right;">0.0075817</td>
+<td style="text-align: right;">5.285522</td>
+<td style="text-align: right;">1315.160</td>
+<td style="text-align: right;">9939.923</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">98</td>
+<td style="text-align: right;">183</td>
+<td style="text-align: right;">1.569213</td>
+<td style="text-align: right;">1.542792</td>
+<td style="text-align: right;">0.0064054</td>
+<td style="text-align: right;">0.3710849</td>
+<td style="text-align: right;">-0.9318936</td>
+<td style="text-align: right;">-0.0371234</td>
+<td style="text-align: right;">0.0029348</td>
+<td style="text-align: right;">-0.1056513</td>
+<td style="text-align: right;">0.0127788</td>
+<td style="text-align: right;">1.5150748</td>
+<td style="text-align: right;">0.2413423</td>
+<td style="text-align: right;">-0.0289909</td>
+<td style="text-align: right;">0.0020990</td>
+<td style="text-align: right;">-0.0706228</td>
+<td style="text-align: right;">-0.0113604</td>
+<td style="text-align: right;">-0.0301961</td>
+<td style="text-align: right;">-0.0346193</td>
+<td style="text-align: right;">-0.0273140</td>
+<td style="text-align: right;">-0.0343277</td>
+<td style="text-align: right;">0.8245047</td>
+<td style="text-align: right;">0.1029889</td>
+<td style="text-align: right;">-0.0272214</td>
+<td style="text-align: right;">-0.0041158</td>
+<td style="text-align: right;">0.0257630</td>
+<td style="text-align: right;">-0.0331309</td>
+<td style="text-align: right;">0.0710320</td>
+<td style="text-align: right;">-0.0400928</td>
+<td style="text-align: right;">0.0529446</td>
+<td style="text-align: right;">0.8635767</td>
+<td style="text-align: right;">0.1616543</td>
+<td style="text-align: right;">0.0017695</td>
+<td style="text-align: right;">-0.0062147</td>
+<td style="text-align: right;">0.4988544</td>
+<td style="text-align: right;">0.4217250</td>
+<td style="text-align: right;">-0.8485889</td>
+<td style="text-align: right;">-0.8657616</td>
+<td style="text-align: right;">-0.8836724</td>
+<td style="text-align: right;">-0.8993938</td>
+<td style="text-align: right;">4.856076</td>
+<td style="text-align: right;">6.964162</td>
+<td style="text-align: right;">-0.5735765</td>
+<td style="text-align: right;">-0.4998477</td>
+<td style="text-align: right;">-0.4677161</td>
+<td style="text-align: right;">-0.4121092</td>
+<td style="text-align: right;">-0.4782534</td>
+<td style="text-align: right;">1.562499</td>
+<td style="text-align: right;">1.562670</td>
+<td style="text-align: right;">0.3859352</td>
+<td style="text-align: right;">0.2732429</td>
+<td style="text-align: right;">0.1554769</td>
+<td style="text-align: right;">4.000438</td>
+<td style="text-align: right;">42.167496</td>
+<td style="text-align: right;">0.8873205</td>
+<td style="text-align: right;">0.8635756</td>
+<td style="text-align: right;">0.9015982</td>
+<td style="text-align: right;">0.8518201</td>
+<td style="text-align: right;">0.5767300</td>
+<td style="text-align: right;">0.2149791</td>
+<td style="text-align: right;">0.8482135</td>
+<td style="text-align: right;">0.3928713</td>
+<td style="text-align: right;">0.8432562</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.0686932</td>
+<td style="text-align: right;">-0.0085602</td>
+<td style="text-align: right;">8.303085</td>
+<td style="text-align: right;">0.3951114</td>
+<td style="text-align: right;">0.0008454</td>
+<td style="text-align: right;">0.0021042</td>
+<td style="text-align: right;">0.0000000</td>
+<td style="text-align: right;">0.000100</td>
+<td style="text-align: right;">0.0000857</td>
+<td style="text-align: right;">0.4829135</td>
+<td style="text-align: right;">0.4483251</td>
+<td style="text-align: right;">2.113142</td>
+<td style="text-align: right;">64.60535</td>
+<td style="text-align: left;">6</td>
+<td style="text-align: right;">1626752</td>
+<td style="text-align: right;">2329130</td>
+<td style="text-align: right;">244243.6</td>
+<td style="text-align: right;">2830462</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">4_26-In-015</td>
+<td style="text-align: left;">d1968_1974_ptf</td>
+<td style="text-align: right;">2573553</td>
+<td style="text-align: right;">1203935</td>
+<td style="text-align: left;">validation</td>
+<td style="text-align: left;">moderate</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6.272715</td>
+<td style="text-align: right;">6.272715</td>
+<td style="text-align: right;">6.718392</td>
+<td style="text-align: right;">7.269008</td>
+<td style="text-align: right;">61.39244</td>
+<td style="text-align: right;">1.0676192</td>
+<td style="text-align: right;">-55.12566</td>
+<td style="text-align: right;">-14.0670462</td>
+<td style="text-align: left;">6</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">7</td>
+<td style="text-align: right;">0.0650000</td>
+<td style="text-align: right;">0.0007469</td>
+<td style="text-align: right;">5.894688</td>
+<td style="text-align: right;">1315.056</td>
+<td style="text-align: right;">9942.032</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">98</td>
+<td style="text-align: right;">183</td>
+<td style="text-align: right;">1.570359</td>
+<td style="text-align: right;">1.541979</td>
+<td style="text-align: right;">0.0042235</td>
+<td style="text-align: right;">0.3907509</td>
+<td style="text-align: right;">4.2692256</td>
+<td style="text-align: right;">0.0378648</td>
+<td style="text-align: right;">0.0022611</td>
+<td style="text-align: right;">-0.1020419</td>
+<td style="text-align: right;">0.0161510</td>
+<td style="text-align: right;">3.6032522</td>
+<td style="text-align: right;">1.8169731</td>
+<td style="text-align: right;">0.6409346</td>
+<td style="text-align: right;">0.0346340</td>
+<td style="text-align: right;">0.0476020</td>
+<td style="text-align: right;">0.0378154</td>
+<td style="text-align: right;">-0.0179657</td>
+<td style="text-align: right;">-0.0137853</td>
+<td style="text-align: right;">-0.0146946</td>
+<td style="text-align: right;">0.0060875</td>
+<td style="text-align: right;">1.4667766</td>
+<td style="text-align: right;">0.9816071</td>
+<td style="text-align: right;">0.2968794</td>
+<td style="text-align: right;">0.0337645</td>
+<td style="text-align: right;">-0.0000494</td>
+<td style="text-align: right;">-0.0202268</td>
+<td style="text-align: right;">0.0882566</td>
+<td style="text-align: right;">-0.0308456</td>
+<td style="text-align: right;">0.0929077</td>
+<td style="text-align: right;">2.6904552</td>
+<td style="text-align: right;">1.0218329</td>
+<td style="text-align: right;">-0.3440553</td>
+<td style="text-align: right;">-0.0008695</td>
+<td style="text-align: right;">0.6999696</td>
+<td style="text-align: right;">0.3944107</td>
+<td style="text-align: right;">-0.8918364</td>
+<td style="text-align: right;">-0.8864348</td>
+<td style="text-align: right;">-0.7795515</td>
+<td style="text-align: right;">-0.4249992</td>
+<td style="text-align: right;">4.130917</td>
+<td style="text-align: right;">6.945287</td>
+<td style="text-align: right;">0.4304937</td>
+<td style="text-align: right;">0.4614536</td>
+<td style="text-align: right;">0.5919228</td>
+<td style="text-align: right;">0.6559467</td>
+<td style="text-align: right;">0.4574654</td>
+<td style="text-align: right;">1.550528</td>
+<td style="text-align: right;">1.562685</td>
+<td style="text-align: right;">0.4330348</td>
+<td style="text-align: right;">0.3299487</td>
+<td style="text-align: right;">0.1889674</td>
+<td style="text-align: right;">4.000948</td>
+<td style="text-align: right;">5.479310</td>
+<td style="text-align: right;">1.8937486</td>
+<td style="text-align: right;">1.2098556</td>
+<td style="text-align: right;">1.5986075</td>
+<td style="text-align: right;">1.2745584</td>
+<td style="text-align: right;">2.7759163</td>
+<td style="text-align: right;">0.5375320</td>
+<td style="text-align: right;">1.2301254</td>
+<td style="text-align: right;">0.3582314</td>
+<td style="text-align: right;">1.1426100</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.3005829</td>
+<td style="text-align: right;">0.0061576</td>
+<td style="text-align: right;">10.110727</td>
+<td style="text-align: right;">0.5134069</td>
+<td style="text-align: right;">0.0043268</td>
+<td style="text-align: right;">0.0045225</td>
+<td style="text-align: right;">0.0054557</td>
+<td style="text-align: right;">0.000200</td>
+<td style="text-align: right;">0.0002062</td>
+<td style="text-align: right;">0.6290755</td>
+<td style="text-align: right;">0.3974232</td>
+<td style="text-align: right;">2.080674</td>
+<td style="text-align: right;">61.16533</td>
+<td style="text-align: left;">6</td>
+<td style="text-align: right;">1626795</td>
+<td style="text-align: right;">2329415</td>
+<td style="text-align: right;">244138.2</td>
+<td style="text-align: right;">2830730</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">4_26-In-016</td>
+<td style="text-align: left;">d1968_1974_ptf</td>
+<td style="text-align: right;">2573310</td>
+<td style="text-align: right;">1204328</td>
+<td style="text-align: left;">calibration</td>
+<td style="text-align: left;">poor</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6.272715</td>
+<td style="text-align: right;">6.160700</td>
+<td style="text-align: right;">5.559031</td>
+<td style="text-align: right;">5.161655</td>
+<td style="text-align: right;">310.05014</td>
+<td style="text-align: right;">0.1321367</td>
+<td style="text-align: right;">-17.16055</td>
+<td style="text-align: right;">-28.0693741</td>
+<td style="text-align: left;">6</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">7</td>
+<td style="text-align: right;">0.0731646</td>
+<td style="text-align: right;">0.0128017</td>
+<td style="text-align: right;">5.938320</td>
+<td style="text-align: right;">1315.000</td>
+<td style="text-align: right;">9940.597</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">98</td>
+<td style="text-align: right;">183</td>
+<td style="text-align: right;">1.569434</td>
+<td style="text-align: right;">1.541606</td>
+<td style="text-align: right;">0.0040683</td>
+<td style="text-align: right;">0.1931891</td>
+<td style="text-align: right;">-0.1732794</td>
+<td style="text-align: right;">-0.1602274</td>
+<td style="text-align: right;">-0.0035833</td>
+<td style="text-align: right;">-0.1282881</td>
+<td style="text-align: right;">0.0003549</td>
+<td style="text-align: right;">1.5897882</td>
+<td style="text-align: right;">0.8171870</td>
+<td style="text-align: right;">0.0318570</td>
+<td style="text-align: right;">-0.0123340</td>
+<td style="text-align: right;">0.0400775</td>
+<td style="text-align: right;">-0.0813964</td>
+<td style="text-align: right;">-0.0049875</td>
+<td style="text-align: right;">0.0320331</td>
+<td style="text-align: right;">-0.0049053</td>
+<td style="text-align: right;">0.0374298</td>
+<td style="text-align: right;">0.7912259</td>
+<td style="text-align: right;">0.3455668</td>
+<td style="text-align: right;">0.0100844</td>
+<td style="text-align: right;">-0.0059622</td>
+<td style="text-align: right;">0.0788309</td>
+<td style="text-align: right;">-0.0014042</td>
+<td style="text-align: right;">0.1603212</td>
+<td style="text-align: right;">-0.0052602</td>
+<td style="text-align: right;">0.0867119</td>
+<td style="text-align: right;">1.0207798</td>
+<td style="text-align: right;">0.6147888</td>
+<td style="text-align: right;">-0.0217726</td>
+<td style="text-align: right;">0.0063718</td>
+<td style="text-align: right;">0.3157751</td>
+<td style="text-align: right;">0.5292308</td>
+<td style="text-align: right;">-0.8766075</td>
+<td style="text-align: right;">0.5905659</td>
+<td style="text-align: right;">0.8129975</td>
+<td style="text-align: right;">0.1640853</td>
+<td style="text-align: right;">2.030315</td>
+<td style="text-align: right;">6.990967</td>
+<td style="text-align: right;">0.6325440</td>
+<td style="text-align: right;">0.8054439</td>
+<td style="text-align: right;">0.5820994</td>
+<td style="text-align: right;">0.7448481</td>
+<td style="text-align: right;">0.6081498</td>
+<td style="text-align: right;">1.563066</td>
+<td style="text-align: right;">1.552568</td>
+<td style="text-align: right;">0.3688371</td>
+<td style="text-align: right;">0.2607146</td>
+<td style="text-align: right;">0.1763995</td>
+<td style="text-align: right;">4.000725</td>
+<td style="text-align: right;">13.499996</td>
+<td style="text-align: right;">1.0418727</td>
+<td style="text-align: right;">0.8515157</td>
+<td style="text-align: right;">1.2106605</td>
+<td style="text-align: right;">0.8916541</td>
+<td style="text-align: right;">1.2163279</td>
+<td style="text-align: right;">0.4894866</td>
+<td style="text-align: right;">1.0906221</td>
+<td style="text-align: right;">0.2049688</td>
+<td style="text-align: right;">0.7156029</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-0.0910767</td>
+<td style="text-align: right;">0.0034276</td>
+<td style="text-align: right;">9.574804</td>
+<td style="text-align: right;">0.3864355</td>
+<td style="text-align: right;">0.0001476</td>
+<td style="text-align: right;">0.0003817</td>
+<td style="text-align: right;">0.0000000</td>
+<td style="text-align: right;">0.000525</td>
+<td style="text-align: right;">0.0001151</td>
+<td style="text-align: right;">0.6997021</td>
+<td style="text-align: right;">0.4278295</td>
+<td style="text-align: right;">2.041467</td>
+<td style="text-align: right;">55.78354</td>
+<td style="text-align: left;">6</td>
+<td style="text-align: right;">1626388</td>
+<td style="text-align: right;">2329634</td>
+<td style="text-align: right;">243676.4</td>
+<td style="text-align: right;">2830716</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="preparations" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="preparations"><span class="header-section-number">3.2</span> Preparations</h2>
+<p>Before we can fit the model, we have to specify a few settings. First, we have to specify our response and predictor variables. Then, we have to split our dataset into a calibration and a validation set. Random Forest models cannot deal with <code>NA</code> values, so we have to remove these from our calibration set.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Specify response: The pH in the top 10cm</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>response <span class="ot">&lt;-</span> <span class="st">"ph.0.10"</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Specify predictors: Remove soil sampling information</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>predictors <span class="ot">&lt;-</span> </span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  data_clean <span class="sc">|&gt;</span> </span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>response,                             <span class="co"># Remove response variable</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>                <span class="sc">-</span>site_id_unique,                       <span class="co"># Remove site ID (no information)</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>                <span class="sc">-</span>tidyr<span class="sc">::</span><span class="fu">starts_with</span>(<span class="st">"ph"</span>),             <span class="co"># No pH information</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>                <span class="sc">-</span>tidyr<span class="sc">::</span><span class="fu">starts_with</span>(<span class="st">"waterlog"</span>),       <span class="co"># No water-status information</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>                <span class="sc">-</span>dclass,                               <span class="co"># No water-status information</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>                <span class="sc">-</span>dataset) <span class="sc">|&gt;</span>                           <span class="co"># Remove calibratoin/validation information</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>()</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"The response is:"</span>, response,</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"</span><span class="sc">\n</span><span class="st">The predictors are:"</span>, <span class="fu">paste0</span>(predictors[<span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>], <span class="at">sep =</span> <span class="st">", "</span>), <span class="st">"..."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>The response is: ph.0.10 
+The predictors are: timeset,  x,  y,  be_gwn25_hdist,  be_gwn25_vdist,  cindx10_25,  cindx50_25,  geo500h1id,  ...</code></pre>
+</div>
+</div>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Split dataset into calibration and validation</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>data_cal <span class="ot">&lt;-</span> data_clean <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(dataset <span class="sc">==</span> <span class="st">"calibration"</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>data_val <span class="ot">&lt;-</span> data_clean <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(dataset <span class="sc">==</span> <span class="st">"validation"</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter out any NA to avoid error when running a Random Forest</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>data_cal <span class="ot">&lt;-</span> data_cal <span class="sc">|&gt;</span> tidyr<span class="sc">::</span><span class="fu">drop_na</span>()</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>data_val <span class="ot">&lt;-</span> data_val <span class="sc">|&gt;</span> tidyr<span class="sc">::</span><span class="fu">drop_na</span>()</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co"># A little bit of verbose output:</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>n_tot <span class="ot">&lt;-</span> <span class="fu">nrow</span>(data_cal) <span class="sc">+</span> <span class="fu">nrow</span>(data_val)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>perc_cal <span class="ot">&lt;-</span> (<span class="fu">nrow</span>(data_cal) <span class="sc">/</span> n_tot) <span class="sc">|&gt;</span> <span class="fu">round</span>(<span class="dv">2</span>) <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>perc_val <span class="ot">&lt;-</span> (<span class="fu">nrow</span>(data_val) <span class="sc">/</span> n_tot) <span class="sc">|&gt;</span> <span class="fu">round</span>(<span class="dv">2</span>) <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"For model training, we have a calibration / validation split of: "</span>,</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    perc_cal, <span class="st">"/"</span>, perc_val, <span class="st">"%"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>For model training, we have a calibration / validation split of:  75 / 25 %</code></pre>
+</div>
+</div>
+<p>Alright, this looks all good. We have our response and predictor variables saved for easy access later on and the 75/25 split of calibration and validation data looks good too. We can now move on to model fitting!</p>
+</section>
+<section id="model-fitting" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="model-fitting"><span class="header-section-number">3.3</span> Model fitting</h2>
+<p>To fit a Random Forest model that predicts the soil pH in the top 10cm, we are looking at different model setups. These setups always train a Random Forest model but differ in the complexity that we intentionally add to improve the final model. If you need a recap on Random Forests, have a look at the introduction given in AGDS 1.</p>
+<section id="basic-model" class="level3" data-number="3.3.1">
+<h3 data-number="3.3.1" class="anchored" data-anchor-id="basic-model"><span class="header-section-number">3.3.1</span> Basic model</h3>
+<p>Let’s start with the basic model, where we use the {ranger} package with the pre-defined hyperparameters.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ranger() crashes when using tibbles, so we are using the</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># base R notation to enter the data</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>rf_basic <span class="ot">&lt;-</span> ranger<span class="sc">::</span><span class="fu">ranger</span>( </span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> data_cal[, response],   <span class="co"># Response variable</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> data_cal[, predictors], <span class="co"># Predictor variables</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">42</span>,                  <span class="co"># Specify the seed for randomization to reproduce the same model again</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">num.threads =</span> parallel<span class="sc">::</span><span class="fu">detectCores</span>() <span class="sc">-</span> <span class="dv">1</span>) <span class="co"># Use all but one CPU core for quick model training</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Print a summary of fitted model</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>rf_basic <span class="sc">|&gt;</span> <span class="fu">print</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Ranger result
+
+Call:
+ ranger::ranger(y = data_cal[, response], x = data_cal[, predictors],      seed = 42, num.threads = parallel::detectCores() - 1) 
+
+Type:                             Regression 
+Number of trees:                  500 
+Sample size:                      605 
+Number of independent variables:  98 
+Mtry:                             9 
+Target node size:                 5 
+Variable importance mode:         none 
+Splitrule:                        variance 
+OOB prediction error (MSE):       0.2804814 
+R squared (OOB):                  0.5252541 </code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Predicting Categories with Random Forests
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If our response variable was a categorical and not a continuous variable, we would have to set the argument <code>probability = TRUE</code>. The output would then be a probability map from 0-100%.</p>
+</div>
+</div>
+<p>Although we only used the pre-defined parameters, we already get a fairly good out-of-bag (OOB) <span class="math inline">\(R^2\)</span> of 0.53 and a MSE of 0.28. Let’s see how we can improve our model further.</p>
+</section>
+<section id="model-with-weights" class="level3" data-number="3.3.2">
+<h3 data-number="3.3.2" class="anchored" data-anchor-id="model-with-weights"><span class="header-section-number">3.3.2</span> Model with weights</h3>
+<p>Sometimes we know that a subset of our dataset is more trustworthy than the rest. For example, when you are using a gap-filling technique to interpolate data, that gap-filled data is less trustworthy than the actually measured data. Informing the model algorithm that it should weigh certain data entries more than other can change the importance of variables and the final model performance.</p>
+<p>In our dataset, we have information on whether the pH values were measured in the field - which is less precise - or in the lab. Also, we have to different lab methods. All of this information is held in the suffix of the <code>timeset</code> variable, so let’s assign weights according on the quality of the pH data as follows: <code>1</code> for CaCl<span class="math inline">\(_2\)</span> lab measurement (no suffix), <code>0.9</code> for pedotransfer from another lab method (suffix <code>_ptf</code>), and <code>0.7</code> for field data (suffix <code>_field</code>). For this, we create a weight-matching vector:</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>weights <span class="ot">&lt;-</span> </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  data_cal <span class="sc">|&gt;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create a new variable 'weight' which holds only 1's</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">w =</span> <span class="dv">1</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Check the suffix in each row and if true, give a new weight. If false, keep the old weight.</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">w =</span> <span class="fu">ifelse</span>(stringr<span class="sc">::</span><span class="fu">str_detect</span>(timeset, <span class="st">"_field"</span>), <span class="fl">0.9</span>, w),</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">w =</span> <span class="fu">ifelse</span>(stringr<span class="sc">::</span><span class="fu">str_detect</span>(timeset, <span class="st">"_ptf"</span>), <span class="fl">0.7</span>, w)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Quality check if everything worked:</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>weights <span class="sc">|&gt;</span> </span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(timeset, w) <span class="sc">|&gt;</span> </span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">8</span>) <span class="sc">|&gt;</span>   <span class="co"># Pick 8 random rows</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">timeset</th>
+<th style="text-align: right;">w</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">d1979_2010</td>
+<td style="text-align: right;">1.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">d1968_1974_field</td>
+<td style="text-align: right;">0.9</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">d1968_1974_field</td>
+<td style="text-align: right;">0.9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">d1968_1974_field</td>
+<td style="text-align: right;">0.9</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">d1968_1974_field</td>
+<td style="text-align: right;">0.9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">d1968_1974_ptf</td>
+<td style="text-align: right;">0.7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">d1968_1974_field</td>
+<td style="text-align: right;">0.9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">d1968_1974_field</td>
+<td style="text-align: right;">0.9</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>It is always a good idea to do quality checks when wrangling! Here we see that our weight attribution code worked as expected, so we can move on to model fitting.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>rf_weighted <span class="ot">&lt;-</span> ranger<span class="sc">::</span><span class="fu">ranger</span>( </span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> data_cal[, response],      <span class="co"># Response variable</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> data_cal[, predictors],    <span class="co"># Predictor variables</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">case.weights =</span> weights[, <span class="st">"w"</span>], <span class="co"># Add weights to input</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">42</span>,                     <span class="co"># Specify seed for randomization to reproduce the same model again</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">num.threads =</span> parallel<span class="sc">::</span><span class="fu">detectCores</span>() <span class="sc">-</span> <span class="dv">1</span>) <span class="co"># Use all but one CPU core for quick model training</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Print a summary of fitted model</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>rf_weighted <span class="sc">|&gt;</span> <span class="fu">print</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Ranger result
+
+Call:
+ ranger::ranger(y = data_cal[, response], x = data_cal[, predictors],      case.weights = weights[, "w"], seed = 42, num.threads = parallel::detectCores() -          1) 
+
+Type:                             Regression 
+Number of trees:                  500 
+Sample size:                      605 
+Number of independent variables:  98 
+Mtry:                             9 
+Target node size:                 5 
+Variable importance mode:         none 
+Splitrule:                        variance 
+OOB prediction error (MSE):       0.2874622 
+R squared (OOB):                  0.5134383 </code></pre>
+</div>
+</div>
+<p>Not much has changed compared to our previous model. We see that the <span class="math inline">\(R^2\)</span> and MSE got negligibly worse but as a trade-off we gained more trust in our model.</p>
+</section>
+<section id="variables-of-importance" class="level3" data-number="3.3.3">
+<h3 data-number="3.3.3" class="anchored" data-anchor-id="variables-of-importance"><span class="header-section-number">3.3.3</span> Variables of importance</h3>
+<p>Our model has 98 variables but we have no idea if each of them should really be in the model and if we are not just fitting noise in the dataset. To investigate this issue, the <code>ranger()</code> function takes an argument called <code>importance</code>. We can set this argument either to follow the <code>permutation</code> method, whereby the algorithm randomly permutes values of each variable and measures the resulting decrease in model accuracy. A larger decrease indicates a more important variable. If the code runs slow, you can also use the faster <code>impurity</code> method (see more information <a href="https://bmcbioinformatics.biomedcentral.com/counter/pdf/10.1186/s12859-016-0995-8.pdf">here</a>).</p>
+<p>Assessing the variable importance gives us a feeling for what variables we should keep or drop from the dataset. The ranger-model stores this information if we enter a <code>importance</code> method. The code below accesses the model’s variable importance and sorts the variables with decreasing importance.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's run the weighted model again but with recording the variable importance</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>rf_weighted <span class="ot">&lt;-</span> ranger<span class="sc">::</span><span class="fu">ranger</span>( </span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> data_cal[, response],     <span class="co"># Response variable</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> data_cal[, predictors],   <span class="co"># Predictor variables</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">case.weights =</span> weights[, <span class="st">"w"</span>],<span class="co"># Add weights to input</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">importance   =</span> <span class="st">"permutation"</span>, <span class="co"># Pick permutation to calculate variable importance</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">42</span>,                    <span class="co"># Specify seed for randomization to reproduce the same model again</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">num.threads =</span> parallel<span class="sc">::</span><span class="fu">detectCores</span>() <span class="sc">-</span> <span class="dv">1</span>) <span class="co"># Use all but one CPU core for quick model training</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Writing functions here for re-usability:</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>get_vi <span class="ot">&lt;-</span> <span class="cf">function</span>(rf_model){</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Extract the variable importance and create a long tibble</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>  vi <span class="ot">&lt;-</span> </span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    rf_model<span class="sc">$</span>variable.importance <span class="sc">|&gt;</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">bind_rows</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="at">cols =</span> dplyr<span class="sc">::</span><span class="fu">everything</span>(), <span class="at">names_to =</span> <span class="st">"variable"</span>)</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(vi)</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>plot_vi <span class="ot">&lt;-</span> <span class="cf">function</span>(rf_model){</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Plot variable importance, ordered by decreasing value</span></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>  vi <span class="ot">&lt;-</span> <span class="fu">get_vi</span>(rf_model)</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> </span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>    vi <span class="sc">|&gt;</span> </span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(variable, value), <span class="at">y =</span> value)) <span class="sc">+</span></span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">fill =</span> <span class="st">"grey50"</span>, <span class="at">width =</span> <span class="fl">0.75</span>) <span class="sc">+</span> </span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">labs</span>(</span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> <span class="st">"Change in OOB MSE after permutation"</span>, </span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> <span class="st">""</span>,</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>      <span class="at">title =</span> <span class="st">"Change in OOB MSE after permutation"</span>) <span class="sc">+</span></span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ggplot2::coord_flip() +</span></span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">theme_classic</span>() <span class="sc">+</span></span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">axis.text.x =</span> ggplot2<span class="sc">::</span><span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">90</span>, <span class="at">vjust =</span> <span class="fl">0.5</span>, <span class="at">hjust=</span><span class="dv">1</span>))</span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(p)</span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_vi</span>(rf_weighted)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="03-model_fit_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="1152"></p>
+</div>
+</div>
+<p>What do we see here? The y-axis shows the decrease in model performance when the respective variable is randomly permuted and, therefore, denotes the importance of a variable. The higher the value, the stronger the effect of permutation on the model performance, the more important the variable. Also, we see that a large part of our covariates have practically no power to predict the pH and can therefore be removed from the model. But how do we determine what variable to pick for our final model? Do we want a maximum number of predictors? Do we want a set of the top n predictors that make up a certain percentage of the total variable importance?</p>
+<p>One common option to generalize variable selection is the “Boruta-Algorithm”, which itself is based Random Forests. In essence, the algorithm creates “shadows” of your original data, where each of the predictor value is randomly permuted, which destroys the predictive power of the variable. Then, the algorithm iterates over these “shadows” and assess for each variable whether its permutation has a substantial effect on the model performance or not. E.g., if a model trained on a variable’s shadow performs constantly worse than when trained on the original values, that variable is assessed as important. The algorithm categorizes all variables into “to reject”, “to consider”, and “to keep”. Luckily, we do not have to write this algorithm ourselves but can use the {Boruta} package:</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>bor <span class="ot">&lt;-</span> </span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  Boruta<span class="sc">::</span><span class="fu">Boruta</span>(</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> data_cal[, response], </span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> data_cal[, predictors],</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">maxRuns =</span> <span class="dv">50</span>, <span class="co"># Number of iterations. Set to 30 or lower if it takes too long</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">num.threads =</span> parallel<span class="sc">::</span><span class="fu">detectCores</span>()<span class="sc">-</span><span class="dv">1</span>)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot variable importance, the Boruta-output can be directly fed into base R plot()</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">oma =</span> <span class="fu">c</span>(<span class="dv">8</span>,<span class="dv">3</span>,<span class="dv">2</span>,<span class="dv">2</span>)) <span class="co"># enlarge plot below for long variable labels</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(bor, </span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">""</span>, </span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"Importance"</span>,</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>     <span class="at">las =</span> <span class="dv">2</span>,</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>     )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="03-model_fit_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="1152"></p>
+</div>
+</div>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check whether the most important variables from Boruta-Algorithm are similar as the</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co"># important variables from the weighted Random Forest model</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>bor_top10 <span class="ot">&lt;-</span> </span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  Boruta<span class="sc">::</span><span class="fu">attStats</span>(bor) <span class="sc">|&gt;</span> </span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">rownames_to_column</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">arrange</span>(dplyr<span class="sc">::</span><span class="fu">desc</span>(meanImp)) <span class="sc">|&gt;</span> </span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_head</span>(<span class="at">n =</span> <span class="dv">10</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(rowname)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>vi <span class="ot">&lt;-</span> <span class="fu">get_vi</span>(rf_weighted)</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>vi_top10 <span class="ot">&lt;-</span> </span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  vi <span class="sc">|&gt;</span> </span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_head</span>(<span class="at">n =</span> <span class="dv">10</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(variable)</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(vi_top10, bor_top10) <span class="sc">|&gt;</span> </span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"RF Top 10"</span>, <span class="st">"Boruta Top 10"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">RF Top 10</th>
+<th style="text-align: left;">Boruta Top 10</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">timeset</td>
+<td style="text-align: left;">timeset</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">x</td>
+<td style="text-align: left;">y30</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">y</td>
+<td style="text-align: left;">y</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">be_gwn25_hdist</td>
+<td style="text-align: left;">mt_rr_y</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">be_gwn25_vdist</td>
+<td style="text-align: left;">y60</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">cindx10_25</td>
+<td style="text-align: left;">x</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">cindx50_25</td>
+<td style="text-align: left;">x30</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">geo500h1id</td>
+<td style="text-align: left;">mt_tt_y</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">geo500h3id</td>
+<td style="text-align: left;">x60</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">lgm</td>
+<td style="text-align: left;">Se_TWI2m_s15</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>We see that apart from the <code>timeset</code> variable, the variable importance calculated by the Boruta-Algorithm differs quite a bit, compared to the simple variable importance assessment built into the <code>ranger()</code> function. To move forward, let’s only keep variables that were classified as “to keep” or “to consider” by the Boruta-Algorithm.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>predictors_bor <span class="ot">&lt;-</span> </span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  bor<span class="sc">$</span>finalDecision <span class="sc">|&gt;</span> </span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>(<span class="at">nm =</span> <span class="st">"assessment"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">rownames_to_column</span>(<span class="at">var =</span> <span class="st">"variable"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(assessment <span class="sc">!=</span> <span class="st">"Rejected"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(variable)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="hyperparameter-tuning" class="level3" data-number="3.3.4">
+<h3 data-number="3.3.4" class="anchored" data-anchor-id="hyperparameter-tuning"><span class="header-section-number">3.3.4</span> Hyperparameter Tuning</h3>
+<p>A Random Forest model has multiple hyperparameters that we can tune to improve the model performance. Commonly, we are tuning the numbers of variables that are considered at each node <code>mtry</code> and the minimum number of observations in a leaf node <code>min.node.size</code>. To facilitate the tuning routine, we are using the {caret} package, which is a wrapper for many different statistical models. Also, we are adding a 5-fold cross-validation to improve model performance.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>opt_mtry <span class="ot">&lt;-</span> (<span class="fu">floor</span>(<span class="fu">length</span>(predictors_bor) <span class="sc">/</span> <span class="dv">3</span>))</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>tune_grid <span class="ot">&lt;-</span> </span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expand.grid</span>(</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">splitrule =</span> <span class="st">"variance"</span>, <span class="co"># Keep split rule the same</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">min.node.size =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">10</span>),</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">mtry =</span> <span class="fu">seq</span>(opt_mtry <span class="sc">-</span> <span class="dv">12</span>,</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>                opt_mtry <span class="sc">+</span> <span class="dv">12</span>,</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>                <span class="dv">6</span>)</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>tune_grid <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">splitrule</th>
+<th style="text-align: right;">min.node.size</th>
+<th style="text-align: right;">mtry</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">variance</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">variance</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">variance</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">13</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">variance</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">13</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">variance</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">19</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">variance</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">19</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">variance</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">25</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">variance</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">25</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">variance</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">31</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">variance</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">31</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model training with cv</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>rf_caret_cv <span class="ot">&lt;-</span> </span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    caret<span class="sc">::</span><span class="fu">train</span>(</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> data_cal[, response], </span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">x =</span> data_cal[, predictors_bor],</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>        <span class="co"># case.weights = weights[, "w"],</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">tuneGrid =</span> tune_grid,</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">method =</span> <span class="st">"ranger"</span>,</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">trControl =</span> caret<span class="sc">::</span><span class="fu">trainControl</span>(<span class="at">method =</span> <span class="st">"cv"</span>, <span class="at">number =</span> <span class="dv">5</span>)</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>rf_caret_cv</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Random Forest 
+
+605 samples
+ 57 predictor
+
+No pre-processing
+Resampling: Cross-Validated (5 fold) 
+Summary of sample sizes: 484, 484, 483, 485, 484 
+Resampling results across tuning parameters:
+
+  min.node.size  mtry  RMSE       Rsquared   MAE      
+   5              7    0.5217069  0.5443577  0.4200393
+   5             13    0.5165682  0.5524160  0.4165533
+   5             19    0.5118972  0.5601600  0.4123606
+   5             25    0.5107955  0.5617213  0.4105809
+   5             31    0.5082873  0.5658401  0.4076707
+  10              7    0.5211940  0.5465129  0.4187897
+  10             13    0.5135841  0.5585009  0.4129460
+  10             19    0.5094686  0.5648549  0.4102757
+  10             25    0.5095817  0.5641810  0.4093945
+  10             31    0.5105233  0.5619128  0.4104439
+
+Tuning parameter 'splitrule' was held constant at a value of variance
+RMSE was used to select the optimal model using the smallest value.
+The final values used for the model were mtry = 31, splitrule = variance
+ and min.node.size = 5.</code></pre>
+</div>
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model training with weights</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co"># rf_caret_w &lt;- </span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="co">#     caret::train(</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co">#       y = data_cal[, response], </span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="co">#       x = data_cal[, predictors_bor],</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="co">#       case.weights = weights[, "w"],</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="co">#       tuneGrid = tune_grid,</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="co">#       method = "ranger",</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="co">#       # trControl = caret::trainControl(method = "cv", number = 5)</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="co">#   )</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="co"># rf_caret_w$bestTune</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+CV with weights
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Unfortuntately, {caret} handles the weights wrong during CV, which throws an <a href="#0">error</a> when trying to use weights alongside CV. As a work-around, one could write the CV by hand and run caret with the weights as input. As we aim for generalizability of our model, we are preferring the cross-validated over the weighted model.</p>
+</div>
+</div>
+<p>From this model output, we can see that the best model had a <code>mtry = 31</code>, a <code>min.node.size = 10</code>. Since we are going to use functions from the {ranger} package for the model interpretation in the next Chapter, we have to first rerun our final model with <code>range()</code> and then save all relevant data for further analysis.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>rf_final <span class="ot">&lt;-</span> </span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  ranger<span class="sc">::</span><span class="fu">ranger</span>( </span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> data_cal[, response],         <span class="co"># Response variable</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> data_cal[, predictors_bor],   <span class="co"># Predictor variables</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">case.weights =</span> weights[, <span class="st">"w"</span>],<span class="co"># Add weights to input</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">importance   =</span> <span class="st">"permutation"</span>, <span class="co"># Pick permutation to calculate variable importance</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">mtry =</span> rf_caret_cv<span class="sc">$</span>finalModel<span class="sc">$</span>mtry,</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">min.node.size =</span> rf_caret_cv<span class="sc">$</span>finalModel<span class="sc">$</span>min.node.size,</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">splitrule =</span> <span class="st">"variance"</span>,</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">seed =</span> <span class="dv">42</span>,                    <span class="co"># Specify seed for randomization to reproduce the same model again</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">num.threads =</span> parallel<span class="sc">::</span><span class="fu">detectCores</span>() <span class="sc">-</span> <span class="dv">1</span> <span class="co"># Use all but one CPU core for quick model training</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(rf_final)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Ranger result
+
+Call:
+ ranger::ranger(y = data_cal[, response], x = data_cal[, predictors_bor],      case.weights = weights[, "w"], importance = "permutation",      mtry = rf_caret_cv$finalModel$mtry, min.node.size = rf_caret_cv$finalModel$min.node.size,      splitrule = "variance", seed = 42, num.threads = parallel::detectCores() -          1) 
+
+Type:                             Regression 
+Number of trees:                  500 
+Sample size:                      605 
+Number of independent variables:  57 
+Mtry:                             31 
+Target node size:                 5 
+Variable importance mode:         permutation 
+Splitrule:                        variance 
+OOB prediction error (MSE):       0.2577789 
+R squared (OOB):                  0.5636805 </code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="model-interpretation" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="model-interpretation"><span class="header-section-number">3.4</span> Model interpretation</h2>
+<section id="variable-importance" class="level3" data-number="3.4.1">
+<h3 data-number="3.4.1" class="anchored" data-anchor-id="variable-importance"><span class="header-section-number">3.4.1</span> Variable importance</h3>
+<p>{Similar as already done above for variable selection.}</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_vi</span>(rf_final)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="03-model_fit_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="partial-dependence-plots" class="level3" data-number="3.4.2">
+<h3 data-number="3.4.2" class="anchored" data-anchor-id="partial-dependence-plots"><span class="header-section-number">3.4.2</span> Partial dependence plots</h3>
+<p>Partial dependence plots (PDP) show the marginal effect that a given predictor has on the response, when the effects of all other predictors are accounted for. We know that not all variables are very influential, so we look only at the top give variables:</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get the names of the 5 most important variables</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Top n variables to create PDPs for</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>top_n <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Get top variables</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>top_vars <span class="ot">&lt;-</span> </span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">get_vi</span>(rf_final) <span class="sc">|&gt;</span> </span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_head</span>(<span class="at">n =</span> top_n) <span class="sc">|&gt;</span> </span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(variable)</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a small loop to extract the predictor values and y_hat</span></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Create separate df for numerical and for categorical variables</span></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>pdp_data_num <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>()</span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>pdp_data_cat <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>()</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i_var <span class="cf">in</span> top_vars) {</span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>  i_data <span class="ot">&lt;-</span> </span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>    pdp<span class="sc">::</span><span class="fu">partial</span>(rf_final, </span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>                 <span class="at">pred.var =</span> i_var, <span class="co"># select one variable you are interessted in </span></span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>                 <span class="at">train =</span> data_cal[, <span class="fu">c</span>(response, predictors_bor)]) <span class="sc">|&gt;</span> </span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>    tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="at">cols =</span> i_var, <span class="at">names_to =</span> <span class="st">"variable"</span>, <span class="at">values_to =</span> <span class="st">"x"</span>)</span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is.character</span>(i_data[[<span class="st">'x'</span>]])) {</span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>    pdp_data_cat <span class="ot">&lt;-</span> <span class="fu">rbind</span>(pdp_data_cat, i_data)  </span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>    pdp_data_num <span class="ot">&lt;-</span> <span class="fu">rbind</span>(pdp_data_num, i_data)  </span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot numerical variables</span></span>
+<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a>pdp_data_num <span class="sc">|&gt;</span> </span>
+<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> yhat)) <span class="sc">+</span></span>
+<span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">facet_wrap</span>(<span class="sc">~</span>variable, <span class="at">scales =</span> <span class="st">"free_x"</span>, <span class="at">nrow =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb22-38"><a href="#cb22-38" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_linedraw</span>() <span class="sc">+</span></span>
+<span id="cb22-39"><a href="#cb22-39" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>),</span>
+<span id="cb22-40"><a href="#cb22-40" aria-hidden="true" tabindex="-1"></a>                 <span class="at">panel.grid.minor.x =</span> <span class="fu">element_blank</span>()) <span class="sc">+</span></span>
+<span id="cb22-41"><a href="#cb22-41" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Response [unit of response]"</span>,</span>
+<span id="cb22-42"><a href="#cb22-42" aria-hidden="true" tabindex="-1"></a>                <span class="at">x =</span> <span class="cn">NULL</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="03-model_fit_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot categorical variables</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>pdp_data_cat <span class="sc">|&gt;</span> </span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> yhat)) <span class="sc">+</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">facet_wrap</span>(<span class="sc">~</span>variable, <span class="at">scales =</span> <span class="st">"free_x"</span>, <span class="at">nrow =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_linedraw</span>() <span class="sc">+</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>),</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>                 <span class="at">panel.grid.minor.x =</span> <span class="fu">element_blank</span>()) <span class="sc">+</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Response [unit of response]"</span>,</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>                <span class="at">x =</span> <span class="cn">NULL</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="03-model_fit_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="save-outputs-for-evaluation" class="level3" data-number="3.4.3">
+<h3 data-number="3.4.3" class="anchored" data-anchor-id="save-outputs-for-evaluation"><span class="header-section-number">3.4.3</span> Save outputs for evaluation</h3>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Save all relevant data for model interpretation</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(rf_final,                   </span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>        here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data/rf_for_ph0-10.rds"</span>))</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(data_cal[, <span class="fu">c</span>(response, predictors_bor)],</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>        here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data/cal_for_ph0-10.rds"</span>))</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(data_val[, <span class="fu">c</span>(response, predictors_bor)],</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>        here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data/val_for_ph0-10.rds"</span>))</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(weights[, <span class="st">"w"</span>],</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>        here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data/weights_for_ph0-10.rds"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<!-- > TODO: Think about whether we should center and scale the data. Is not needed for RF per se but it could help with model interpretability and variable importance assessment. -->
+<!-- > TODO: Add interpretation of variable importance and of PDP plots -->
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./02-data_preparation.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Preparing Raster Data</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./04-model_eval.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Model Analysis</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>
