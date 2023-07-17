@@ -11,4 +11,7 @@ book/_site
 book/_book
 #book/_freeze
 
-data/.
+data/*
+data-raw/study_area/*
+data-raw/soildata/*
+data-raw/geodata/*

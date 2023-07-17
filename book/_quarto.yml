@@ -17,15 +17,19 @@ book:
     - 99-exercise.qmd
     - references.qmd
   search: true
+  navbar: 
+    right:
+      - icon: github
+        href: https://padasch.github.io/digital_soil_mapping/
+        aria-label: GitHub
   
-
 bibliography: references.bib
 csl: global-change-biology.csl
 
 format:
   html:
     theme: cosmo
-    code-fold: show
+    code-fold: true
     code-copy: true
     code-summary: "Show/Hide Code"
   # pdf:
