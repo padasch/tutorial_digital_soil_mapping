@@ -35,4 +35,4 @@ editor: visual
 
 execute: 
   warning: false
-  freeze: true
+  freeze: auto
