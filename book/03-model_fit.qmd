@@ -63,6 +63,9 @@ To fit a Random Forest model that predicts the soil pH in the top 10cm, we are l
 Let's start with the basic model, where we use the {ranger} package with the pre-defined hyperparameters.
 
 ```{r}
+# ranger() crashes when using tibbles, so we are using the
+# base R notation to enter the data
+
 rf_basic <- ranger::ranger( 
   y = data_cal[, response],   # Response variable
   x = data_cal[, predictors], # Predictor variables
@@ -73,9 +76,11 @@ rf_basic <- ranger::ranger(
 rf_basic |> print()
 ```
 
-> **Sidenote:** If our response variable was a categorical and not a continuous variable, we would have to set the argument `probability = TRUE`. The output would then be a probability map from 0-100%.
->
-> **Sidenote:** `ranger()` crashes when using tibbles, so we are using the base R notation to enter the data
+::: callout-tip
+## Predicting Categories with Random Forests
+
+If our response variable was a categorical and not a continuous variable, we would have to set the argument `probability = TRUE`. The output would then be a probability map from 0-100%.
+:::
 
 Although we only used the pre-defined parameters, we already get a fairly good out-of-bag (OOB) $R^2$ of 0.53 and a MSE of 0.28. Let's see how we can improve our model further.
 
@@ -271,7 +276,11 @@ rf_caret_cv
 # rf_caret_w$bestTune
 ```
 
-> **Note:** Unfortuntately, {caret} handles the weights wrong during CV and throws an [error](https://github.com/imbs-hl/ranger/issues/419) when trying to use weights alongside CV. As a work-around, one could write the CV by hand and run caret with the weights as input. As we aim for generalizability of our model, we are preferring the cross-validated over the weighted model.
+::: callout-note
+## CV with weights
+
+Unfortuntately, {caret} handles the weights wrong during CV, which throws an [error](#0) when trying to use weights alongside CV. As a work-around, one could write the CV by hand and run caret with the weights as input. As we aim for generalizability of our model, we are preferring the cross-validated over the weighted model.
+:::
 
 From this model output, we can see that the best model had a `mtry = 31`, a `min.node.size = 10`. Since we are going to use functions from the {ranger} package for the model interpretation in the next Chapter, we have to first rerun our final model with `range()` and then save all relevant data for further analysis.
 
@@ -381,6 +390,6 @@ saveRDS(weights[, "w"],
         here::here("data/weights_for_ph0-10.rds"))
 ```
 
-> TODO: Think about whether we should center and scale the data. Is not needed for RF per se but it could help with model interpretability and variable importance assessment.
+<!-- > TODO: Think about whether we should center and scale the data. Is not needed for RF per se but it could help with model interpretability and variable importance assessment. -->
 
-> TODO: Add interpretation of variable importance and of PDP plots
+<!-- > TODO: Add interpretation of variable importance and of PDP plots -->

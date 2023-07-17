@@ -32,8 +32,8 @@ Next, we have to load the relevant covariates to run our model:
 covariate_files <- 
   list.files(path = here::here("data-raw/geodata/covariates/"), 
              pattern = ".tif$",
-             recursive = T, 
-             full.names = T
+             recursive = TRUE, 
+             full.names = TRUE
              )
 
 # Filter that list only for the variables used in the RF
@@ -122,7 +122,11 @@ prediction <-
 cov_df$prediction <- round(prediction$predictions, 2)
 ```
 
-> **Note:** If your response variable was a categorical value, you want to predict its probability. You can access these predicter probabilities as such: prediction\$predictions\[,1\]
+::: callout-tip
+## Predicting Categories with Random Forests
+
+If your response variable was a categorical value, you want to predict its probability. You can access these predicted probabilities like this: `prediction$predictions[,1]`.
+:::
 
 ```{r}
 # Extract dataframe with coordinates and predictions
@@ -139,13 +143,26 @@ ra_predictions <-
 
 ```{r}
 # Let's have a look at our predictions!
-terra::plot(ra_predictions)
+# To have some more flexibility, we can plot this in the ggplot-style as such:
+ggplot2::ggplot() +
+  tidyterra::geom_spatraster(data = ra_predictions) +
+  ggplot2::scale_fill_viridis_c(
+    na.value = NA,
+    option = "viridis",
+    name = "pH"
+    ) +
+  ggplot2::theme_classic() +
+  ggplot2::scale_x_continuous(expand = c(0, 0)) +
+  ggplot2::scale_y_continuous(expand = c(0, 0)) +
+  ggplot2::labs(title = "Predicted soil pH (0 - 10cm)")
 ```
 
-> TODO: Maybe make this a bit nicer or add some interpretation
+<!-- > TODO: Could not find a quick way to change the projected CRS within this ggplot call -->
+
+<!-- > TODO: Add some interpretation here -->
 
 ```{r eval=FALSE}
-# Save raster as .tif for later use
+# Save raster as .tif file
 terra::writeRaster(
   ra_predictions,
   "data/ra_predicted_ph0-10.tif",
@@ -156,6 +173,8 @@ terra::writeRaster(
 ```
 
 ## Model evaluation
+
+<!-- TODO: Add some more text and explanation to these sections -->
 
 ### Make predictions
 
@@ -199,19 +218,28 @@ data_val |>
                        color = "tomato") +
   # Add layout
   ggplot2::theme_classic() +
-  ggplot2::geom_abline(intercept = 0, slope = 1, linetype = "dotted") +
+  ggplot2::geom_abline(
+    intercept = 0, 
+    slope = 1, 
+    linetype = "dotted") +
   ggplot2::ylim(5, 7.5) +
   ggplot2::xlim(5, 7.5) +
   ggplot2::labs(
     title = "Predicted vs. Observed soil pH 0-10 cm",
     # subtitle = paste0("Bias = ", bias, ", RMSE = ", rmse, ", R^2 = ", r2),
-    subtitle = bquote(paste("Bias = ", .(bias), ", RMSE = ", .(rmse), ", R"^2, " = ", .(r2))),
+    subtitle = bquote(paste("Bias = ", .(bias), 
+                            ", RMSE = ", .(rmse), 
+                            ", R"^2, " = ", .(r2))),
     x = "Predicted",
     y = "Observed"
   )
 ```
 
+<!-- TODO: Add some model interpretation here -->
+
 ## Example for predicting a categorical variable
+
+Below is an example for how you conducted everything you learned in this tutorial, from data wrangling to model evaluation, but with using a categorical response instead of a continuous one.
 
 ### Data preparation
 
@@ -220,7 +248,7 @@ data_val |>
 data_clean <- readRDS(here::here("data/bern_sampling_locations_with_covariates.rds"))
 
 # Specify response and predictors
-response <- "waterlog.30" # Pick whether water at 30cm
+response <- "waterlog.30" # Pick water status at 30cm
 
 # Make sure that response is encoded as factor!
 data_clean[[response]] <- factor(data_clean[[response]],
@@ -235,12 +263,12 @@ cat("Target is encoded so that a model predicts the probability that the soil at
 # Specify predictors: Remove soil sampling information
 predictors <- 
   data_clean |> 
-  dplyr::select(-response,                             # Remove response variable
-                -site_id_unique,                       # Remove site ID (no information)
-                -tidyr::starts_with("ph"),             # Remove pH information
-                -tidyr::starts_with("waterlog"),       # Remove water-status information
-                -dclass,                               # Remove water-status information
-                -dataset) |>                           # Remove calibratoin/validation information
+  dplyr::select(-response,                        # Remove response variable
+                -site_id_unique,                  # Remove site ID
+                -tidyr::starts_with("ph"),        # Remove pH information
+                -tidyr::starts_with("waterlog"),  # Remove water-status info
+                -dclass,                          # Remove water-status info
+                -dataset) |>                      # Remove calib./valid. info
   names()
 
 # Split dataset into calibration and validation
@@ -268,15 +296,17 @@ rf <- ranger::ranger(
   y = data_cal[, response],   # Response variable
   x = data_cal[, predictors], # Predictor variables
   probability = TRUE,         # Set true for categorical variable
-  seed = 42,                  # Specify the seed for randomization to reproduce the same model again
-  num.threads = parallel::detectCores() - 1) # Use all but one CPU core for quick model training
+  seed = 42,                  # Seed to reproduce randomness
+  num.threads = parallel::detectCores() - 1) # Use all but one CPU
 ```
 
 ### Model evaluation
 
+#### Model predictions
+
 ```{r}
 # Need to load {ranger} because ranger-object is used in predict()
-library(ranger) 
+library(ranger)
 
 # Make predictions for validation sites
 prediction <- 
@@ -289,7 +319,7 @@ prediction <-
 data_val$pred <- round(prediction$predictions[, 1], 2)
 ```
 
-### Model metrics
+#### Model metrics
 
 For our predictions, we now have a probabilities for the reference level of our response. To turn this into the original factor levels of 0 and 1, we have to map a threshold to these probabilities. Here, we use a threshold of 50%, which may or may not be optimal - a discussion for another course.
 
@@ -298,7 +328,7 @@ For our predictions, we now have a probabilities for the reference level of our 
 thresh <- 0.5
 
 # Translate probability values into comparable factor levels
-data_val$pred <- 
+data_val$pred_lvl <- 
   factor(
     data_val$pred > thresh, 
     levels = c(TRUE, FALSE), 
@@ -306,59 +336,171 @@ data_val$pred <-
     )
 ```
 
+Due to the response variable being a categorical variable, we have to use slightly different model metrics to evaluate our model. To get started, we need a confusion matrix. This 2x2 matrix shows all model predictions and whether they were true/false positives/negatives. Have a look at the table printed below. You can see that in the top left cell, 184 predictions for dry sites and 2 predictinos for wet sites were correct. However, our model predicted 12 times that a site would be wet although it was dry, and 2 times that the site was wet when it was dry instead.
+
 ```{r}
 # Create confusion matrix
 ma_conf <- 
   table(
     predicted = data_val[[response]],
-    observed  = data_val$pred
+    observed  = data_val$pred_lvl
   )
 
 # Display confusion matrix
 ma_conf 
 ```
 
+From these predictions, we can calculate [many](https://en.wikipedia.org/wiki/Confusion_matrix) different metrics and the {verification} package provides a nice short-cut to get them. Depending on your requirements that your model should meet, you want to investigate different metrics. Here, we will have a look at some more general ones:
+
 ```{r}
 # Compute statistics
-verification::multi.cont(ma_conf ) 
+l_stat <- verification::multi.cont(ma_conf) 
+
+# Print output
+cat(
+  "The model showed:",
+  "\n a percentage of correct values of: ", l_stat$pc,
+  "\n a bias of (dry / wet predictions): ", round(l_stat$bias, 2),
+  "\n a Peirce Skill Score of: ", round(l_stat$ps, 2))
 ```
 
-> TODO NEXT: install.packages('verification') and calculate metrics as defined in the next chunk
+These metrics looks quite good! We see that in 93% of all cases, our model predicted the water status of a soil location accurately \[(184+2)/(184+12+2+2) = 0.93\]. The model showed almost no bias when predicting at dry sites but tends to overestiamte at wet sites (predicted 12 times a site is wet when it was dry). But note that this could also be a consequence of our data being skewed towards many more dry than wet sites.
 
-```{r eval=FALSE}
-# Create confusion matrix (also called contigency table)
-( m.confusion <- table( predicted = d.validation$prediction.class, observed = d.validation$observed_class) )
+The Perice Skill Score answers the question of "How well did the forecast separate 'yes' events from 'no' events".[^04-model_eval-1] This means how well our model separated dry from wet sites. The score has a range of \[-1, 1\] where 1 means that there is a perfect distinction, -1 means that the model always gets it wrong (so, simply taking the opposite of the prediction always get it right), and 0 means that the model is no better than guessing randomly. We see that our model has a score of 0.44, which means that is certainly better than just random predictions but - in line with the bias - tends to predict dry sites to be wet.
 
-# compute statistics
-t.statistics <- multi.cont(m.confusion)
+[^04-model_eval-1]: See this useful page on forecast verification: [https://www.cawcr.gov.au/projects/verification/](https://www.cawcr.gov.au/projects/verification/https://www.cawcr.gov.au/projects/verification/)
 
-# percentage correct
-t.statistics$pc
+> **Note:** The Peirce Skill Score is originally from *Peirce, C. S., 1884: The numerical measure of the success of pre- dictions. Science, 4, 453--454*. But it has been re-discovered several times since, which is why it also often referred to as "Kuipers Skill Score" or "Hanssen-Kuiper Skill Score", or "True Skill Statistic".
 
-# Bias
-#  1: no bias
-# <1: underpredicted
-# >1: overpredicted
-t.statistics$bias
+<!-- TODO: Could not make sense of this OOB statistics, the object `randomForest.model.pnd` does not exist when loading the respective `.Rdata` file and there is no code for producing it. Is this meant for the pH or waterlog prediction? -->
 
-# Peirce Skill Score
-#  1: perfect prediction
-#  0: prediction is as good as just using a random map generator
-# -1: prediction is always the opposite of the observed
-t.statistics$ps
+<!-- ```{r} -->
 
+<!-- # 4) Validation statistics for OOB, advanced -----  -->
+
+<!-- # load saved model -->
+
+<!-- ( load("4_intermediate_data/randomForest_model_for_topsoil_ph0_10cm.RData") ) -->
+
+<!-- randomForest.model <- randomForest.model.png -->
+
+<!-- # Inside the model object we can find the OOB predictions  -->
+
+<!-- pred <- randomForest.model$predictions -->
+
+<!-- # In the calibration data we find the observed values -->
+
+<!-- obs <- d.calibration[, name.response] -->
+
+<!-- # compare OOB predictions with observed, continue as above  -->
+
+<!-- error <- obs - pred  -->
+
+<!-- ## ...  -->
+
+<!-- ``` -->
+
+#### Model plots
+
+Let's create a combined violin-box-plot to get a better feeling for our predictions. The plot below visualizes what we already learned from the model metrics. That is, that our model tends to predict dry sites quite well (see how close the median is to 1?) but suffers from a few outliers. If we were to increase the prediction threshold `thresh` defined above, our model would perform words, as more outliers fall below the threshold. Also, the prediction for wet sites is not very clear as indicated by the relatively even distribution of predicted probabilities, and the median at around 75%.
+
+```{r}
+data_val |> 
+  ggplot2::ggplot() +
+  ggplot2::aes(x = waterlog.30, y = pred, fill = waterlog.30) +
+  ggplot2::geom_violin() +
+  ggplot2::geom_boxplot(width = 0.07) +
+  ggplot2::labs(
+    title  = "Prediction of Water Status at 30cm",
+    y      = "Predicted Probability",
+    x      = "Observed Status",
+    fill   = "Water\nStatus"
+  ) +
+  ggplot2::geom_abline(
+    intercept = thresh, 
+    slope = 0, 
+    linetype = "dotted"
+    ) +
+  ggplot2::ylim(0, 1) +
+  ggplot2::theme_classic()
 ```
 
-### Prediction map
+#### Prediction map
 
-> TODO: IS THIS IMPORTANT?
+Note that we have not conducted any variable selection for this simplified example. Thus, we have to create a new raster stack with all predictors and cannot re-use the subset that we used for predicting pH.
 
-```{r eval=FALSE}
-# Create `cov_df` as done above but without subset of covariates
-# because model here is trained using all covariates
+<!--# It would be nice if this was all wrapped into a function instead of copy-pasting the code. -->
+
+```{r}
+# Get a list of all covariate file names
+covariate_files <- 
+  list.files(path = here::here("data-raw/geodata/covariates/"), 
+             pattern = ".tif$",
+             recursive = TRUE, 
+             full.names = TRUE
+             )
+
+# Load all rasters as a stack
+cov_raster <- terra::rast(covariate_files)
+
+# Get coordinates for which we want data
+sampling_xy <- target_df |> dplyr::select(x, y)
+
+# Extract data from covariate raster stack
+cov_df <-
+  terra::extract(cov_raster,  # The raster we want to extract from
+                 sampling_xy,  # A matrix of x and y values to extract for
+                 ID = FALSE    # To not add a default ID column to the output
+                 )
+
+cov_df <- cbind(sampling_xy, cov_df)
+
+# Add rotated coordinates as when preparing training data:
+cov_df <- 
+  cov_df |> 
+    dplyr::mutate(
+      x30 = x*cos(30/180*pi) - y*sin(30/180*pi),
+      y30 = x*sin(30/180*pi) + y*cos(30/180*pi),
+      x60 = x*cos(60/180*pi) - y*sin(60/180*pi),
+      y60 = x*sin(60/180*pi) + y*cos(60/180*pi)
+    )
+
+# Attaching reference timeset levels from prepared dataset
+bern_cov <- readRDS(here::here("data/bern_sampling_locations_with_covariates.rds"))
+
+cov_df$timeset <- "d1979_2010"
+levels(cov_df$timeset) <- c(unique(bern_cov$timeset))
+
+# Define numerically encoded categorical variables 
+cat_vars <- 
+  cov_df |> 
+  # Get number of distinct values per variable
+  dplyr::summarise(dplyr::across(dplyr::everything(), ~ dplyr::n_distinct(.))) |> 
+  # Turn df into long format for easy filtering
+  tidyr::pivot_longer(dplyr::everything(), 
+                      names_to = "variable", 
+                      values_to = "n") |> 
+  # Filter out variables with 10 or less distinct values
+  dplyr::filter(n <= 10) |>
+  # Extract the names of these variables
+  dplyr::pull('variable')
+
+cov_df <- 
+  cov_df |> 
+  dplyr::mutate(dplyr::across(cat_vars, ~ as.factor(.)))
+
+# Reduce dataframe to hold only rows without any NA values
+cov_df <- 
+  cov_df |> 
+  tidyr::drop_na()
+
+# Display final dataframe
+head(cov_df) |> knitr::kable()
 ```
 
-```{r eval=FALSE}
+Now that we have our predictor raster again, we can make our predictions and plot them.
+
+```{r}
 # Need to load {ranger} because ranger-object is used in predict()
 library(ranger) 
 
@@ -369,12 +511,10 @@ prediction <-
           num.threads = parallel::detectCores()-1)
 
 # Attach predictions to dataframe and round them
-cov_df$prediction <- round(prediction$predictions[, 1], 2)
+cov_df$prediction <- round(prediction$predictions[,1], 2)
 ```
 
-> **Note:** If your response variable was a categorical value, you want to predict its probability. You can access these predicter probabilities as such: prediction\$predictions\[,1\]
-
-```{r eval=FALSE}
+```{r}
 # Extract dataframe with coordinates and predictions
 df_map <- cov_df |> dplyr::select(x, y, prediction)
 
@@ -387,32 +527,20 @@ ra_predictions <-
             )
 ```
 
-```{r eval=FALSE}
+```{r}
 # Let's have a look at our predictions!
-terra::plot(ra_predictions)
-```
-
-# TODO
-
--   Implement this code chunk
-
-```{r eval=FALSE}
-
-# 4) Validation statistics for OOB, advanced ----- 
-
-# load saved model
-( load("4_intermediate_data/randomForest_model_for_topsoil_ph0_10cm.RData") )
-randomForest.model <- randomForest.model.png
-
-# Inside the model object we can find the OOB predictions 
-pred <- randomForest.model$predictions
-
-# In the calibration data we find the observed values
-obs <- d.calibration[, name.response]
-
-# compare OOB predictions with observed, continue as above 
-error <- obs - pred 
-
-## ... 
-
+# To have some more flexibility, we can plot this in the ggplot-style as such:
+ggplot2::ggplot() +
+  tidyterra::geom_spatraster(data = ra_predictions) +
+  ggplot2::scale_fill_viridis_c(
+    na.value = NA,
+    option = "viridis",
+    name = "Probability"
+    ) +
+  ggplot2::theme_classic() +
+  ggplot2::scale_x_continuous(expand = c(0, 0)) +
+  ggplot2::scale_y_continuous(expand = c(0, 0)) +
+  ggplot2::labs(title = expression(paste("Predicted probability for ", 
+                                         italic(bold("no")), 
+                                         " waterlog at 30 cm")))
 ```
