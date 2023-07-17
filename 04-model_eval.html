@@ -76,11 +76,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
-  "location": "sidebar",
+  "location": "navbar",
   "copy-button": false,
   "collapse-after": 3,
-  "panel-placement": "start",
-  "type": "textbox",
+  "panel-placement": "end",
+  "type": "overlay",
   "limit": 20,
   "language": {
     "search-no-results-text": "No results",
@@ -99,10 +99,34 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </head>
 
-<body class="nav-sidebar floating">
+<body class="nav-sidebar floating nav-fixed">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">AGDS 2: Digital Soil Mapping</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://padasch.github.io/digital_soil_mapping/" rel="" target=""><i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
   <nav class="quarto-secondary-nav">
     <div class="container-fluid d-flex">
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
@@ -118,14 +142,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
-    <div class="pt-lg-2 mt-2 text-left sidebar-header">
-    <div class="sidebar-title mb-0 py-0">
-      <a href="./">AGDS 2: Digital Soil Mapping</a> 
-    </div>
-      </div>
         <div class="mt-2 flex-shrink-0 align-items-center">
         <div class="sidebar-search">
         <div id="quarto-search" class="" title="Search"></div>
@@ -225,7 +244,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="load-model-and-data" class="level2" data-number="4.1">
 <h2 data-number="4.1" class="anchored" data-anchor-id="load-model-and-data"><span class="header-section-number">4.1</span> Load model and data</h2>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load best random forest model</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>rf <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data/rf_for_pH0-10.rds"</span>))</span>
@@ -235,7 +254,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Our target area to predict on is defined in the file <code>area_to_be_mapped.tif</code>. Since we only want to predict on a given study area, the TIF file comes with a specification of 0 and one for the area of (no) interest.</p>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load area to be predicted</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>target_raster <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">rast</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data-raw/geodata/study_area/area_to_be_mapped.tif"</span>))</span>
@@ -295,7 +314,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Next, we have to load the relevant covariates to run our model:</p>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get a list of all covariate file names</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>covariate_files <span class="ot">&lt;-</span> </span>
@@ -859,7 +878,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="create-map-of-predictions" class="level2" data-number="4.2">
 <h2 data-number="4.2" class="anchored" data-anchor-id="create-map-of-predictions"><span class="header-section-number">4.2</span> Create map of predictions</h2>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Need to load {ranger} because ranger-object is used in predict()</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ranger) </span>
@@ -888,7 +907,7 @@ Predicting Categories with Random Forests
 </div>
 </div>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract dataframe with coordinates and predictions</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>df_map <span class="ot">&lt;-</span> cov_df <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">select</span>(x, y, prediction)</span>
@@ -903,7 +922,7 @@ Predicting Categories with Random Forests
 </details>
 </div>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's have a look at our predictions!</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># To have some more flexibility, we can plot this in the ggplot-style as such:</span></span>
@@ -926,7 +945,7 @@ Predicting Categories with Random Forests
 <!-- > TODO: Could not find a quick way to change the projected CRS within this ggplot call -->
 <!-- > TODO: Add some interpretation here -->
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Save raster as .tif file</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>terra<span class="sc">::</span><span class="fu">writeRaster</span>(</span>
@@ -945,7 +964,7 @@ Predicting Categories with Random Forests
 <section id="make-predictions" class="level3" data-number="4.3.1">
 <h3 data-number="4.3.1" class="anchored" data-anchor-id="make-predictions"><span class="header-section-number">4.3.1</span> Make predictions</h3>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Need to load {ranger} because ranger-object is used in predict()</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ranger) </span>
@@ -964,7 +983,7 @@ Predicting Categories with Random Forests
 <section id="calculate-model-metrics" class="level3" data-number="4.3.2">
 <h3 data-number="4.3.2" class="anchored" data-anchor-id="calculate-model-metrics"><span class="header-section-number">4.3.2</span> Calculate model metrics</h3>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate error</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>err <span class="ot">&lt;-</span> data_val<span class="sc">$</span>ph.<span class="fl">0.10</span> <span class="sc">-</span> data_val<span class="sc">$</span>pred</span>
@@ -983,7 +1002,7 @@ Predicting Categories with Random Forests
 <section id="make-plots" class="level3" data-number="4.3.3">
 <h3 data-number="4.3.3" class="anchored" data-anchor-id="make-plots"><span class="header-section-number">4.3.3</span> Make plots</h3>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>data_val <span class="sc">|&gt;</span> </span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> pred, <span class="at">y =</span> ph.<span class="fl">0.10</span>)) <span class="sc">+</span></span>
@@ -1021,7 +1040,7 @@ Predicting Categories with Random Forests
 <section id="data-preparation" class="level3" data-number="4.4.1">
 <h3 data-number="4.4.1" class="anchored" data-anchor-id="data-preparation"><span class="header-section-number">4.4.1</span> Data preparation</h3>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load clean data</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>data_clean <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data/bern_sampling_locations_with_covariates.rds"</span>))</span>
@@ -1042,7 +1061,7 @@ Predicting Categories with Random Forests
 </div>
 </div>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Specify predictors: Remove soil sampling information</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>predictors <span class="ot">&lt;-</span> </span>
@@ -1080,7 +1099,7 @@ Predicting Categories with Random Forests
 <section id="model-fitting" class="level3" data-number="4.4.2">
 <h3 data-number="4.4.2" class="anchored" data-anchor-id="model-fitting"><span class="header-section-number">4.4.2</span> Model fitting</h3>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>rf <span class="ot">&lt;-</span> ranger<span class="sc">::</span><span class="fu">ranger</span>( </span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> data_cal[, response],   <span class="co"># Response variable</span></span>
@@ -1096,7 +1115,7 @@ Predicting Categories with Random Forests
 <section id="model-predictions" class="level4" data-number="4.4.3.1">
 <h4 data-number="4.4.3.1" class="anchored" data-anchor-id="model-predictions"><span class="header-section-number">4.4.3.1</span> Model predictions</h4>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Need to load {ranger} because ranger-object is used in predict()</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ranger)</span>
@@ -1117,7 +1136,7 @@ Predicting Categories with Random Forests
 <h4 data-number="4.4.3.2" class="anchored" data-anchor-id="model-metrics"><span class="header-section-number">4.4.3.2</span> Model metrics</h4>
 <p>For our predictions, we now have a probabilities for the reference level of our response. To turn this into the original factor levels of 0 and 1, we have to map a threshold to these probabilities. Here, we use a threshold of 50%, which may or may not be optimal - a discussion for another course.</p>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set threshold</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>thresh <span class="ot">&lt;-</span> <span class="fl">0.5</span></span>
@@ -1133,7 +1152,7 @@ Predicting Categories with Random Forests
 </div>
 <p>Due to the response variable being a categorical variable, we have to use slightly different model metrics to evaluate our model. To get started, we need a confusion matrix. This 2x2 matrix shows all model predictions and whether they were true/false positives/negatives. Have a look at the table printed below. You can see that in the top left cell, 184 predictions for dry sites and 2 predictinos for wet sites were correct. However, our model predicted 12 times that a site would be wet although it was dry, and 2 times that the site was wet when it was dry instead.</p>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create confusion matrix</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>ma_conf <span class="ot">&lt;-</span> </span>
@@ -1154,7 +1173,7 @@ predicted dry wet
 </div>
 <p>From these predictions, we can calculate <a href="https://en.wikipedia.org/wiki/Confusion_matrix">many</a> different metrics and the {verification} package provides a nice short-cut to get them. Depending on your requirements that your model should meet, you want to investigate different metrics. Here, we will have a look at some more general ones:</p>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute statistics</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>l_stat <span class="ot">&lt;-</span> verification<span class="sc">::</span><span class="fu">multi.cont</span>(ma_conf) </span>
@@ -1197,7 +1216,7 @@ predicted dry wet
 <h4 data-number="4.4.3.3" class="anchored" data-anchor-id="model-plots"><span class="header-section-number">4.4.3.3</span> Model plots</h4>
 <p>Let’s create a combined violin-box-plot to get a better feeling for our predictions. The plot below visualizes what we already learned from the model metrics. That is, that our model tends to predict dry sites quite well (see how close the median is to 1?) but suffers from a few outliers. If we were to increase the prediction threshold <code>thresh</code> defined above, our model would perform words, as more outliers fall below the threshold. Also, the prediction for wet sites is not very clear as indicated by the relatively even distribution of predicted probabilities, and the median at around 75%.</p>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>data_val <span class="sc">|&gt;</span> </span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>() <span class="sc">+</span></span>
@@ -1228,7 +1247,7 @@ predicted dry wet
 <p>Note that we have not conducted any variable selection for this simplified example. Thus, we have to create a new raster stack with all predictors and cannot re-use the subset that we used for predicting pH.</p>
 <!--# It would be nice if this was all wrapped into a function instead of copy-pasting the code. -->
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get a list of all covariate file names</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>covariate_files <span class="ot">&lt;-</span> </span>
@@ -2106,7 +2125,7 @@ predicted dry wet
 </div>
 <p>Now that we have our predictor raster again, we can make our predictions and plot them.</p>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Need to load {ranger} because ranger-object is used in predict()</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ranger) </span>
@@ -2122,7 +2141,7 @@ predicted dry wet
 </details>
 </div>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract dataframe with coordinates and predictions</span></span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>df_map <span class="ot">&lt;-</span> cov_df <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">select</span>(x, y, prediction)</span>
@@ -2137,7 +2156,7 @@ predicted dry wet
 </details>
 </div>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's have a look at our predictions!</span></span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="co"># To have some more flexibility, we can plot this in the ggplot-style as such:</span></span>

@@ -76,11 +76,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
-  "location": "sidebar",
+  "location": "navbar",
   "copy-button": false,
   "collapse-after": 3,
-  "panel-placement": "start",
-  "type": "textbox",
+  "panel-placement": "end",
+  "type": "overlay",
   "limit": 20,
   "language": {
     "search-no-results-text": "No results",
@@ -101,10 +101,34 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </head>
 
-<body class="nav-sidebar floating">
+<body class="nav-sidebar floating nav-fixed">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">AGDS 2: Digital Soil Mapping</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://padasch.github.io/digital_soil_mapping/" rel="" target=""><i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
   <nav class="quarto-secondary-nav">
     <div class="container-fluid d-flex">
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
@@ -120,14 +144,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
-    <div class="pt-lg-2 mt-2 text-left sidebar-header">
-    <div class="sidebar-title mb-0 py-0">
-      <a href="./">AGDS 2: Digital Soil Mapping</a> 
-    </div>
-      </div>
         <div class="mt-2 flex-shrink-0 align-items-center">
         <div class="sidebar-search">
         <div id="quarto-search" class="" title="Search"></div>
@@ -229,7 +248,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 data-number="3.1" class="anchored" data-anchor-id="load-data"><span class="header-section-number">3.1</span> Load data</h2>
 <p>In the previous Chapter, we create a dataframe that holds information on the soil sampling locations and the covariates that we extracted for these positions. Let’s load this datafarme into our environment</p>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>data_clean <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data/bern_sampling_locations_with_covariates.rds"</span>))</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -1129,7 +1148,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 data-number="3.2" class="anchored" data-anchor-id="preparations"><span class="header-section-number">3.2</span> Preparations</h2>
 <p>Before we can fit the model, we have to specify a few settings. First, we have to specify our response and predictor variables. Then, we have to split our dataset into a calibration and a validation set. Random Forest models cannot deal with <code>NA</code> values, so we have to remove these from our calibration set.</p>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Specify response: The pH in the top 10cm</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>response <span class="ot">&lt;-</span> <span class="st">"ph.0.10"</span></span>
@@ -1154,7 +1173,7 @@ The predictors are: timeset,  x,  y,  be_gwn25_hdist,  be_gwn25_vdist,  cindx10_
 </div>
 </div>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Split dataset into calibration and validation</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>data_cal <span class="ot">&lt;-</span> data_clean <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(dataset <span class="sc">==</span> <span class="st">"calibration"</span>)</span>
@@ -1186,7 +1205,7 @@ The predictors are: timeset,  x,  y,  be_gwn25_hdist,  be_gwn25_vdist,  cindx10_
 <h3 data-number="3.3.1" class="anchored" data-anchor-id="basic-model"><span class="header-section-number">3.3.1</span> Basic model</h3>
 <p>Let’s start with the basic model, where we use the {ranger} package with the pre-defined hyperparameters.</p>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ranger() crashes when using tibbles, so we are using the</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># base R notation to enter the data</span></span>
@@ -1238,7 +1257,7 @@ Predicting Categories with Random Forests
 <p>Sometimes we know that a subset of our dataset is more trustworthy than the rest. For example, when you are using a gap-filling technique to interpolate data, that gap-filled data is less trustworthy than the actually measured data. Informing the model algorithm that it should weigh certain data entries more than other can change the importance of variables and the final model performance.</p>
 <p>In our dataset, we have information on whether the pH values were measured in the field - which is less precise - or in the lab. Also, we have to different lab methods. All of this information is held in the suffix of the <code>timeset</code> variable, so let’s assign weights according on the quality of the pH data as follows: <code>1</code> for CaCl<span class="math inline">\(_2\)</span> lab measurement (no suffix), <code>0.9</code> for pedotransfer from another lab method (suffix <code>_ptf</code>), and <code>0.7</code> for field data (suffix <code>_field</code>). For this, we create a weight-matching vector:</p>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>weights <span class="ot">&lt;-</span> </span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  data_cal <span class="sc">|&gt;</span></span>
@@ -1305,7 +1324,7 @@ Predicting Categories with Random Forests
 </div>
 <p>It is always a good idea to do quality checks when wrangling! Here we see that our weight attribution code worked as expected, so we can move on to model fitting.</p>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>rf_weighted <span class="ot">&lt;-</span> ranger<span class="sc">::</span><span class="fu">ranger</span>( </span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> data_cal[, response],      <span class="co"># Response variable</span></span>
@@ -1342,7 +1361,7 @@ R squared (OOB):                  0.5134383 </code></pre>
 <p>Our model has 98 variables but we have no idea if each of them should really be in the model and if we are not just fitting noise in the dataset. To investigate this issue, the <code>ranger()</code> function takes an argument called <code>importance</code>. We can set this argument either to follow the <code>permutation</code> method, whereby the algorithm randomly permutes values of each variable and measures the resulting decrease in model accuracy. A larger decrease indicates a more important variable. If the code runs slow, you can also use the faster <code>impurity</code> method (see more information <a href="https://bmcbioinformatics.biomedcentral.com/counter/pdf/10.1186/s12859-016-0995-8.pdf">here</a>).</p>
 <p>Assessing the variable importance gives us a feeling for what variables we should keep or drop from the dataset. The ranger-model stores this information if we enter a <code>importance</code> method. The code below accesses the model’s variable importance and sorts the variables with decreasing importance.</p>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's run the weighted model again but with recording the variable importance</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>rf_weighted <span class="ot">&lt;-</span> ranger<span class="sc">::</span><span class="fu">ranger</span>( </span>
@@ -1394,7 +1413,7 @@ R squared (OOB):                  0.5134383 </code></pre>
 <p>What do we see here? The y-axis shows the decrease in model performance when the respective variable is randomly permuted and, therefore, denotes the importance of a variable. The higher the value, the stronger the effect of permutation on the model performance, the more important the variable. Also, we see that a large part of our covariates have practically no power to predict the pH and can therefore be removed from the model. But how do we determine what variable to pick for our final model? Do we want a maximum number of predictors? Do we want a set of the top n predictors that make up a certain percentage of the total variable importance?</p>
 <p>One common option to generalize variable selection is the “Boruta-Algorithm”, which itself is based Random Forests. In essence, the algorithm creates “shadows” of your original data, where each of the predictor value is randomly permuted, which destroys the predictive power of the variable. Then, the algorithm iterates over these “shadows” and assess for each variable whether its permutation has a substantial effect on the model performance or not. E.g., if a model trained on a variable’s shadow performs constantly worse than when trained on the original values, that variable is assessed as important. The algorithm categorizes all variables into “to reject”, “to consider”, and “to keep”. Luckily, we do not have to write this algorithm ourselves but can use the {Boruta} package:</p>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>bor <span class="ot">&lt;-</span> </span>
@@ -1417,7 +1436,7 @@ R squared (OOB):                  0.5134383 </code></pre>
 </div>
 </div>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check whether the most important variables from Boruta-Algorithm are similar as the</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co"># important variables from the weighted Random Forest model</span></span>
@@ -1492,7 +1511,7 @@ R squared (OOB):                  0.5134383 </code></pre>
 </div>
 <p>We see that apart from the <code>timeset</code> variable, the variable importance calculated by the Boruta-Algorithm differs quite a bit, compared to the simple variable importance assessment built into the <code>ranger()</code> function. To move forward, let’s only keep variables that were classified as “to keep” or “to consider” by the Boruta-Algorithm.</p>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>predictors_bor <span class="ot">&lt;-</span> </span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  bor<span class="sc">$</span>finalDecision <span class="sc">|&gt;</span> </span>
@@ -1507,7 +1526,7 @@ R squared (OOB):                  0.5134383 </code></pre>
 <h3 data-number="3.3.4" class="anchored" data-anchor-id="hyperparameter-tuning"><span class="header-section-number">3.3.4</span> Hyperparameter Tuning</h3>
 <p>A Random Forest model has multiple hyperparameters that we can tune to improve the model performance. Commonly, we are tuning the numbers of variables that are considered at each node <code>mtry</code> and the minimum number of observations in a leaf node <code>min.node.size</code>. To facilitate the tuning routine, we are using the {caret} package, which is a wrapper for many different statistical models. Also, we are adding a 5-fold cross-validation to improve model performance.</p>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>opt_mtry <span class="ot">&lt;-</span> (<span class="fu">floor</span>(<span class="fu">length</span>(predictors_bor) <span class="sc">/</span> <span class="dv">3</span>))</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -1587,7 +1606,7 @@ R squared (OOB):                  0.5134383 </code></pre>
 </div>
 </div>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model training with cv</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>rf_caret_cv <span class="ot">&lt;-</span> </span>
@@ -1630,7 +1649,7 @@ RMSE was used to select the optimal model using the smallest value.
 The final values used for the model were mtry = 31, splitrule = variance
  and min.node.size = 5.</code></pre>
 </div>
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model training with weights</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co"># rf_caret_w &lt;- </span></span>
@@ -1660,7 +1679,7 @@ CV with weights
 </div>
 <p>From this model output, we can see that the best model had a <code>mtry = 31</code>, a <code>min.node.size = 10</code>. Since we are going to use functions from the {ranger} package for the model interpretation in the next Chapter, we have to first rerun our final model with <code>range()</code> and then save all relevant data for further analysis.</p>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>rf_final <span class="ot">&lt;-</span> </span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  ranger<span class="sc">::</span><span class="fu">ranger</span>( </span>
@@ -1703,7 +1722,7 @@ R squared (OOB):                  0.5636805 </code></pre>
 <h3 data-number="3.4.1" class="anchored" data-anchor-id="variable-importance"><span class="header-section-number">3.4.1</span> Variable importance</h3>
 <p>{Similar as already done above for variable selection.}</p>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_vi</span>(rf_final)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -1716,7 +1735,7 @@ R squared (OOB):                  0.5636805 </code></pre>
 <h3 data-number="3.4.2" class="anchored" data-anchor-id="partial-dependence-plots"><span class="header-section-number">3.4.2</span> Partial dependence plots</h3>
 <p>Partial dependence plots (PDP) show the marginal effect that a given predictor has on the response, when the effects of all other predictors are accounted for. We know that not all variables are very influential, so we look only at the top give variables:</p>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get the names of the 5 most important variables</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -1766,7 +1785,7 @@ R squared (OOB):                  0.5636805 </code></pre>
 </div>
 </div>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot categorical variables</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>pdp_data_cat <span class="sc">|&gt;</span> </span>
@@ -1787,7 +1806,7 @@ R squared (OOB):                  0.5636805 </code></pre>
 <section id="save-outputs-for-evaluation" class="level3" data-number="3.4.3">
 <h3 data-number="3.4.3" class="anchored" data-anchor-id="save-outputs-for-evaluation"><span class="header-section-number">3.4.3</span> Save outputs for evaluation</h3>
 <div class="cell">
-<details open="">
+<details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Save all relevant data for model interpretation</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(rf_final,                   </span>
