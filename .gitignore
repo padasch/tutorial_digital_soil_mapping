@@ -11,5 +11,4 @@ book/_site
 book/_book
 #book/_freeze
 
-data/
-data-raw/
+data/.
