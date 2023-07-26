@@ -1,5 +1,13 @@
 # Exercise {#sec-exercise}
 
+::: callout-tip
+## A note on reproducibility
+
+As taught extensively in [Applied Geodata Science I](https://geco-bern.github.io/agds/), we value reproducible and open workflows. Therefore, we strongly advice you to create a suitable work environment. This includes proper version control of your code via git and GitHub, package version control via {renv}, and general best-practices in organizing your files and code.
+:::
+
+## Your Project
+
 After reading through this tutorial, you should have a solid understanding of how we can use Random Forest models for digital soil mapping. Based on the provided knowledge and code, it is now your task to improve and expand the analysis.
 
 As a first task and to deepen your understanding, you have to answer the following questions:
@@ -10,8 +18,22 @@ As a second task, you have to expand the analysis. You are absolutely free to co
 
 -   TODO
 
-::: callout-tip
-## A note on reproducibility
+## Additional Exercises
 
-As taught extensively in [Applied Geodata Science I](https://geco-bern.github.io/agds/), we value reproducible and open workflows. Therefore, we strongly advice you to create a suitable work environment. This includes proper version control of your code via git and GitHub, package version control via {renv}, and general best-practices in organizing your files and code.
-:::
+### Spatial Upscaling
+
+In @sec-intro and @sec-dataprep, we touched on the topic of spatial auto-correlation. Re-read these sections and solve the problem below.
+
+In the top half of Figure @fig-chessboard, there is a predicted land cover map based on a Random Forest model. The green circles are sampling locations where the land cover was classified by hand as for model training. The different colors denote different the covers. Comparing the prediction to the satellite image used for prediction, we see that, for example, agricultural land is in light green and urban structures are in red.
+
+Now, we see that there is a lot of miss-classification happening here, and we see this chess-board pattern in the prediction map. Why is this happening? Find two causes of how the underlying data can lead to such miss-classification.
+
+```{=html}
+<!-- Solution:
+
+1. Bad sampling scheme with not-evenly spread locations. Sampling scheme leads to spatially clustered training data. Model just predicts what is nearby and does not learn the information from the picture.
+2. Not using rotated coordinates as predictors leads to chess-board features. Model learned that there is dark forest to the east, light forest to the south, etc.
+
+-->
+```
+![Example for chess-board structured prediction map, taken from a GIS stackexchange [post](https://gis.stackexchange.com/questions/111932/classified-images-of-randomforest-classification-look-clustered).](images/chess_board_example.png){#fig-chessboard fig-align="center"}
