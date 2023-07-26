@@ -4,7 +4,7 @@ project:
 
 book:
   title: "AGDS 2: Digital Soil Mapping"
-  subtitle: "Predicing soil properties from spatial data"
+  subtitle: "Predicting soil properties from spatial data"
   author: "Pascal Schneider"
   date: "6/29/2023"
   page-navigation: true
@@ -20,7 +20,7 @@ book:
   navbar: 
     right:
       - icon: github
-        href: https://padasch.github.io/digital_soil_mapping/
+        href: https://github.com/padasch/digital_soil_mapping
         aria-label: GitHub
   
 bibliography: references.bib
