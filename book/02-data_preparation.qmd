@@ -1,12 +1,8 @@
 # Preparing Raster Data {#sec-dataprep}
 
-```{r}
-# load_packages()
-```
+# Load data on study area
 
-## Load data
-
-### Sampling location data
+## Soil samples
 
 ```{r}
 # Load soil data from sampling locations
@@ -36,7 +32,7 @@ The dataset on soil samples from Bern holds `r dim(bern_data)[2]` variables for 
 
 -   `ph.0.10`, `ph.10.30`, `ph.30.50`, `ph.50.100`: Average soil pH between 0-10, 10-30, 30-50, and 50-100 cm depth.
 
-### Raster data of covariates
+### Covariate data
 
 Now, let's load all the covariates that we want to produce our soil maps.
 
@@ -85,6 +81,8 @@ As shown in the output, a raster object has the following properties (among othe
 -   min value: The lowest value of all cells.
 
 -   max value: The highest value of all cells.
+
+# Mapping the study area
 
 Now, let's look at a visualisation of this raster file. Since we selected the slope at 2m resolution, we expect a relief-like map with a color gradient that indicates the steepness of the terrain.
 
@@ -277,22 +275,30 @@ merged_data <- cbind(bern_data, covar_data)
 head(merged_data) |> knitr::kable() 
 ```
 
-<!-- > TODO: Add explanation that rotated coordinates are added to avoid chess-board prediction maps -->
+Great that worked without problems!
 
-Great that worked without problems. Now, to allow spatial trend in more directions than only in a north-south and east-west direction, we have to add polar coordinates:
+# Spatial correlation
+
+As touched in @sec-intro, we should find a way to take spatial auto-correlation into account. Currently, our dataset holds spatial information in the x- and y-coordinates. The risk of including these coordinates is that a model learns the spatial features of our study area but not the generalisable underlying processes that drive soil development. For example, if our study area has a tendency to have a given soil type towards the north, a model may just learn this and predict a higher probability of that soil type with increasing y-coordinates. This tendency, however, may not be always true (for more, see @sec-exercise).
+
+Another consequence of just using x- and y-coordinates is that, when we use that model for prediction, the final map will most-likely look like a chess-board. Although it does not alleviate the issue of spatial autocorrelation, a quick fix to avoid a chess-board pattern is to add rotated coordinates to your dataset. That means that for every pixel, you rotate its x- and y-coordinates by a certain angle (see Figure @fig-rotcoord).[^02-data_preparation-1] This allows a Random Forest model to not just split across the orthogonal x- and y-coordinates but also along the rotated axes. Here, we are going to shift the coordinate system by 30° and 60° as follows:
+
+[^02-data_preparation-1]: For a detailed explanation, see Wikipedia article [on axes rotation](https://en.wikipedia.org/wiki/Rotation_of_axes_in_two_dimensions).
 
 ```{r}
 final_data <- 
   merged_data |> 
     dplyr::mutate(
-      x30 = x*cos(30/180*pi) - y*sin(30/180*pi),
+      x30 = x*cos(30/180*pi) - y*sin(30/180*pi), # 30/180*pi = 30°
       y30 = x*sin(30/180*pi) + y*cos(30/180*pi),
-      x60 = x*cos(60/180*pi) - y*sin(60/180*pi),
+      x60 = x*cos(60/180*pi) - y*sin(60/180*pi), # 30/180*pi = 60°
       y60 = x*sin(60/180*pi) + y*cos(60/180*pi)
     )
 ```
 
-Not all our covariates may be continuous variables and therefore have should be encoded as factors. As an easy check, we can take the original corvariates data and check for the number of unique values in each raster. If the variable is continuous, we expect that there are a lot of different values - at maximum 1052 different values because we have that many entries. So, let's have a look and assume that variables with 10 or less different values are categorical variables.
+![Visualisation of rotating x- and y-coordinates by 30° and 60°. Figure adapted from work by M. Nussbaum.](images/rotated_coords.png){#fig-rotcoord fig-align="center"}
+
+Note that not all our covariates may be continuous variables and therefore have to be encoded as factors. As an easy check, we can take the original corvariates data and check for the number of unique values in each raster. If the variable is continuous, we expect that there are a lot of different values - at maximum 1052 different values because we have that many entries. So, let's have a look and assume that variables with 10 or less different values are categorical variables.
 
 ```{r}
 cat_vars <- 
@@ -319,7 +325,7 @@ final_data <-
   dplyr::mutate(dplyr::across(cat_vars, ~ as.factor(.)))
 ```
 
-## Checking missing data
+# Checking missing data
 
 We are almost done with our data preparation, we just need to reduce it to sampling locations for which we have a decent amount of data on the covariates. Else, we blow up the model calibration with data that is not informative enough.
 
@@ -348,7 +354,7 @@ final_data |> visdat::vis_miss()
 
 Alright, we see that we are not missing a lot of data for any variable and in total only 1% of our data is `NA`. That is good enough! We do not have to modify the dataframe any further and can save it for further analysis.
 
-## Save data
+# Save data
 
 ```{r}
 saveRDS(final_data, 
