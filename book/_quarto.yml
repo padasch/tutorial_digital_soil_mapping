@@ -5,7 +5,9 @@ project:
 book:
   title: "AGDS 2: Digital Soil Mapping"
   subtitle: "Predicting soil properties from spatial data"
-  author: "Pascal Schneider"
+  author: 
+    - name: "Pascal Schneider"
+    - name: "Madlene Nussbaum"
   date: "6/29/2023"
   page-navigation: true
   chapters:

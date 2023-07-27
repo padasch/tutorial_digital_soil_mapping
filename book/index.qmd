@@ -1,6 +1,6 @@
 # Preface {.unnumbered}
 
-This online book covers the tutorial on digital soil mapping from the course Applied Geodata Science 2 at the University of Bern. Material is adapted from work by [Madlene Nussbaum](https://www.bfh.ch/de/ueber-die-bfh/personen/3ipudkkxwe7z/).
+This online book covers the tutorial on digital soil mapping from the course Applied Geodata Science 2 at the University of Bern. Code and data was provided by [Madlene Nussbaum](https://www.bfh.ch/de/ueber-die-bfh/personen/3ipudkkxwe7z/) and the conversion into an online tutorial was done by Pascal Schneider.
 
 # System Setup
 
