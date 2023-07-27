@@ -83,7 +83,7 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
-    <a class="nav-link" href="https://padasch.github.io/digital_soil_mapping/" rel="" target=""><i class="bi bi-github" role="img" aria-label="GitHub">
+    <a class="nav-link" href="https://github.com/padasch/digital_soil_mapping" rel="" target=""><i class="bi bi-github" role="img" aria-label="GitHub">
 </i> 
  <span class="menu-text"></span></a>
   </li>  
@@ -166,7 +166,17 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#your-project" id="toc-your-project" class="nav-link active" data-scroll-target="#your-project"><span class="header-section-number">5.1</span> Your Project</a></li>
+  <li><a href="#additional-exercises" id="toc-additional-exercises" class="nav-link" data-scroll-target="#additional-exercises"><span class="header-section-number">5.2</span> Additional Exercises</a>
+  <ul class="collapse">
+  <li><a href="#spatial-upscaling" id="toc-spatial-upscaling" class="nav-link" data-scroll-target="#spatial-upscaling"><span class="header-section-number">5.2.1</span> Spatial Upscaling</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -188,15 +198,6 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<p>After reading through this tutorial, you should have a solid understanding of how we can use Random Forest models for digital soil mapping. Based on the provided knowledge and code, it is now your task to improve and expand the analysis.</p>
-<p>As a first task and to deepen your understanding, you have to answer the following questions:</p>
-<ul>
-<li><a href="01-introduction.html"><span>Chapter&nbsp;1</span></a> holds a list of requirements for our statistical model. Here, we picked Random Forests but without explicitly stating why this is a suitable model choice. Your task is to give reasonable answer to why Random Forests are meeting the listed requirements.</li>
-</ul>
-<p>As a second task, you have to expand the analysis. You are absolutely free to come up with your own ideas but here are a few primers to get you started:</p>
-<ul>
-<li>TODO</li>
-</ul>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -210,8 +211,41 @@ A note on reproducibility
 <p>As taught extensively in <a href="https://geco-bern.github.io/agds/">Applied Geodata Science I</a>, we value reproducible and open workflows. Therefore, we strongly advice you to create a suitable work environment. This includes proper version control of your code via git and GitHub, package version control via {renv}, and general best-practices in organizing your files and code.</p>
 </div>
 </div>
+<section id="your-project" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="your-project"><span class="header-section-number">5.1</span> Your Project</h2>
+<p>After reading through this tutorial, you should have a solid understanding of how we can use Random Forest models for digital soil mapping. Based on the provided knowledge and code, it is now your task to improve and expand the analysis.</p>
+<p>As a first task and to deepen your understanding, you have to answer the following questions:</p>
+<ul>
+<li><a href="01-introduction.html"><span>Chapter&nbsp;1</span></a> holds a list of requirements for our statistical model. Here, we picked Random Forests but without explicitly stating why this is a suitable model choice. Your task is to give reasonable answer to why Random Forests are meeting the listed requirements.</li>
+</ul>
+<p>As a second task, you have to expand the analysis. You are absolutely free to come up with your own ideas but here are a few primers to get you started:</p>
+<ul>
+<li>TODO</li>
+</ul>
+</section>
+<section id="additional-exercises" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="additional-exercises"><span class="header-section-number">5.2</span> Additional Exercises</h2>
+<section id="spatial-upscaling" class="level3" data-number="5.2.1">
+<h3 data-number="5.2.1" class="anchored" data-anchor-id="spatial-upscaling"><span class="header-section-number">5.2.1</span> Spatial Upscaling</h3>
+<p>In <a href="01-introduction.html"><span>Chapter&nbsp;1</span></a> and <a href="02-data_preparation.html"><span>Chapter&nbsp;2</span></a>, we touched on the topic of spatial auto-correlation. Re-read these sections and solve the problem below.</p>
+<p>In the top half of Figure <a href="#fig-chessboard">Figure&nbsp;<span>5.1</span></a>, there is a predicted land cover map based on a Random Forest model. The green circles are sampling locations where the land cover was classified by hand as for model training. The different colors denote different the covers. Comparing the prediction to the satellite image used for prediction, we see that, for example, agricultural land is in light green and urban structures are in red.</p>
+<p>Now, we see that there is a lot of miss-classification happening here, and we see this chess-board pattern in the prediction map. Why is this happening? Find two causes of how the underlying data can lead to such miss-classification.</p>
+<!-- Solution:
+
+1. Bad sampling scheme with not-evenly spread locations. Sampling scheme leads to spatially clustered training data. Model just predicts what is nearby and does not learn the information from the picture.
+2. Not using rotated coordinates as predictors leads to chess-board features. Model learned that there is dark forest to the east, light forest to the south, etc.
+
+-->
+<div id="fig-chessboard" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="images/chess_board_example.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Figure&nbsp;5.1: Example for chess-board structured prediction map, taken from a GIS stackexchange <a href="https://gis.stackexchange.com/questions/111932/classified-images-of-randomforest-classification-look-clustered">post</a>.</figcaption>
+</figure>
+</div>
 
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
