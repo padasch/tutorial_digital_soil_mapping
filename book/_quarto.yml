@@ -31,7 +31,7 @@ csl: global-change-biology.csl
 format:
   html:
     theme: cosmo
-    code-fold: true
+    code-fold: false
     code-copy: true
     code-summary: "Show/Hide Code"
   # pdf:
