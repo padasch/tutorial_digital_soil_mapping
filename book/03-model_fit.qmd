@@ -22,11 +22,11 @@ response <- "ph.0.10"
 predictors <- 
   data_clean |> 
   dplyr::select(-response,                             # Remove response variable
-                -site_id_unique,                       # Remove site ID (no information)
+                -site_id_unique,                       # Remove site ID
                 -tidyr::starts_with("ph"),             # No pH information
                 -tidyr::starts_with("waterlog"),       # No water-status information
                 -dclass,                               # No water-status information
-                -dataset) |>                           # Remove calibratoin/validation information
+                -dataset) |>                           # No calib./valid information
   names()
 
 cat("The response is:", response,
@@ -235,15 +235,13 @@ predictors_bor <-
 A Random Forest model has multiple hyperparameters that we can tune to improve the model performance. Commonly, we are tuning the numbers of variables that are considered at each node `mtry` and the minimum number of observations in a leaf node `min.node.size`. To facilitate the tuning routine, we are using the {caret} package, which is a wrapper for many different statistical models. Also, we are adding a 5-fold cross-validation to improve model performance.
 
 ```{r}
-opt_mtry <- (floor(length(predictors_bor) / 3))
-
+# For mtry, we pick an equally spaced vector from 1 to p with a length of 5 
+# For min.node.size, we pick a a number between 1 and 9
 tune_grid <- 
   expand.grid(
     splitrule = "variance", # Keep split rule the same
-    min.node.size = c(5, 10),
-    mtry = seq(opt_mtry - 12,
-                opt_mtry + 12,
-                6)
+    min.node.size = seq(1, 10, 2),
+    mtry          = ceiling(seq(1, length(predictors), length.out = 5))
     )
 
 tune_grid |> knitr::kable()
