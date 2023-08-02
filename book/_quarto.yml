@@ -17,6 +17,7 @@ book:
     - 03-model_fit.qmd
     - 04-model_eval.qmd
     - 99-exercise.qmd
+    - 99-scratchpad.qmd
     - references.qmd
   search: true
   navbar: 
