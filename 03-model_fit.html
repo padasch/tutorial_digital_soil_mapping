@@ -192,6 +192,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./99-scratchpad.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">[Scratchpad]</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./references.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">References</span></a>
   </div>
@@ -1152,11 +1158,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>predictors <span class="ot">&lt;-</span> </span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  data_clean <span class="sc">|&gt;</span> </span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>response,                             <span class="co"># Remove response variable</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>                <span class="sc">-</span>site_id_unique,                       <span class="co"># Remove site ID (no information)</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>                <span class="sc">-</span>site_id_unique,                       <span class="co"># Remove site ID</span></span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>                <span class="sc">-</span>tidyr<span class="sc">::</span><span class="fu">starts_with</span>(<span class="st">"ph"</span>),             <span class="co"># No pH information</span></span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>                <span class="sc">-</span>tidyr<span class="sc">::</span><span class="fu">starts_with</span>(<span class="st">"waterlog"</span>),       <span class="co"># No water-status information</span></span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>                <span class="sc">-</span>dclass,                               <span class="co"># No water-status information</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>                <span class="sc">-</span>dataset) <span class="sc">|&gt;</span>                           <span class="co"># Remove calibratoin/validation information</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>                <span class="sc">-</span>dataset) <span class="sc">|&gt;</span>                           <span class="co"># No calib./valid information</span></span>
 <span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>()</span>
 <span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"The response is:"</span>, response,</span>
@@ -1496,18 +1502,16 @@ R squared (OOB):                  0.5134383 </code></pre>
 <h3 data-number="3.3.4" class="anchored" data-anchor-id="hyperparameter-tuning"><span class="header-section-number">3.3.4</span> Hyperparameter Tuning</h3>
 <p>A Random Forest model has multiple hyperparameters that we can tune to improve the model performance. Commonly, we are tuning the numbers of variables that are considered at each node <code>mtry</code> and the minimum number of observations in a leaf node <code>min.node.size</code>. To facilitate the tuning routine, we are using the {caret} package, which is a wrapper for many different statistical models. Also, we are adding a 5-fold cross-validation to improve model performance.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>opt_mtry <span class="ot">&lt;-</span> (<span class="fu">floor</span>(<span class="fu">length</span>(predictors_bor) <span class="sc">/</span> <span class="dv">3</span>))</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># For mtry, we pick an equally spaced vector from 1 to p with a length of 5 </span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="co"># For min.node.size, we pick a a number between 1 and 9</span></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>tune_grid <span class="ot">&lt;-</span> </span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expand.grid</span>(</span>
 <span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">splitrule =</span> <span class="st">"variance"</span>, <span class="co"># Keep split rule the same</span></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">min.node.size =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">10</span>),</span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">mtry =</span> <span class="fu">seq</span>(opt_mtry <span class="sc">-</span> <span class="dv">12</span>,</span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>                opt_mtry <span class="sc">+</span> <span class="dv">12</span>,</span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>                <span class="dv">6</span>)</span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>tune_grid <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">min.node.size =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">2</span>),</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">mtry          =</span> <span class="fu">ceiling</span>(<span class="fu">seq</span>(<span class="dv">1</span>, <span class="fu">length</span>(predictors), <span class="at">length.out =</span> <span class="dv">5</span>))</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>tune_grid <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
 <thead>
@@ -1520,53 +1524,128 @@ R squared (OOB):                  0.5134383 </code></pre>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">variance</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">variance</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">variance</td>
 <td style="text-align: right;">5</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">variance</td>
 <td style="text-align: right;">7</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">variance</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">variance</td>
-<td style="text-align: right;">10</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">26</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">variance</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">26</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">variance</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">26</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">variance</td>
 <td style="text-align: right;">7</td>
+<td style="text-align: right;">26</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">variance</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">26</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">variance</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">50</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">variance</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">50</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">variance</td>
 <td style="text-align: right;">5</td>
-<td style="text-align: right;">13</td>
+<td style="text-align: right;">50</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">variance</td>
-<td style="text-align: right;">10</td>
-<td style="text-align: right;">13</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">50</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">variance</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">50</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">variance</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">74</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">variance</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">74</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">variance</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">74</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">variance</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">74</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">variance</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">74</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">variance</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">98</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">variance</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">98</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">variance</td>
 <td style="text-align: right;">5</td>
-<td style="text-align: right;">19</td>
+<td style="text-align: right;">98</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">variance</td>
-<td style="text-align: right;">10</td>
-<td style="text-align: right;">19</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">98</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">variance</td>
-<td style="text-align: right;">5</td>
-<td style="text-align: right;">25</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">variance</td>
-<td style="text-align: right;">10</td>
-<td style="text-align: right;">25</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">variance</td>
-<td style="text-align: right;">5</td>
-<td style="text-align: right;">31</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">variance</td>
-<td style="text-align: right;">10</td>
-<td style="text-align: right;">31</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">98</td>
 </tr>
 </tbody>
 </table>
@@ -1597,21 +1676,36 @@ Summary of sample sizes: 484, 484, 483, 485, 484
 Resampling results across tuning parameters:
 
   min.node.size  mtry  RMSE       Rsquared   MAE      
-   5              7    0.5217069  0.5443577  0.4200393
-   5             13    0.5165682  0.5524160  0.4165533
-   5             19    0.5118972  0.5601600  0.4123606
-   5             25    0.5107955  0.5617213  0.4105809
-   5             31    0.5082873  0.5658401  0.4076707
-  10              7    0.5211940  0.5465129  0.4187897
-  10             13    0.5135841  0.5585009  0.4129460
-  10             19    0.5094686  0.5648549  0.4102757
-  10             25    0.5095817  0.5641810  0.4093945
-  10             31    0.5105233  0.5619128  0.4104439
+  1               1    0.5496691  0.5082110  0.4416633
+  1              26    0.5080837  0.5667532  0.4085002
+  1              50    0.5083564  0.5652961  0.4087318
+  1              74          NaN        NaN        NaN
+  1              98          NaN        NaN        NaN
+  3               1    0.5520794  0.5043353  0.4426002
+  3              26    0.5086833  0.5660987  0.4096449
+  3              50    0.5065478  0.5688146  0.4072980
+  3              74          NaN        NaN        NaN
+  3              98          NaN        NaN        NaN
+  5               1    0.5525488  0.5042816  0.4435890
+  5              26    0.5079319  0.5668622  0.4100156
+  5              50    0.5084420  0.5651644  0.4093447
+  5              74          NaN        NaN        NaN
+  5              98          NaN        NaN        NaN
+  7               1    0.5539034  0.5016743  0.4450918
+  7              26    0.5088478  0.5656766  0.4089423
+  7              50    0.5088371  0.5646783  0.4095499
+  7              74          NaN        NaN        NaN
+  7              98          NaN        NaN        NaN
+  9               1    0.5560706  0.5000875  0.4469837
+  9              26    0.5118963  0.5600316  0.4121397
+  9              50    0.5085219  0.5650709  0.4093291
+  9              74          NaN        NaN        NaN
+  9              98          NaN        NaN        NaN
 
 Tuning parameter 'splitrule' was held constant at a value of variance
 RMSE was used to select the optimal model using the smallest value.
-The final values used for the model were mtry = 31, splitrule = variance
- and min.node.size = 5.</code></pre>
+The final values used for the model were mtry = 50, splitrule = variance
+ and min.node.size = 3.</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model training with weights</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co"># rf_caret_w &lt;- </span></span>
@@ -1664,12 +1758,12 @@ Type:                             Regression
 Number of trees:                  500 
 Sample size:                      605 
 Number of independent variables:  57 
-Mtry:                             31 
-Target node size:                 5 
+Mtry:                             50 
+Target node size:                 3 
 Variable importance mode:         permutation 
 Splitrule:                        variance 
-OOB prediction error (MSE):       0.2577789 
-R squared (OOB):                  0.5636805 </code></pre>
+OOB prediction error (MSE):       0.2595114 
+R squared (OOB):                  0.5607482 </code></pre>
 </div>
 </div>
 </section>
