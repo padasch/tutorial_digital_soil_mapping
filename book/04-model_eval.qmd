@@ -79,7 +79,7 @@ bern_cov <- readRDS(here::here("data/bern_sampling_locations_with_covariates.rds
 cov_df$timeset <- "d1979_2010"
 levels(cov_df$timeset) <- c(unique(bern_cov$timeset))
 
-# Define numerically encoded categorical variables 
+# Define numerically variables 
 cat_vars <- 
   cov_df |> 
   # Get number of distinct values per variable
@@ -93,6 +93,7 @@ cat_vars <-
   # Extract the names of these variables
   dplyr::pull('variable')
 
+# Define categorical variables 
 cov_df <- 
   cov_df |> 
   dplyr::mutate(dplyr::across(cat_vars, ~ as.factor(.)))
