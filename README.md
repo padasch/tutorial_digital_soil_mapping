@@ -10,15 +10,14 @@ The material has been provided by Madlene Nussbaum and written-up by Pascal Schn
 - Install {renv} and install all required R packages when opening the `digital_soil_mapping.Rproj`
 
 
-To render book locally in RStudio:
+To render book locally in RStudio, run these commands in the console:
 
 ```r
-quarto::quarto_render(input = "book")
+renv::status()
+renv::load()
+renv::restore()
+install.packages("quarto")
+quarto::quarto_render("book")
 ```
 
-To render book locally via terminal (requires quarto):
-
-```bash
-$ cd book
-$ quarto render
-```
+Then open the file: `book/_book/index.html`
