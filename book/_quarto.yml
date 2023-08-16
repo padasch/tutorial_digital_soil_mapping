@@ -14,8 +14,8 @@ book:
     - index.qmd
     - 01-introduction.qmd
     - 02-data_preparation.qmd
-    - 03-model_fit.qmd
-    - 04-model_eval.qmd
+    - 03-model_training.qmd
+    - 04-model_test.qmd
     - 99-exercise.qmd
     - 99-scratchpad.qmd
     - references.qmd
