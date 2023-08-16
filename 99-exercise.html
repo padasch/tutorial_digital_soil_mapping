@@ -31,7 +31,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
 <link href="./99-scratchpad.html" rel="next">
-<link href="./04-model_eval.html" rel="prev">
+<link href="./04-model_test.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -138,13 +138,13 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./03-model_fit.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Fitting a Random Forest Model</span></span></a>
+  <a href="./03-model_training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Train a Random Forest</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./04-model_eval.html" class="sidebar-item-text sidebar-link">
+  <a href="./04-model_test.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Model Analysis</span></span></a>
   </div>
 </li>
@@ -181,6 +181,7 @@ ul.task-list li input[type="checkbox"] {
   <ul class="collapse">
   <li><a href="#spatial-upscaling" id="toc-spatial-upscaling" class="nav-link" data-scroll-target="#spatial-upscaling"><span class="header-section-number">5.2.1</span> Spatial Upscaling</a></li>
   </ul></li>
+  <li><a href="#exercise" id="toc-exercise" class="nav-link" data-scroll-target="#exercise"><span class="header-section-number">5.3</span> Exercise</a></li>
   </ul>
 </nav>
     </div>
@@ -248,9 +249,15 @@ A note on reproducibility
 <figcaption class="figure-caption">Figure&nbsp;5.1: Example for chess-board structured prediction map, taken from a GIS stackexchange <a href="https://gis.stackexchange.com/questions/111932/classified-images-of-randomforest-classification-look-clustered">post</a>.</figcaption>
 </figure>
 </div>
-
-
+<hr>
 </section>
+</section>
+<section id="exercise" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="exercise"><span class="header-section-number">5.3</span> Exercise</h2>
+<p>In the <a href="https://geco-bern.github.io/agds/">AGDS Book</a>, we explain how to conduct hyperparameter tuning and cross-validation of RandomForests via the {caret} package. Read up on how to do this and implement your own routine to predict the top layer pH - or create an entirely new workflow with another response variable that interests you! Start by doing a preliminary variable selection, compile a tuning grid, and let a RandomForest model run over the grid.</p>
+<p>Moreover, we explain how to use model-agnostic procedures to interpret your model in the <a href="https://geco-bern.github.io/agds/">AGDS Book</a>. Conduct these tests on your model and interpret your findings.</p>
+
+
 </section>
 
 </main> <!-- /main -->
@@ -489,7 +496,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./04-model_eval.html" class="pagination-link">
+      <a href="./04-model_test.html" class="pagination-link">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Model Analysis</span></span>
       </a>          
   </div>
