@@ -128,9 +128,7 @@ Not much has changed compared to our previous model. We see that the $R^2$ and M
 
 ## Model interpretation
 
-### Variable importance
-
-### Random Forest specific
+### Variable importance based on OOB-Error
 
 Our model has 98 variables but we have no idea if each of them should really be in the model and if we are not just fitting noise in the dataset. To investigate this issue, the `ranger()` function takes an argument called `importance`. We can set this argument either to follow the `permutation` method, whereby the algorithm randomly permutes values of each variable and measures the resulting decrease in model accuracy. A larger decrease indicates a more important variable. If the code runs slow, you can also use the faster `impurity` method (see more information [here](https://bmcbioinformatics.biomedcentral.com/counter/pdf/10.1186/s12859-016-0995-8.pdf)).
 
