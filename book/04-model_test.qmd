@@ -3,13 +3,13 @@
 ## Load model and data
 
 ```{r}
-# Load best random forest model
-rf <- readRDS(here::here("data/rf_for_pH0-10.rds"))
+# Load random forest model
+rf       <- readRDS(here::here("data/rf_for_pH0-10.rds"))
 data_cal <- readRDS(here::here("data/cal_for_ph0-10.rds"))
 data_val <- readRDS(here::here("data/val_for_ph0-10.rds"))
 ```
 
-Our target area to predict on is defined in the file `area_to_be_mapped.tif`. Since we only want to predict on a given study area, the TIF file comes with a specification of 0 and one for the area of (no) interest.
+Our target area to predict over is defined in the file `area_to_be_mapped.tif`. Since we only want to predict on a given study area, the TIF file comes with a labeling of `0` for pixels that are outside the area of interest and `1` for pixels within the area of interest.
 
 ```{r}
 # Load area to be predicted
@@ -27,6 +27,10 @@ head(target_df) |> knitr::kable()
 
 Next, we have to load the relevant covariates to run our model:
 
+::: callout-warning
+Our basic RandomForest model has not undergone any variable selection, so we are loading almost 100 covariates here. However, as discussed during the model training step, it is not sensible to use all covariates at hand.
+:::
+
 ```{r}
 # Get a list of all covariate file names
 covariate_files <- 
@@ -37,7 +41,7 @@ covariate_files <-
              )
 
 # Filter that list only for the variables used in the RF
-used_cov <- names(rf$variable.importance)
+used_cov <- rf$forest$independent.variable.names
 cov_to_load <- c()
 
 for (i_var in used_cov) {
@@ -107,7 +111,74 @@ cov_df <-
 head(cov_df) |> knitr::kable()
 ```
 
-## Create map of predictions
+
+
+## Model testing
+
+<!-- TODO: Add some more text and explanation to these sections -->
+
+### Make predictions
+
+```{r}
+# Need to load {ranger} because ranger-object is used in predict()
+library(ranger) 
+
+# Make predictions for validation sites
+prediction <- 
+  predict(rf,                # RF model
+          data = data_val,   # Predictor data
+          num.threads = parallel::detectCores()-1)
+
+# Save predictions to validation df
+data_val$pred <- prediction$predictions
+```
+
+### Model metrics
+
+```{r}
+# Calculate error
+err <- data_val$ph.0.10 - data_val$pred
+
+# Calculate bias
+bias <- mean(err, na.rm = T) |> round(2)
+
+# Calculate RMSE
+rmse <- sqrt(mean(err, na.rm = T)) |> round(2)
+
+# Calculate R2
+r2 <- cor(data_val$ph.0.10, data_val$pred, method = "pearson")^2 |> round(2)
+```
+
+### Metric plots
+
+```{r}
+data_val |> 
+  ggplot2::ggplot(ggplot2::aes(x = pred, y = ph.0.10)) +
+  ggplot2::geom_point() +
+  ggplot2::geom_smooth(method = "lm",
+                       color = "tomato") +
+  # Add layout
+  ggplot2::theme_classic() +
+  ggplot2::geom_abline(
+    intercept = 0, 
+    slope = 1, 
+    linetype = "dotted") +
+  ggplot2::ylim(5, 7.5) +
+  ggplot2::xlim(5, 7.5) +
+  ggplot2::labs(
+    title = "Predicted vs. Observed soil pH 0-10 cm",
+    # subtitle = paste0("Bias = ", bias, ", RMSE = ", rmse, ", R^2 = ", r2),
+    subtitle = bquote(paste("Bias = ", .(bias), 
+                            ", RMSE = ", .(rmse), 
+                            ", R"^2, " = ", .(r2))),
+    x = "Predicted",
+    y = "Observed"
+  )
+```
+
+<!-- TODO: Add some model interpretation here -->
+
+## Create prediction maps
 
 ```{r}
 # Need to load {ranger} because ranger-object is used in predict()
@@ -123,11 +194,6 @@ prediction <-
 cov_df$prediction <- round(prediction$predictions, 2)
 ```
 
-::: callout-tip
-## Predicting Categories with Random Forests
-
-If your response variable was a categorical value, you want to predict its probability. You can access these predicted probabilities like this: `prediction$predictions[,1]`.
-:::
 
 ```{r}
 # Extract dataframe with coordinates and predictions
@@ -172,71 +238,6 @@ terra::writeRaster(
   overwrite = "TRUE"   # Overwrite existing file
 )
 ```
-
-## Model evaluation
-
-<!-- TODO: Add some more text and explanation to these sections -->
-
-### Make predictions
-
-```{r}
-# Need to load {ranger} because ranger-object is used in predict()
-library(ranger) 
-
-# Make predictions for validation sites
-prediction <- 
-  predict(rf,                # RF model
-          data = data_val,   # Predictor data
-          num.threads = parallel::detectCores()-1)
-
-# Save predictions to validation df
-data_val$pred <- prediction$predictions
-```
-
-### Calculate model metrics
-
-```{r}
-# Calculate error
-err <- data_val$ph.0.10 - data_val$pred
-
-# Calculate bias
-bias <- mean(err, na.rm = T) |> round(2)
-
-# Calculate RMSE
-rmse <- sqrt(mean(err, na.rm = T)) |> round(2)
-
-# Calculate R2
-r2 <- cor(data_val$ph.0.10, data_val$pred, method = "pearson")^2 |> round(2)
-```
-
-### Make plots
-
-```{r}
-data_val |> 
-  ggplot2::ggplot(ggplot2::aes(x = pred, y = ph.0.10)) +
-  ggplot2::geom_point() +
-  ggplot2::geom_smooth(method = "lm",
-                       color = "tomato") +
-  # Add layout
-  ggplot2::theme_classic() +
-  ggplot2::geom_abline(
-    intercept = 0, 
-    slope = 1, 
-    linetype = "dotted") +
-  ggplot2::ylim(5, 7.5) +
-  ggplot2::xlim(5, 7.5) +
-  ggplot2::labs(
-    title = "Predicted vs. Observed soil pH 0-10 cm",
-    # subtitle = paste0("Bias = ", bias, ", RMSE = ", rmse, ", R^2 = ", r2),
-    subtitle = bquote(paste("Bias = ", .(bias), 
-                            ", RMSE = ", .(rmse), 
-                            ", R"^2, " = ", .(r2))),
-    x = "Predicted",
-    y = "Observed"
-  )
-```
-
-<!-- TODO: Add some model interpretation here -->
 
 ## Example for predicting a categorical variable
 
@@ -290,7 +291,7 @@ cat("For model training, we have a calibration / validation split of: ",
     perc_cal, "/", perc_val, "%")
 ```
 
-### Model fitting
+### Model training
 
 ```{r}
 rf <- ranger::ranger( 
@@ -301,7 +302,11 @@ rf <- ranger::ranger(
   num.threads = parallel::detectCores() - 1) # Use all but one CPU
 ```
 
-### Model evaluation
+::: callout-warning
+Note that we are skipping model interpretation here to keep it brief.
+:::
+
+### Model testing
 
 #### Model predictions
 
@@ -401,7 +406,7 @@ The Perice Skill Score answers the question of "How well did the forecast separa
 
 <!-- ``` -->
 
-#### Model plots
+#### Metric plots
 
 Let's create a combined violin-box-plot to get a better feeling for our predictions. The plot below visualizes what we already learned from the model metrics. That is, that our model tends to predict dry sites quite well (see how close the median is to 1?) but suffers from a few outliers. If we were to increase the prediction threshold `thresh` defined above, our model would perform words, as more outliers fall below the threshold. Also, the prediction for wet sites is not very clear as indicated by the relatively even distribution of predicted probabilities, and the median at around 75%.
 
@@ -426,7 +431,7 @@ data_val |>
   ggplot2::theme_classic()
 ```
 
-#### Prediction map
+### Prediction map
 
 Note that we have not conducted any variable selection for this simplified example. Thus, we have to create a new raster stack with all predictors and cannot re-use the subset that we used for predicting pH.
 
@@ -514,6 +519,11 @@ prediction <-
 # Attach predictions to dataframe and round them
 cov_df$prediction <- round(prediction$predictions[,1], 2)
 ```
+
+
+::: callout-tip
+Note the difference to the regression task before: To access the predicted probabilities, we need to use `prediction$predictions[,1]`.
+:::
 
 ```{r}
 # Extract dataframe with coordinates and predictions
