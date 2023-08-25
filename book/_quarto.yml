@@ -19,25 +19,33 @@ book:
     - 99-exercise.qmd
     - 99-scratchpad.qmd
     - references.qmd
+  favicon: "figures/favicon.ico"
+  twitter-card: true
+  sharing: [twitter, facebook]
   search: true
   navbar: 
+    title: " "
+    logo: "images/logo.png"
+    background: "#3A3A3A"
     right:
       - icon: github
         href: https://github.com/padasch/digital_soil_mapping
         aria-label: GitHub
+      - text: "Home"
+        file: index.qmd
   
 bibliography: references.bib
 csl: global-change-biology.csl
 
 format:
   html:
-    theme: cosmo
+    theme: 
+      light: [cosmo, theme-light.scss]
+      dark: [cosmo, theme-dark.scss]
     code-fold: false
     code-copy: true
     code-summary: "Show/Hide Code"
-  # pdf:
-  #   documentclass: scrreprt
-
+    
 editor: visual
 
 execute: 
