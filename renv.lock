@@ -1118,23 +1118,6 @@
       ],
       "Hash": "e2111252a76984ca50bf8d6314348681"
     },
-    "sp": {
-      "Package": "sp",
-      "Version": "2.0-0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "grDevices",
-        "graphics",
-        "grid",
-        "lattice",
-        "methods",
-        "stats",
-        "utils"
-      ],
-      "Hash": "2551981e6f85d59c81652bf654d6c3ca"
-    },
     "spam": {
       "Package": "spam",
       "Version": "2.9-1",

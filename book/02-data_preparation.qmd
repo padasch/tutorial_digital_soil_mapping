@@ -124,41 +124,25 @@ This looks already interesting but we can put our data into a bit more context. 
 r <- terra::project(raster_example, "+init=EPSG:4326")
 
 # For the sampling locations:
-# Function from Stackoverflow:
-# https://stackoverflow.com/questions/49536664/r-transforming-coordinates-inside-the-data-frame
-change_coords <-function(data, from_CRS, to_CRS) {
+change_coords <- function(data, from_CRS, to_CRS) {
   
-  # Load required package
-  require(sp)
+  # Check if data input is correct
+  if (!all(names(data) %in% c("id", "lat", "lon"))) {
+    stop("Input data needs variables: id, lat, lon")
+  }
   
-  # Turn string into CRS
-  from_CRS = CRS(from_CRS)
-  to_CRS   = CRS(to_CRS)
+  # Create simple feature for old CRS
+  sf_old_crs <- sf::st_as_sf(data, coords = c("lon", "lat"), crs = from_CRS)
   
-  new <- 
-    as.data.frame(
-      spTransform(
-        SpatialPointsDataFrame(
-          coords = data.frame(
-            lon = data$lon,
-            lat = data$lat),
-          
-          data = data.frame(
-            id = data$id,
-            lon_old = data$lon,
-            lat_old = data$lat),
-          proj4string = from_CRS), 
-        to_CRS
-        )
-      )
+  # Transform to new CRS
+  sf_new_crs     <- sf::st_transform(sf_old_crs, crs = to_CRS)
+  sf_new_crs$lat <- sf::st_coordinates(sf_new_crs)[, "Y"]
+  sf_new_crs$lon <- sf::st_coordinates(sf_new_crs)[, "X"]
   
-  new <- 
-    new |> 
-    dplyr::select(coords.x1, coords.x2, id) |> 
-    dplyr::rename(lon = coords.x1,
-                  lat = coords.x2)
+  sf_new_crs <- sf_new_crs |> dplyr::as_tibble() |> dplyr::select(id, lat, lon)
   
-  return(new)
+  # Return new CRS
+  return(sf_new_crs)
 }
 
 # Transform dataframes
@@ -168,8 +152,8 @@ coord_cal <-
   dplyr::select(site_id_unique, x, y) |> 
   dplyr::rename(id = site_id_unique, lon = x, lat = y) |> 
   change_coords(
-    from_CRS = "+init=epsg:2056", 
-    to_CRS = "+init=epsg:4326"
+    from_CRS = 2056, 
+    to_CRS = 4326
     )
 
 coord_val <- 
@@ -178,8 +162,8 @@ coord_val <-
   dplyr::select(site_id_unique, x, y) |> 
   dplyr::rename(id = site_id_unique, lon = x, lat = y) |> 
   change_coords(
-    from_CRS = "+init=epsg:2056", 
-    to_CRS = "+init=epsg:4326"
+    from_CRS = 2056, 
+    to_CRS = 4326
     )
 
 ```
