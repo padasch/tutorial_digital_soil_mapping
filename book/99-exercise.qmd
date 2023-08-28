@@ -34,4 +34,4 @@ Finally, you should test your model as demonstrated in the tutorial. Give explan
 
 <!--# -->
 
---\> <!--# ``` --> <!--# ![Example for chess-board structured prediction map, taken from a GIS stackexchange [post](https://gis.stackexchange.com/questions/111932/classified-images-of-randomforest-classification-look-clustered).](images/chess_board_example.png){#fig-chessboard fig-align="center"} -->
+<!--# ``` --> <!--# ![Example for chess-board structured prediction map, taken from a GIS stackexchange [post](https://gis.stackexchange.com/questions/111932/classified-images-of-randomforest-classification-look-clustered).](images/chess_board_example.png){#fig-chessboard fig-align="center"} -->
