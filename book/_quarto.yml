@@ -28,7 +28,7 @@ book:
     background: "#3A3A3A"
     right:
       - icon: github
-        href: https://github.com/geco/digital_soil_mapping
+        href: https://github.com/padasch/digital_soil_mapping
         aria-label: GitHub
       - text: "Home"
         file: index.qmd
