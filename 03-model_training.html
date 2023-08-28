@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.450">
+<meta name="generator" content="quarto-1.3.433">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -224,12 +224,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./99-scratchpad.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">[Scratchpad]</span></span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="./references.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">References</span></a>
   </div>
@@ -283,120 +277,43 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 data-number="3.1" class="anchored" data-anchor-id="load-data"><span class="header-section-number">3.1</span> Load data</h2>
 <p>In the previous Chapter, we create a dataframe that holds information on the soil sampling locations and the covariates that we extracted for these positions. Let’s load this datafarme into our environment</p>
 <div class="cell">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>data_clean <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data/bern_sampling_locations_with_covariates.rds"</span>))</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(data_clean) <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
 <colgroup>
-<col style="width: 1%">
-<col style="width: 1%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 1%">
-<col style="width: 1%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 1%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 1%">
-<col style="width: 1%">
-<col style="width: 0%">
-<col style="width: 1%">
-<col style="width: 1%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 1%">
-<col style="width: 1%">
-<col style="width: 1%">
-<col style="width: 1%">
-<col style="width: 1%">
-<col style="width: 1%">
-<col style="width: 1%">
-<col style="width: 0%">
-<col style="width: 1%">
-<col style="width: 1%">
-<col style="width: 1%">
-<col style="width: 1%">
-<col style="width: 1%">
-<col style="width: 1%">
-<col style="width: 1%">
-<col style="width: 1%">
-<col style="width: 0%">
-<col style="width: 1%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 1%">
-<col style="width: 1%">
-<col style="width: 0%">
-<col style="width: 1%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 1%">
-<col style="width: 1%">
-<col style="width: 0%">
-<col style="width: 1%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 1%">
-<col style="width: 0%">
-<col style="width: 1%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 1%">
-<col style="width: 1%">
-<col style="width: 1%">
-<col style="width: 0%">
-<col style="width: 1%">
-<col style="width: 1%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 1%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 1%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 0%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 3%">
+<col style="width: 2%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 6%">
+<col style="width: 3%">
+<col style="width: 4%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 2%">
+<col style="width: 4%">
+<col style="width: 5%">
+<col style="width: 4%">
+<col style="width: 2%">
+<col style="width: 5%">
+<col style="width: 4%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -413,101 +330,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <th style="text-align: right;">ph.10.30</th>
 <th style="text-align: right;">ph.30.50</th>
 <th style="text-align: right;">ph.50.100</th>
-<th style="text-align: right;">be_gwn25_hdist</th>
-<th style="text-align: right;">be_gwn25_vdist</th>
-<th style="text-align: right;">cindx10_25</th>
-<th style="text-align: right;">cindx50_25</th>
-<th style="text-align: left;">geo500h1id</th>
-<th style="text-align: left;">geo500h3id</th>
-<th style="text-align: left;">lgm</th>
-<th style="text-align: right;">lsf</th>
-<th style="text-align: right;">mrrtf25</th>
-<th style="text-align: right;">mrvbf25</th>
-<th style="text-align: right;">mt_gh_y</th>
-<th style="text-align: right;">mt_rr_y</th>
-<th style="text-align: right;">mt_td_y</th>
-<th style="text-align: right;">mt_tt_y</th>
-<th style="text-align: right;">mt_ttvar</th>
-<th style="text-align: right;">NegO</th>
-<th style="text-align: right;">PosO</th>
-<th style="text-align: right;">protindx</th>
-<th style="text-align: right;">Se_alti2m_std_50c</th>
-<th style="text-align: right;">Se_conv2m</th>
-<th style="text-align: right;">Se_curv25m</th>
-<th style="text-align: right;">Se_curv2m_fmean_50c</th>
-<th style="text-align: right;">Se_curv2m_fmean_5c</th>
-<th style="text-align: right;">Se_curv2m_s60</th>
-<th style="text-align: right;">Se_curv2m_std_50c</th>
-<th style="text-align: right;">Se_curv2m_std_5c</th>
-<th style="text-align: right;">Se_curv2m</th>
-<th style="text-align: right;">Se_curv50m</th>
-<th style="text-align: right;">Se_curv6m</th>
-<th style="text-align: right;">Se_curvplan25m</th>
 <th style="text-align: right;">Se_curvplan2m_fmean_50c</th>
-<th style="text-align: right;">Se_curvplan2m_fmean_5c</th>
-<th style="text-align: right;">Se_curvplan2m_s60</th>
-<th style="text-align: right;">Se_curvplan2m_s7</th>
-<th style="text-align: right;">Se_curvplan2m_std_50c</th>
-<th style="text-align: right;">Se_curvplan2m_std_5c</th>
-<th style="text-align: right;">Se_curvplan2m</th>
-<th style="text-align: right;">Se_curvplan50m</th>
-<th style="text-align: right;">Se_curvprof25m</th>
-<th style="text-align: right;">Se_curvprof2m_fmean_50c</th>
-<th style="text-align: right;">Se_curvprof2m_fmean_5c</th>
-<th style="text-align: right;">Se_curvprof2m_s60</th>
-<th style="text-align: right;">Se_curvprof2m_s7</th>
-<th style="text-align: right;">Se_curvprof2m_std_50c</th>
-<th style="text-align: right;">Se_curvprof2m_std_5c</th>
-<th style="text-align: right;">Se_curvprof2m</th>
-<th style="text-align: right;">Se_curvprof50m</th>
-<th style="text-align: right;">Se_diss2m_50c</th>
-<th style="text-align: right;">Se_diss2m_5c</th>
-<th style="text-align: right;">Se_e_aspect25m</th>
-<th style="text-align: right;">Se_e_aspect2m_5c</th>
-<th style="text-align: right;">Se_e_aspect2m</th>
-<th style="text-align: right;">Se_e_aspect50m</th>
-<th style="text-align: right;">Se_MRRTF2m</th>
-<th style="text-align: right;">Se_MRVBF2m</th>
-<th style="text-align: right;">Se_n_aspect2m_50c</th>
-<th style="text-align: right;">Se_n_aspect2m_5c</th>
-<th style="text-align: right;">Se_n_aspect2m</th>
-<th style="text-align: right;">Se_n_aspect50m</th>
-<th style="text-align: right;">Se_n_aspect6m</th>
-<th style="text-align: right;">Se_NO2m_r500</th>
-<th style="text-align: right;">Se_PO2m_r500</th>
-<th style="text-align: right;">Se_rough2m_10c</th>
-<th style="text-align: right;">Se_rough2m_5c</th>
-<th style="text-align: right;">Se_rough2m_rect3c</th>
-<th style="text-align: right;">Se_SAR2m</th>
-<th style="text-align: right;">Se_SCA2m</th>
-<th style="text-align: right;">Se_slope2m_fmean_50c</th>
-<th style="text-align: right;">Se_slope2m_fmean_5c</th>
-<th style="text-align: right;">Se_slope2m_s60</th>
-<th style="text-align: right;">Se_slope2m_s7</th>
-<th style="text-align: right;">Se_slope2m_std_50c</th>
-<th style="text-align: right;">Se_slope2m_std_5c</th>
-<th style="text-align: right;">Se_slope2m</th>
-<th style="text-align: right;">Se_slope50m</th>
-<th style="text-align: right;">Se_slope6m</th>
-<th style="text-align: right;">Se_toposcale2m_r3_r50_i10s</th>
-<th style="text-align: right;">Se_tpi_2m_50c</th>
 <th style="text-align: right;">Se_tpi_2m_5c</th>
-<th style="text-align: right;">Se_tri2m_altern_3c</th>
-<th style="text-align: right;">Se_tsc10_2m</th>
-<th style="text-align: right;">Se_TWI2m_s15</th>
-<th style="text-align: right;">Se_TWI2m_s60</th>
-<th style="text-align: right;">Se_TWI2m</th>
-<th style="text-align: right;">Se_vrm2m_r10c</th>
-<th style="text-align: right;">Se_vrm2m</th>
-<th style="text-align: right;">terrTextur</th>
+<th style="text-align: right;">Se_e_aspect2m_5c</th>
+<th style="text-align: right;">mt_tt_y</th>
+<th style="text-align: right;">Se_SCA2m</th>
+<th style="text-align: right;">Se_curvprof2m_s60</th>
+<th style="text-align: right;">Se_e_aspect25m</th>
+<th style="text-align: right;">Se_curvprof2m_s7</th>
 <th style="text-align: right;">tsc25_18</th>
-<th style="text-align: right;">tsc25_40</th>
-<th style="text-align: right;">vdcn25</th>
-<th style="text-align: left;">vszone</th>
-<th style="text-align: right;">x30</th>
-<th style="text-align: right;">y30</th>
-<th style="text-align: right;">x60</th>
-<th style="text-align: right;">y60</th>
+<th style="text-align: right;">Se_curv2m_std_50c</th>
+<th style="text-align: right;">Se_slope2m_fmean_5c</th>
+<th style="text-align: right;">Se_n_aspect2m_5c</th>
+<th style="text-align: right;">mrrtf25</th>
+<th style="text-align: right;">Se_slope2m_std_50c</th>
+<th style="text-align: right;">Se_curv2m_std_5c</th>
 </tr>
 </thead>
 <tbody>
@@ -525,101 +362,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td style="text-align: right;">6.227780</td>
 <td style="text-align: right;">7.109235</td>
 <td style="text-align: right;">7.214589</td>
-<td style="text-align: right;">234.39087</td>
-<td style="text-align: right;">1.2986320</td>
-<td style="text-align: right;">-10.62191</td>
-<td style="text-align: right;">-6.9658718</td>
-<td style="text-align: left;">6</td>
-<td style="text-align: left;">0</td>
-<td style="text-align: left;">7</td>
-<td style="text-align: right;">0.0770846</td>
-<td style="text-align: right;">0.0184651</td>
-<td style="text-align: right;">4.977099</td>
-<td style="text-align: right;">1316.922</td>
-<td style="text-align: right;">9931.120</td>
-<td style="text-align: right;">58</td>
-<td style="text-align: right;">98</td>
-<td style="text-align: right;">183</td>
-<td style="text-align: right;">1.569110</td>
-<td style="text-align: right;">1.534734</td>
-<td style="text-align: right;">0.0159717</td>
-<td style="text-align: right;">0.3480562</td>
-<td style="text-align: right;">-40.5395088</td>
-<td style="text-align: right;">-0.0014441</td>
-<td style="text-align: right;">-0.0062570</td>
-<td style="text-align: right;">0.0175912</td>
-<td style="text-align: right;">0.0002296</td>
-<td style="text-align: right;">2.9204133</td>
-<td style="text-align: right;">1.1769447</td>
-<td style="text-align: right;">-1.9364884</td>
-<td style="text-align: right;">0.0031319</td>
-<td style="text-align: right;">-0.5886537</td>
-<td style="text-align: right;">-0.0042508</td>
 <td style="text-align: right;">-0.0445323</td>
-<td style="text-align: right;">-0.0481024</td>
-<td style="text-align: right;">-0.0504083</td>
-<td style="text-align: right;">-0.1655090</td>
-<td style="text-align: right;">1.5687343</td>
-<td style="text-align: right;">0.6229440</td>
-<td style="text-align: right;">-1.0857303</td>
-<td style="text-align: right;">0.0007920</td>
-<td style="text-align: right;">-0.0028067</td>
-<td style="text-align: right;">-0.0382753</td>
-<td style="text-align: right;">-0.0656936</td>
-<td style="text-align: right;">-0.0506380</td>
-<td style="text-align: right;">-0.0732220</td>
-<td style="text-align: right;">1.6507173</td>
-<td style="text-align: right;">0.7082230</td>
-<td style="text-align: right;">0.8507581</td>
-<td style="text-align: right;">-0.0023399</td>
-<td style="text-align: right;">0.3934371</td>
-<td style="text-align: right;">0.1770810</td>
-<td style="text-align: right;">-0.9702092</td>
-<td style="text-align: right;">-0.7929600</td>
-<td style="text-align: right;">-0.5661940</td>
-<td style="text-align: right;">-0.9939429</td>
-<td style="text-align: right;">5.930607</td>
-<td style="text-align: right;">6.950892</td>
-<td style="text-align: right;">-0.2840056</td>
-<td style="text-align: right;">-0.6084610</td>
-<td style="text-align: right;">-0.2402939</td>
-<td style="text-align: right;">-0.0577110</td>
-<td style="text-align: right;">-0.7661251</td>
-<td style="text-align: right;">1.562085</td>
-<td style="text-align: right;">1.548762</td>
-<td style="text-align: right;">0.3228087</td>
-<td style="text-align: right;">0.2241062</td>
-<td style="text-align: right;">0.2003846</td>
-<td style="text-align: right;">4.000910</td>
-<td style="text-align: right;">16.248077</td>
-<td style="text-align: right;">0.9428899</td>
-<td style="text-align: right;">0.6683306</td>
-<td style="text-align: right;">0.9333237</td>
-<td style="text-align: right;">0.7310556</td>
-<td style="text-align: right;">0.8815832</td>
-<td style="text-align: right;">0.3113754</td>
-<td style="text-align: right;">1.1250136</td>
-<td style="text-align: right;">0.3783818</td>
-<td style="text-align: right;">0.5250366</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">-0.0940372</td>
 <td style="text-align: right;">-0.0583917</td>
-<td style="text-align: right;">10.319408</td>
-<td style="text-align: right;">0.4645128</td>
-<td style="text-align: right;">0.0032796</td>
-<td style="text-align: right;">0.0049392</td>
-<td style="text-align: right;">0.0011592</td>
-<td style="text-align: right;">0.000125</td>
-<td style="text-align: right;">0.0002450</td>
-<td style="text-align: right;">0.6248673</td>
+<td style="text-align: right;">-0.7929600</td>
+<td style="text-align: right;">98</td>
+<td style="text-align: right;">16.248077</td>
+<td style="text-align: right;">-0.0506380</td>
+<td style="text-align: right;">-0.9702092</td>
+<td style="text-align: right;">-0.0732220</td>
 <td style="text-align: right;">0.3332805</td>
-<td style="text-align: right;">1.784737</td>
-<td style="text-align: right;">65.62196</td>
-<td style="text-align: left;">6</td>
-<td style="text-align: right;">1625912</td>
-<td style="text-align: right;">2327826</td>
-<td style="text-align: right;">244167.6</td>
-<td style="text-align: right;">2828913</td>
+<td style="text-align: right;">2.9204133</td>
+<td style="text-align: right;">0.6683306</td>
+<td style="text-align: right;">-0.6084610</td>
+<td style="text-align: right;">0.0184651</td>
+<td style="text-align: right;">0.8815832</td>
+<td style="text-align: right;">1.1769447</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">4_26-In-006</td>
@@ -635,101 +392,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td style="text-align: right;">6.947128</td>
 <td style="text-align: right;">7.203502</td>
 <td style="text-align: right;">7.700000</td>
-<td style="text-align: right;">127.41681</td>
-<td style="text-align: right;">1.7064546</td>
-<td style="text-align: right;">-10.87862</td>
-<td style="text-align: right;">-11.8201790</td>
-<td style="text-align: left;">6</td>
-<td style="text-align: left;">0</td>
-<td style="text-align: left;">7</td>
-<td style="text-align: right;">0.0860347</td>
-<td style="text-align: right;">0.0544361</td>
-<td style="text-align: right;">4.975796</td>
-<td style="text-align: right;">1317.000</td>
-<td style="text-align: right;">9931.672</td>
-<td style="text-align: right;">58</td>
-<td style="text-align: right;">98</td>
-<td style="text-align: right;">183</td>
-<td style="text-align: right;">1.568917</td>
-<td style="text-align: right;">1.533827</td>
-<td style="text-align: right;">0.0204794</td>
-<td style="text-align: right;">0.1484705</td>
-<td style="text-align: right;">19.0945148</td>
-<td style="text-align: right;">-0.0190294</td>
-<td style="text-align: right;">0.0021045</td>
-<td style="text-align: right;">0.0221433</td>
-<td style="text-align: right;">0.0000390</td>
-<td style="text-align: right;">3.8783867</td>
-<td style="text-align: right;">4.3162045</td>
-<td style="text-align: right;">2.1377332</td>
-<td style="text-align: right;">-0.0171786</td>
-<td style="text-align: right;">0.1278165</td>
-<td style="text-align: right;">-0.0119618</td>
 <td style="text-align: right;">-0.0501855</td>
-<td style="text-align: right;">-0.3270764</td>
-<td style="text-align: right;">-0.1004921</td>
-<td style="text-align: right;">-0.5133076</td>
-<td style="text-align: right;">2.0736780</td>
-<td style="text-align: right;">2.2502327</td>
-<td style="text-align: right;">-0.3522736</td>
-<td style="text-align: right;">-0.0073879</td>
-<td style="text-align: right;">0.0070676</td>
-<td style="text-align: right;">-0.0522900</td>
-<td style="text-align: right;">-0.3492197</td>
-<td style="text-align: right;">-0.1005311</td>
-<td style="text-align: right;">-0.4981292</td>
-<td style="text-align: right;">2.1899190</td>
-<td style="text-align: right;">2.4300070</td>
-<td style="text-align: right;">-2.4900069</td>
-<td style="text-align: right;">0.0097907</td>
-<td style="text-align: right;">0.4014700</td>
-<td style="text-align: right;">0.7360508</td>
-<td style="text-align: right;">0.5683194</td>
-<td style="text-align: right;">0.8753148</td>
-<td style="text-align: right;">-0.3505180</td>
-<td style="text-align: right;">0.3406741</td>
-<td style="text-align: right;">5.984921</td>
-<td style="text-align: right;">6.984581</td>
-<td style="text-align: right;">-0.5732749</td>
-<td style="text-align: right;">0.4801802</td>
-<td style="text-align: right;">0.4917848</td>
-<td style="text-align: right;">-0.4550385</td>
-<td style="text-align: right;">0.7722272</td>
-<td style="text-align: right;">1.543384</td>
-<td style="text-align: right;">1.558683</td>
-<td style="text-align: right;">0.2730940</td>
-<td style="text-align: right;">0.2489859</td>
-<td style="text-align: right;">0.2376962</td>
-<td style="text-align: right;">4.001326</td>
-<td style="text-align: right;">3.357315</td>
-<td style="text-align: right;">1.0895698</td>
-<td style="text-align: right;">0.9857153</td>
-<td style="text-align: right;">1.0231543</td>
-<td style="text-align: right;">1.0398037</td>
-<td style="text-align: right;">1.0152543</td>
-<td style="text-align: right;">0.5357812</td>
-<td style="text-align: right;">1.3587183</td>
-<td style="text-align: right;">0.0645478</td>
-<td style="text-align: right;">0.5793087</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">-0.0014692</td>
 <td style="text-align: right;">0.0180000</td>
-<td style="text-align: right;">12.603136</td>
-<td style="text-align: right;">0.5536283</td>
-<td style="text-align: right;">0.0070509</td>
-<td style="text-align: right;">0.0067992</td>
-<td style="text-align: right;">0.0139006</td>
-<td style="text-align: right;">0.000300</td>
-<td style="text-align: right;">0.0005389</td>
-<td style="text-align: right;">0.7573612</td>
+<td style="text-align: right;">0.8753148</td>
+<td style="text-align: right;">98</td>
+<td style="text-align: right;">3.357315</td>
+<td style="text-align: right;">-0.1005311</td>
+<td style="text-align: right;">0.5683194</td>
+<td style="text-align: right;">-0.4981292</td>
 <td style="text-align: right;">0.3395441</td>
-<td style="text-align: right;">1.832904</td>
-<td style="text-align: right;">69.16074</td>
-<td style="text-align: left;">6</td>
-<td style="text-align: right;">1626064</td>
-<td style="text-align: right;">2327873</td>
-<td style="text-align: right;">244276.3</td>
-<td style="text-align: right;">2829029</td>
+<td style="text-align: right;">3.8783867</td>
+<td style="text-align: right;">0.9857153</td>
+<td style="text-align: right;">0.4801802</td>
+<td style="text-align: right;">0.0544361</td>
+<td style="text-align: right;">1.0152543</td>
+<td style="text-align: right;">4.3162045</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">4_26-In-012</td>
@@ -745,101 +422,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td style="text-align: right;">6.147128</td>
 <td style="text-align: right;">5.603502</td>
 <td style="text-align: right;">5.904355</td>
-<td style="text-align: right;">143.41533</td>
-<td style="text-align: right;">0.9372618</td>
-<td style="text-align: right;">22.10210</td>
-<td style="text-align: right;">0.2093917</td>
-<td style="text-align: left;">6</td>
-<td style="text-align: left;">0</td>
-<td style="text-align: left;">7</td>
-<td style="text-align: right;">0.0737963</td>
-<td style="text-align: right;">3.6830916</td>
-<td style="text-align: right;">4.986864</td>
-<td style="text-align: right;">1315.134</td>
-<td style="text-align: right;">9935.438</td>
-<td style="text-align: right;">58</td>
-<td style="text-align: right;">98</td>
-<td style="text-align: right;">183</td>
-<td style="text-align: right;">1.569093</td>
-<td style="text-align: right;">1.543057</td>
-<td style="text-align: right;">0.0048880</td>
-<td style="text-align: right;">0.1112066</td>
-<td style="text-align: right;">-9.1396294</td>
-<td style="text-align: right;">0.0039732</td>
-<td style="text-align: right;">0.0009509</td>
-<td style="text-align: right;">0.0431735</td>
-<td style="text-align: right;">0.0034232</td>
-<td style="text-align: right;">0.7022317</td>
-<td style="text-align: right;">0.4170935</td>
-<td style="text-align: right;">-0.4178924</td>
-<td style="text-align: right;">-0.0026431</td>
-<td style="text-align: right;">-0.0183221</td>
-<td style="text-align: right;">0.0015183</td>
 <td style="text-align: right;">-0.0079620</td>
-<td style="text-align: right;">0.0053904</td>
-<td style="text-align: right;">-0.0091239</td>
-<td style="text-align: right;">-0.0110896</td>
-<td style="text-align: right;">0.3974485</td>
-<td style="text-align: right;">0.2292406</td>
-<td style="text-align: right;">-0.2168447</td>
-<td style="text-align: right;">-0.0013561</td>
-<td style="text-align: right;">-0.0024548</td>
-<td style="text-align: right;">-0.0089129</td>
-<td style="text-align: right;">-0.0377831</td>
-<td style="text-align: right;">-0.0125471</td>
-<td style="text-align: right;">-0.0052359</td>
-<td style="text-align: right;">0.4158890</td>
-<td style="text-align: right;">0.2700820</td>
-<td style="text-align: right;">0.2010477</td>
-<td style="text-align: right;">0.0012870</td>
-<td style="text-align: right;">0.6717541</td>
-<td style="text-align: right;">0.4404107</td>
-<td style="text-align: right;">-0.6987815</td>
-<td style="text-align: right;">-0.3866692</td>
-<td style="text-align: right;">-0.1960597</td>
-<td style="text-align: right;">-0.7592779</td>
-<td style="text-align: right;">5.953919</td>
-<td style="text-align: right;">6.990917</td>
-<td style="text-align: right;">-0.3006475</td>
-<td style="text-align: right;">-0.9221049</td>
-<td style="text-align: right;">-0.9633239</td>
-<td style="text-align: right;">-0.3257418</td>
-<td style="text-align: right;">-0.9502072</td>
-<td style="text-align: right;">1.565405</td>
-<td style="text-align: right;">1.563151</td>
-<td style="text-align: right;">0.2305476</td>
-<td style="text-align: right;">0.2182523</td>
-<td style="text-align: right;">0.1434273</td>
-<td style="text-align: right;">4.000320</td>
-<td style="text-align: right;">11.330072</td>
-<td style="text-align: right;">0.5758902</td>
-<td style="text-align: right;">0.5300468</td>
-<td style="text-align: right;">0.5107915</td>
-<td style="text-align: right;">0.5744110</td>
-<td style="text-align: right;">0.4975456</td>
-<td style="text-align: right;">0.2001768</td>
-<td style="text-align: right;">0.7160403</td>
-<td style="text-align: right;">0.1311051</td>
-<td style="text-align: right;">0.4620202</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0.0340407</td>
 <td style="text-align: right;">-0.0145804</td>
-<td style="text-align: right;">7.100000</td>
-<td style="text-align: right;">0.4850160</td>
-<td style="text-align: right;">0.0021498</td>
-<td style="text-align: right;">0.0017847</td>
-<td style="text-align: right;">0.0011398</td>
-<td style="text-align: right;">0.000000</td>
-<td style="text-align: right;">0.0000124</td>
-<td style="text-align: right;">0.7978453</td>
+<td style="text-align: right;">-0.3866692</td>
+<td style="text-align: right;">98</td>
+<td style="text-align: right;">11.330072</td>
+<td style="text-align: right;">-0.0125471</td>
+<td style="text-align: right;">-0.6987815</td>
+<td style="text-align: right;">-0.0052359</td>
 <td style="text-align: right;">0.4455501</td>
-<td style="text-align: right;">1.981526</td>
-<td style="text-align: right;">63.57096</td>
-<td style="text-align: left;">6</td>
-<td style="text-align: right;">1626382</td>
-<td style="text-align: right;">2328897</td>
-<td style="text-align: right;">244039.8</td>
-<td style="text-align: right;">2830075</td>
+<td style="text-align: right;">0.7022317</td>
+<td style="text-align: right;">0.5300468</td>
+<td style="text-align: right;">-0.9221049</td>
+<td style="text-align: right;">3.6830916</td>
+<td style="text-align: right;">0.4975456</td>
+<td style="text-align: right;">0.4170935</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">4_26-In-014</td>
@@ -855,101 +452,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td style="text-align: right;">6.754607</td>
 <td style="text-align: right;">7.200000</td>
 <td style="text-align: right;">7.151129</td>
-<td style="text-align: right;">165.80418</td>
-<td style="text-align: right;">0.7653937</td>
-<td style="text-align: right;">-20.11569</td>
-<td style="text-align: right;">-7.7729993</td>
-<td style="text-align: left;">6</td>
-<td style="text-align: left;">0</td>
-<td style="text-align: left;">7</td>
-<td style="text-align: right;">0.0859686</td>
-<td style="text-align: right;">0.0075817</td>
-<td style="text-align: right;">5.285522</td>
-<td style="text-align: right;">1315.160</td>
-<td style="text-align: right;">9939.923</td>
-<td style="text-align: right;">58</td>
-<td style="text-align: right;">98</td>
-<td style="text-align: right;">183</td>
-<td style="text-align: right;">1.569213</td>
-<td style="text-align: right;">1.542792</td>
-<td style="text-align: right;">0.0064054</td>
-<td style="text-align: right;">0.3710849</td>
-<td style="text-align: right;">-0.9318936</td>
-<td style="text-align: right;">-0.0371234</td>
-<td style="text-align: right;">0.0029348</td>
-<td style="text-align: right;">-0.1056513</td>
-<td style="text-align: right;">0.0127788</td>
-<td style="text-align: right;">1.5150748</td>
-<td style="text-align: right;">0.2413423</td>
-<td style="text-align: right;">-0.0289909</td>
-<td style="text-align: right;">0.0020990</td>
-<td style="text-align: right;">-0.0706228</td>
-<td style="text-align: right;">-0.0113604</td>
 <td style="text-align: right;">-0.0301961</td>
-<td style="text-align: right;">-0.0346193</td>
-<td style="text-align: right;">-0.0273140</td>
-<td style="text-align: right;">-0.0343277</td>
-<td style="text-align: right;">0.8245047</td>
-<td style="text-align: right;">0.1029889</td>
-<td style="text-align: right;">-0.0272214</td>
-<td style="text-align: right;">-0.0041158</td>
-<td style="text-align: right;">0.0257630</td>
-<td style="text-align: right;">-0.0331309</td>
-<td style="text-align: right;">0.0710320</td>
-<td style="text-align: right;">-0.0400928</td>
-<td style="text-align: right;">0.0529446</td>
-<td style="text-align: right;">0.8635767</td>
-<td style="text-align: right;">0.1616543</td>
-<td style="text-align: right;">0.0017695</td>
-<td style="text-align: right;">-0.0062147</td>
-<td style="text-align: right;">0.4988544</td>
-<td style="text-align: right;">0.4217250</td>
-<td style="text-align: right;">-0.8485889</td>
-<td style="text-align: right;">-0.8657616</td>
-<td style="text-align: right;">-0.8836724</td>
-<td style="text-align: right;">-0.8993938</td>
-<td style="text-align: right;">4.856076</td>
-<td style="text-align: right;">6.964162</td>
-<td style="text-align: right;">-0.5735765</td>
-<td style="text-align: right;">-0.4998477</td>
-<td style="text-align: right;">-0.4677161</td>
-<td style="text-align: right;">-0.4121092</td>
-<td style="text-align: right;">-0.4782534</td>
-<td style="text-align: right;">1.562499</td>
-<td style="text-align: right;">1.562670</td>
-<td style="text-align: right;">0.3859352</td>
-<td style="text-align: right;">0.2732429</td>
-<td style="text-align: right;">0.1554769</td>
-<td style="text-align: right;">4.000438</td>
-<td style="text-align: right;">42.167496</td>
-<td style="text-align: right;">0.8873205</td>
-<td style="text-align: right;">0.8635756</td>
-<td style="text-align: right;">0.9015982</td>
-<td style="text-align: right;">0.8518201</td>
-<td style="text-align: right;">0.5767300</td>
-<td style="text-align: right;">0.2149791</td>
-<td style="text-align: right;">0.8482135</td>
-<td style="text-align: right;">0.3928713</td>
-<td style="text-align: right;">0.8432562</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0.0686932</td>
 <td style="text-align: right;">-0.0085602</td>
-<td style="text-align: right;">8.303085</td>
-<td style="text-align: right;">0.3951114</td>
-<td style="text-align: right;">0.0008454</td>
-<td style="text-align: right;">0.0021042</td>
-<td style="text-align: right;">0.0000000</td>
-<td style="text-align: right;">0.000100</td>
-<td style="text-align: right;">0.0000857</td>
-<td style="text-align: right;">0.4829135</td>
+<td style="text-align: right;">-0.8657616</td>
+<td style="text-align: right;">98</td>
+<td style="text-align: right;">42.167496</td>
+<td style="text-align: right;">-0.0400928</td>
+<td style="text-align: right;">-0.8485889</td>
+<td style="text-align: right;">0.0529446</td>
 <td style="text-align: right;">0.4483251</td>
-<td style="text-align: right;">2.113142</td>
-<td style="text-align: right;">64.60535</td>
-<td style="text-align: left;">6</td>
-<td style="text-align: right;">1626752</td>
-<td style="text-align: right;">2329130</td>
-<td style="text-align: right;">244243.6</td>
-<td style="text-align: right;">2830462</td>
+<td style="text-align: right;">1.5150748</td>
+<td style="text-align: right;">0.8635756</td>
+<td style="text-align: right;">-0.4998477</td>
+<td style="text-align: right;">0.0075817</td>
+<td style="text-align: right;">0.5767300</td>
+<td style="text-align: right;">0.2413423</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">4_26-In-015</td>
@@ -965,101 +482,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td style="text-align: right;">6.272715</td>
 <td style="text-align: right;">6.718392</td>
 <td style="text-align: right;">7.269008</td>
-<td style="text-align: right;">61.39244</td>
-<td style="text-align: right;">1.0676192</td>
-<td style="text-align: right;">-55.12566</td>
-<td style="text-align: right;">-14.0670462</td>
-<td style="text-align: left;">6</td>
-<td style="text-align: left;">0</td>
-<td style="text-align: left;">7</td>
-<td style="text-align: right;">0.0650000</td>
-<td style="text-align: right;">0.0007469</td>
-<td style="text-align: right;">5.894688</td>
-<td style="text-align: right;">1315.056</td>
-<td style="text-align: right;">9942.032</td>
-<td style="text-align: right;">58</td>
-<td style="text-align: right;">98</td>
-<td style="text-align: right;">183</td>
-<td style="text-align: right;">1.570359</td>
-<td style="text-align: right;">1.541979</td>
-<td style="text-align: right;">0.0042235</td>
-<td style="text-align: right;">0.3907509</td>
-<td style="text-align: right;">4.2692256</td>
-<td style="text-align: right;">0.0378648</td>
-<td style="text-align: right;">0.0022611</td>
-<td style="text-align: right;">-0.1020419</td>
-<td style="text-align: right;">0.0161510</td>
-<td style="text-align: right;">3.6032522</td>
-<td style="text-align: right;">1.8169731</td>
-<td style="text-align: right;">0.6409346</td>
-<td style="text-align: right;">0.0346340</td>
-<td style="text-align: right;">0.0476020</td>
-<td style="text-align: right;">0.0378154</td>
 <td style="text-align: right;">-0.0179657</td>
-<td style="text-align: right;">-0.0137853</td>
-<td style="text-align: right;">-0.0146946</td>
-<td style="text-align: right;">0.0060875</td>
-<td style="text-align: right;">1.4667766</td>
-<td style="text-align: right;">0.9816071</td>
-<td style="text-align: right;">0.2968794</td>
-<td style="text-align: right;">0.0337645</td>
-<td style="text-align: right;">-0.0000494</td>
-<td style="text-align: right;">-0.0202268</td>
-<td style="text-align: right;">0.0882566</td>
-<td style="text-align: right;">-0.0308456</td>
-<td style="text-align: right;">0.0929077</td>
-<td style="text-align: right;">2.6904552</td>
-<td style="text-align: right;">1.0218329</td>
-<td style="text-align: right;">-0.3440553</td>
-<td style="text-align: right;">-0.0008695</td>
-<td style="text-align: right;">0.6999696</td>
-<td style="text-align: right;">0.3944107</td>
-<td style="text-align: right;">-0.8918364</td>
-<td style="text-align: right;">-0.8864348</td>
-<td style="text-align: right;">-0.7795515</td>
-<td style="text-align: right;">-0.4249992</td>
-<td style="text-align: right;">4.130917</td>
-<td style="text-align: right;">6.945287</td>
-<td style="text-align: right;">0.4304937</td>
-<td style="text-align: right;">0.4614536</td>
-<td style="text-align: right;">0.5919228</td>
-<td style="text-align: right;">0.6559467</td>
-<td style="text-align: right;">0.4574654</td>
-<td style="text-align: right;">1.550528</td>
-<td style="text-align: right;">1.562685</td>
-<td style="text-align: right;">0.4330348</td>
-<td style="text-align: right;">0.3299487</td>
-<td style="text-align: right;">0.1889674</td>
-<td style="text-align: right;">4.000948</td>
-<td style="text-align: right;">5.479310</td>
-<td style="text-align: right;">1.8937486</td>
-<td style="text-align: right;">1.2098556</td>
-<td style="text-align: right;">1.5986075</td>
-<td style="text-align: right;">1.2745584</td>
-<td style="text-align: right;">2.7759163</td>
-<td style="text-align: right;">0.5375320</td>
-<td style="text-align: right;">1.2301254</td>
-<td style="text-align: right;">0.3582314</td>
-<td style="text-align: right;">1.1426100</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0.3005829</td>
 <td style="text-align: right;">0.0061576</td>
-<td style="text-align: right;">10.110727</td>
-<td style="text-align: right;">0.5134069</td>
-<td style="text-align: right;">0.0043268</td>
-<td style="text-align: right;">0.0045225</td>
-<td style="text-align: right;">0.0054557</td>
-<td style="text-align: right;">0.000200</td>
-<td style="text-align: right;">0.0002062</td>
-<td style="text-align: right;">0.6290755</td>
+<td style="text-align: right;">-0.8864348</td>
+<td style="text-align: right;">98</td>
+<td style="text-align: right;">5.479310</td>
+<td style="text-align: right;">-0.0308456</td>
+<td style="text-align: right;">-0.8918364</td>
+<td style="text-align: right;">0.0929077</td>
 <td style="text-align: right;">0.3974232</td>
-<td style="text-align: right;">2.080674</td>
-<td style="text-align: right;">61.16533</td>
-<td style="text-align: left;">6</td>
-<td style="text-align: right;">1626795</td>
-<td style="text-align: right;">2329415</td>
-<td style="text-align: right;">244138.2</td>
-<td style="text-align: right;">2830730</td>
+<td style="text-align: right;">3.6032522</td>
+<td style="text-align: right;">1.2098556</td>
+<td style="text-align: right;">0.4614536</td>
+<td style="text-align: right;">0.0007469</td>
+<td style="text-align: right;">2.7759163</td>
+<td style="text-align: right;">1.8169731</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">4_26-In-016</td>
@@ -1075,101 +512,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td style="text-align: right;">6.160700</td>
 <td style="text-align: right;">5.559031</td>
 <td style="text-align: right;">5.161655</td>
-<td style="text-align: right;">310.05014</td>
-<td style="text-align: right;">0.1321367</td>
-<td style="text-align: right;">-17.16055</td>
-<td style="text-align: right;">-28.0693741</td>
-<td style="text-align: left;">6</td>
-<td style="text-align: left;">0</td>
-<td style="text-align: left;">7</td>
-<td style="text-align: right;">0.0731646</td>
-<td style="text-align: right;">0.0128017</td>
-<td style="text-align: right;">5.938320</td>
-<td style="text-align: right;">1315.000</td>
-<td style="text-align: right;">9940.597</td>
-<td style="text-align: right;">58</td>
-<td style="text-align: right;">98</td>
-<td style="text-align: right;">183</td>
-<td style="text-align: right;">1.569434</td>
-<td style="text-align: right;">1.541606</td>
-<td style="text-align: right;">0.0040683</td>
-<td style="text-align: right;">0.1931891</td>
-<td style="text-align: right;">-0.1732794</td>
-<td style="text-align: right;">-0.1602274</td>
-<td style="text-align: right;">-0.0035833</td>
-<td style="text-align: right;">-0.1282881</td>
-<td style="text-align: right;">0.0003549</td>
-<td style="text-align: right;">1.5897882</td>
-<td style="text-align: right;">0.8171870</td>
-<td style="text-align: right;">0.0318570</td>
-<td style="text-align: right;">-0.0123340</td>
-<td style="text-align: right;">0.0400775</td>
-<td style="text-align: right;">-0.0813964</td>
 <td style="text-align: right;">-0.0049875</td>
-<td style="text-align: right;">0.0320331</td>
-<td style="text-align: right;">-0.0049053</td>
-<td style="text-align: right;">0.0374298</td>
-<td style="text-align: right;">0.7912259</td>
-<td style="text-align: right;">0.3455668</td>
-<td style="text-align: right;">0.0100844</td>
-<td style="text-align: right;">-0.0059622</td>
-<td style="text-align: right;">0.0788309</td>
-<td style="text-align: right;">-0.0014042</td>
-<td style="text-align: right;">0.1603212</td>
-<td style="text-align: right;">-0.0052602</td>
-<td style="text-align: right;">0.0867119</td>
-<td style="text-align: right;">1.0207798</td>
-<td style="text-align: right;">0.6147888</td>
-<td style="text-align: right;">-0.0217726</td>
-<td style="text-align: right;">0.0063718</td>
-<td style="text-align: right;">0.3157751</td>
-<td style="text-align: right;">0.5292308</td>
-<td style="text-align: right;">-0.8766075</td>
-<td style="text-align: right;">0.5905659</td>
-<td style="text-align: right;">0.8129975</td>
-<td style="text-align: right;">0.1640853</td>
-<td style="text-align: right;">2.030315</td>
-<td style="text-align: right;">6.990967</td>
-<td style="text-align: right;">0.6325440</td>
-<td style="text-align: right;">0.8054439</td>
-<td style="text-align: right;">0.5820994</td>
-<td style="text-align: right;">0.7448481</td>
-<td style="text-align: right;">0.6081498</td>
-<td style="text-align: right;">1.563066</td>
-<td style="text-align: right;">1.552568</td>
-<td style="text-align: right;">0.3688371</td>
-<td style="text-align: right;">0.2607146</td>
-<td style="text-align: right;">0.1763995</td>
-<td style="text-align: right;">4.000725</td>
-<td style="text-align: right;">13.499996</td>
-<td style="text-align: right;">1.0418727</td>
-<td style="text-align: right;">0.8515157</td>
-<td style="text-align: right;">1.2106605</td>
-<td style="text-align: right;">0.8916541</td>
-<td style="text-align: right;">1.2163279</td>
-<td style="text-align: right;">0.4894866</td>
-<td style="text-align: right;">1.0906221</td>
-<td style="text-align: right;">0.2049688</td>
-<td style="text-align: right;">0.7156029</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">-0.0910767</td>
 <td style="text-align: right;">0.0034276</td>
-<td style="text-align: right;">9.574804</td>
-<td style="text-align: right;">0.3864355</td>
-<td style="text-align: right;">0.0001476</td>
-<td style="text-align: right;">0.0003817</td>
-<td style="text-align: right;">0.0000000</td>
-<td style="text-align: right;">0.000525</td>
-<td style="text-align: right;">0.0001151</td>
-<td style="text-align: right;">0.6997021</td>
+<td style="text-align: right;">0.5905659</td>
+<td style="text-align: right;">98</td>
+<td style="text-align: right;">13.499996</td>
+<td style="text-align: right;">-0.0052602</td>
+<td style="text-align: right;">-0.8766075</td>
+<td style="text-align: right;">0.0867119</td>
 <td style="text-align: right;">0.4278295</td>
-<td style="text-align: right;">2.041467</td>
-<td style="text-align: right;">55.78354</td>
-<td style="text-align: left;">6</td>
-<td style="text-align: right;">1626388</td>
-<td style="text-align: right;">2329634</td>
-<td style="text-align: right;">243676.4</td>
-<td style="text-align: right;">2830716</td>
+<td style="text-align: right;">1.5897882</td>
+<td style="text-align: right;">0.8515157</td>
+<td style="text-align: right;">0.8054439</td>
+<td style="text-align: right;">0.0128017</td>
+<td style="text-align: right;">1.2163279</td>
+<td style="text-align: right;">0.8171870</td>
 </tr>
 </tbody>
 </table>
@@ -1180,6 +537,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 data-number="3.2" class="anchored" data-anchor-id="preparations"><span class="header-section-number">3.2</span> Preparations</h2>
 <p>Before we can fit the model, we have to specify a few settings. First, we have to specify our response and predictor variables. Then, we have to split our dataset into a calibration and a validation set. Random Forest models cannot deal with <code>NA</code> values, so we have to remove these from our calibration set.</p>
 <div class="cell">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Specify response: The pH in the top 10cm</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>response <span class="ot">&lt;-</span> <span class="st">"ph.0.10"</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1196,12 +555,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"The response is:"</span>, response,</span>
 <span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"</span><span class="sc">\n</span><span class="st">The predictors are:"</span>, <span class="fu">paste0</span>(predictors[<span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>], <span class="at">sep =</span> <span class="st">", "</span>), <span class="st">"..."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>The response is: ph.0.10 
-The predictors are: timeset,  x,  y,  be_gwn25_hdist,  be_gwn25_vdist,  cindx10_25,  cindx50_25,  geo500h1id,  ...</code></pre>
+The predictors are: timeset,  x,  y,  Se_curvplan2m_fmean_50c,  Se_tpi_2m_5c,  Se_e_aspect2m_5c,  mt_tt_y,  Se_SCA2m,  ...</code></pre>
 </div>
 </div>
 <div class="cell">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Split dataset into calibration and validation</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>data_cal <span class="ot">&lt;-</span> data_clean <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(dataset <span class="sc">==</span> <span class="st">"calibration"</span>)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>data_val <span class="ot">&lt;-</span> data_clean <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(dataset <span class="sc">==</span> <span class="st">"validation"</span>)</span>
@@ -1218,6 +580,7 @@ The predictors are: timeset,  x,  y,  be_gwn25_hdist,  be_gwn25_vdist,  cindx10_
 <span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"For model training, we have a calibration / validation split of: "</span>,</span>
 <span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    perc_cal, <span class="st">"/"</span>, perc_val, <span class="st">"%"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>For model training, we have a calibration / validation split of:  75 / 25 %</code></pre>
 </div>
@@ -1231,6 +594,8 @@ The predictors are: timeset,  x,  y,  be_gwn25_hdist,  be_gwn25_vdist,  cindx10_
 <h3 data-number="3.3.1" class="anchored" data-anchor-id="basic-model"><span class="header-section-number">3.3.1</span> Basic model</h3>
 <p>Let’s start with the basic model, where we use the {ranger} package with the pre-defined hyperparameters.</p>
 <div class="cell">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ranger() crashes when using tibbles, so we are using the</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># base R notation to enter the data</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1242,6 +607,7 @@ The predictors are: timeset,  x,  y,  be_gwn25_hdist,  be_gwn25_vdist,  cindx10_
 <span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Print a summary of fitted model</span></span>
 <span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>rf_basic <span class="sc">|&gt;</span> <span class="fu">print</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Ranger result
 
@@ -1251,13 +617,13 @@ Call:
 Type:                             Regression 
 Number of trees:                  500 
 Sample size:                      605 
-Number of independent variables:  98 
-Mtry:                             9 
+Number of independent variables:  18 
+Mtry:                             4 
 Target node size:                 5 
 Variable importance mode:         none 
 Splitrule:                        variance 
-OOB prediction error (MSE):       0.2804814 
-R squared (OOB):                  0.5252541 </code></pre>
+OOB prediction error (MSE):       0.2716784 
+R squared (OOB):                  0.5401541 </code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled">
@@ -1280,6 +646,8 @@ Predicting categories with Random Forests
 <p>Sometimes we know that a subset of our dataset is more trustworthy than the rest. For example, when you are using a gap-filling technique to interpolate data, that gap-filled data is less trustworthy than the actually measured data. Informing the model algorithm that it should weigh certain data entries more than other can change the importance of variables and the final model performance.</p>
 <p>In our dataset, we have information on whether the pH values were measured in the field - which is less precise - or in the lab. Also, we have to different lab methods. All of this information is held in the suffix of the <code>timeset</code> variable, so let’s assign weights according on the quality of the pH data as follows: <code>1</code> for CaCl<span class="math inline">\(_2\)</span> lab measurement (no suffix), <code>0.9</code> for pedotransfer from another lab method (suffix <code>_ptf</code>), and <code>0.7</code> for field data (suffix <code>_field</code>). For this, we create a weight-matching vector:</p>
 <div class="cell">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>weights <span class="ot">&lt;-</span> </span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  data_cal <span class="sc">|&gt;</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
@@ -1297,6 +665,7 @@ Predicting categories with Random Forests
 <span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(timeset, w) <span class="sc">|&gt;</span> </span>
 <span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">8</span>) <span class="sc">|&gt;</span>   <span class="co"># Pick 8 random rows</span></span>
 <span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
 <thead>
@@ -1344,6 +713,8 @@ Predicting categories with Random Forests
 </div>
 <p>It is always a good idea to do quality checks when wrangling! Here we see that our weight attribution code worked as expected, so we can move on to model fitting.</p>
 <div class="cell">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>rf_weighted <span class="ot">&lt;-</span> ranger<span class="sc">::</span><span class="fu">ranger</span>( </span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> data_cal[, response],      <span class="co"># Response variable</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> data_cal[, predictors],    <span class="co"># Predictor variables</span></span>
@@ -1353,6 +724,7 @@ Predicting categories with Random Forests
 <span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Print a summary of fitted model</span></span>
 <span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>rf_weighted <span class="sc">|&gt;</span> <span class="fu">print</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Ranger result
 
@@ -1362,13 +734,13 @@ Call:
 Type:                             Regression 
 Number of trees:                  500 
 Sample size:                      605 
-Number of independent variables:  98 
-Mtry:                             9 
+Number of independent variables:  18 
+Mtry:                             4 
 Target node size:                 5 
 Variable importance mode:         none 
 Splitrule:                        variance 
-OOB prediction error (MSE):       0.2874622 
-R squared (OOB):                  0.5134383 </code></pre>
+OOB prediction error (MSE):       0.2717956 
+R squared (OOB):                  0.5399558 </code></pre>
 </div>
 </div>
 <p>Not much has changed compared to our previous model. We see that the <span class="math inline">\(R^2\)</span> and MSE got negligibly worse but as a trade-off we gained more trust in our model.</p>
@@ -1381,6 +753,8 @@ R squared (OOB):                  0.5134383 </code></pre>
 <p>Our model has 98 variables but we have no idea if each of them should really be in the model and if we are not just fitting noise in the dataset. To investigate this issue, the <code>ranger()</code> function takes an argument called <code>importance</code>. We can set this argument either to follow the <code>permutation</code> method, whereby the algorithm randomly permutes values of each variable and measures the resulting decrease in model accuracy. A larger decrease indicates a more important variable. If the code runs slow, you can also use the faster <code>impurity</code> method (see more information <a href="https://bmcbioinformatics.biomedcentral.com/counter/pdf/10.1186/s12859-016-0995-8.pdf">here</a>).</p>
 <p>Assessing the variable importance gives us a feeling for what variables we should keep or drop from the dataset. The ranger-model stores this information if we enter a <code>importance</code> method. The code below accesses the model’s variable importance and sorts the variables with decreasing importance.</p>
 <div class="cell">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's run the weighted model again but with recording the variable importance</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>rf_weighted <span class="ot">&lt;-</span> ranger<span class="sc">::</span><span class="fu">ranger</span>( </span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> data_cal[, response],     <span class="co"># Response variable</span></span>
@@ -1410,6 +784,7 @@ R squared (OOB):                  0.5134383 </code></pre>
 <span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Display plot</span></span>
 <span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <p><img src="03-model_training_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="1152"></p>
 </div>
@@ -1420,6 +795,8 @@ R squared (OOB):                  0.5134383 </code></pre>
 <h3 data-number="3.4.2" class="anchored" data-anchor-id="boruta-algorithm"><span class="header-section-number">3.4.2</span> Boruta Algorithm</h3>
 <p>One common option to generalize variable selection is the “Boruta-Algorithm”, which itself is based Random Forests. In essence, the algorithm creates “shadows” of your original data, where each of the predictor value is randomly permuted, which destroys the predictive power of the variable. Then, the algorithm iterates over these “shadows” and assess for each variable whether its permutation has a substantial effect on the model performance or not. E.g., if a model trained on a variable’s shadow performs constantly worse than when trained on the original values, that variable is assessed as important. The algorithm categorizes all variables into “to reject”, “to consider”, and “to keep”. Luckily, we do not have to write this algorithm ourselves but can use the {Boruta} package:</p>
 <div class="cell">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>bor <span class="ot">&lt;-</span> </span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  Boruta<span class="sc">::</span><span class="fu">Boruta</span>(</span>
@@ -1435,11 +812,14 @@ R squared (OOB):                  0.5134383 </code></pre>
 <span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"Importance"</span>,</span>
 <span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>     <span class="at">las =</span> <span class="dv">2</span>,</span>
 <span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>     )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <p><img src="03-model_training_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="1152"></p>
 </div>
 </div>
 <div class="cell">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check whether the most important variables from Boruta-Algorithm are similar as the</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co"># important variables from the weighted Random Forest model</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>bor_top10 <span class="ot">&lt;-</span> </span>
@@ -1456,6 +836,7 @@ R squared (OOB):                  0.5134383 </code></pre>
 <span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(vi_top10, bor_top10) <span class="sc">|&gt;</span> </span>
 <span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"RF Top 10"</span>, <span class="st">"Boruta Top 10"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
 <thead>
@@ -1471,39 +852,39 @@ R squared (OOB):                  0.5134383 </code></pre>
 </tr>
 <tr class="even">
 <td style="text-align: left;">x</td>
-<td style="text-align: left;">y30</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">y</td>
-<td style="text-align: left;">y</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">be_gwn25_hdist</td>
-<td style="text-align: left;">mt_rr_y</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">be_gwn25_vdist</td>
-<td style="text-align: left;">y60</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">cindx10_25</td>
 <td style="text-align: left;">x</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">cindx50_25</td>
-<td style="text-align: left;">x30</td>
+<td style="text-align: left;">y</td>
+<td style="text-align: left;">y</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">geo500h1id</td>
+<td style="text-align: left;">Se_curvplan2m_fmean_50c</td>
 <td style="text-align: left;">mt_tt_y</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">geo500h3id</td>
-<td style="text-align: left;">x60</td>
+<td style="text-align: left;">Se_tpi_2m_5c</td>
+<td style="text-align: left;">tsc25_18</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">lgm</td>
-<td style="text-align: left;">Se_TWI2m_s15</td>
+<td style="text-align: left;">Se_e_aspect2m_5c</td>
+<td style="text-align: left;">Se_curv2m_std_5c</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">mt_tt_y</td>
+<td style="text-align: left;">Se_curv2m_std_50c</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Se_SCA2m</td>
+<td style="text-align: left;">Se_slope2m_fmean_5c</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Se_curvprof2m_s60</td>
+<td style="text-align: left;">Se_n_aspect2m_5c</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Se_e_aspect25m</td>
+<td style="text-align: left;">mrrtf25</td>
 </tr>
 </tbody>
 </table>
@@ -1511,14 +892,19 @@ R squared (OOB):                  0.5134383 </code></pre>
 </div>
 <p>We see that apart from the <code>timeset</code> variable, the variable importance calculated by the Boruta-Algorithm differs quite a bit, compared to the simple variable importance assessment built into the <code>ranger()</code> function. To move forward, we could keep only variables that were classified as “to keep” or “to consider” by the Boruta-Algorithm:</p>
 <div class="cell">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>predictors_bor <span class="ot">&lt;-</span> </span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  bor<span class="sc">$</span>finalDecision <span class="sc">|&gt;</span> </span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>(<span class="at">nm =</span> <span class="st">"assessment"</span>) <span class="sc">|&gt;</span> </span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">rownames_to_column</span>(<span class="at">var =</span> <span class="st">"variable"</span>) <span class="sc">|&gt;</span> </span>
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(assessment <span class="sc">!=</span> <span class="st">"Rejected"</span>) <span class="sc">|&gt;</span> </span>
 <span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(variable)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <div class="cell">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Save relevant data for model testing in the next chapter.</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Pick rf to save:</span></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>rf <span class="ot">&lt;-</span> rf_basic</span>
@@ -1534,6 +920,7 @@ R squared (OOB):                  0.5134383 </code></pre>
 <span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(data_val[, <span class="fu">c</span>(response, predictors)],</span>
 <span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>        here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data/val_for_ph0-10.rds"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 
 
