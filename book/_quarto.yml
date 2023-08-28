@@ -17,7 +17,6 @@ book:
     - 03-model_training.qmd
     - 04-model_test.qmd
     - 99-exercise.qmd
-    - 99-scratchpad.qmd
     - references.qmd
   favicon: "figures/favicon.ico"
   twitter-card: true
@@ -42,7 +41,7 @@ format:
     theme: 
       light: [cosmo, theme-light.scss]
       dark: [cosmo, theme-dark.scss]
-    code-fold: false
+    code-fold: show
     code-copy: true
     code-summary: "Show/Hide Code"
     
