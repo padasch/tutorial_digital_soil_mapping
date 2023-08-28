@@ -1,3 +1,7 @@
+---
+bibliography: references.bib
+---
+
 # Introduction {#sec-intro}
 
 ::: callout-important
@@ -6,7 +10,7 @@
 This tutorial builds on the course [Applied Geodata Science I](https://geco-bern.github.io/agds/) and requires basic knowledge in using the tidyverse and Random Forests for data analysis.
 :::
 
-## Spatial Data Science: An Introduction
+## A primer on spatial data science
 
 Spatial data science combines geography, statistics, computer science, and data science to analyze and interpret spatially referenced data. It focuses on uncovering patterns and relationships in geospatial data to gain insights into spatial phenomena. By integrating locational information, spatial data science provides a deeper understanding of complex spatial patterns and processes. There are three key aspects of spatial data science that allow such a deeper understanding:
 
@@ -16,27 +20,31 @@ Spatial data science combines geography, statistics, computer science, and data 
 
 -   Geospatial Machine Learning: Applying machine learning algorithms to spatial data enables the creation of predictive models for spatially explicit predictions.
 
-Combined, working on each of these aspects, allows for a variety of real-world applications, for example, in urban planning, ecology, transportation, public health, or social sciences. The knowledge create through maps, analysis, and prediction reveals fundamental processes to understand spatial relationships, and to eventually improve decision-making.
+Combined, working on each of these aspects, allows for a variety of real-world applications. For example, in urban planning, ecology, transportation, public health, and social sciences, we can apply similar methods to solve a problem. The knowledge inferred from maps, statistical analysis, and model prediction reveals fundamental processes to understand spatial relationships, and to eventually improve decision-making.
 
-## Spatial Upscaling with Machine Learning Methods
+<!--# ## Spatial Upscaling with Machine Learning Methods -->
 
-Spatial upscaling describes the process of extrapolating information from a smaller to a larger area. Spatial upscaling is used to solve the common problem where we have a variable of interest measured at a few sampling locations, whilst having large maps of potential covariates that could predict that variable. As discussed further below, this a variable of interest could be a soil characteristic that has to be sampled by digging up soil and analyzing it in the lab. Potential covariates are often remote-sensing data or pre-existing maps of e.g., geological features. Recent technological progress substantially facilitated the acquisition of remote-sensing data and in combination with increased computational capacity, we can use a variety of machine learning tools to investigate our variable of interest at larger scales.
+<!--# Spatial upscaling describes the process of extrapolating information from a smaller to a larger area. Spatial upscaling is used to solve the common problem where we have a variable of interest measured at a few sampling locations, whilst having large maps of potential covariates that could predict that variable. As discussed further below, this a variable of interest could be a soil characteristic that has to be sampled by digging up soil and analyzing it in the lab. Potential covariates are often remote-sensing data or pre-existing maps of e.g., geological features. Recent technological progress substantially facilitated the acquisition of remote-sensing data and in combination with increased computational capacity, we can use a variety of machine learning tools to investigate our variable of interest at larger scales. -->
 
-Although the field of spatial data science or geostatistics has gained great interest in recent years, our fundamental understanding rests on hundreds of years on decades of research. For example, quoting Waldo Tobler, a famous American-Swiss geographer, the first law of geography is that "everything is related to everything else, but near things are more related than distant things" [@tobler1970]. This is the essential idea of spatial autocorrelation. And because autocorrelation can hamper the validity of statistical analyses and modelling, we must account for it. However, this is not always straight-forward to do. Also, because of the rising use of global maps in scientific publications and in the media outlets that spread them, the trust-worthiness of global maps and communicating their uncertainties has become active scientific debate [@meyer2021; @meyer2022].
+<!--# Although the field of spatial data science or geostatistics has gained great interest in recent years, our fundamental understanding rests on hundreds of years on decades of research. For example, quoting Waldo Tobler, a famous American-Swiss geographer, the first law of geography is that "everything is related to everything else, but near things are more related than distant things" [@tobler1970]. This is the essential idea of spatial autocorrelation. And because autocorrelation can hamper the validity of statistical analyses and modelling, we must account for it. However, this is not always straight-forward to do. Also, because of the rising use of global maps in scientific publications and in the media outlets that spread them, the trust-worthiness of global maps and communicating their uncertainties has become active scientific debate [@meyer2021; @meyer2022]. -->
+
+## A primer on soil science
+
+Generally, any soil is the result of five key pedogenetic factors [@jenny1994]. Abbreviated, they can be simply memorized with the mnemonic "CLOPRT": *soil = f(**cl**imate, **o**rganisms, topog**r**aphy, **t**ime, ... )*. The "*...*" stands for additional factors, which have been recognized to be important factors but that do not fall under the original CLORPT scheme; for example, a soil's parent material. *soil* itself can stand for a variety of soil properties like its texture, density, pH, water drainage, cation exchange capacity, organic matter content, etc. Note that especially information on climate, topography, and parent material (think of geological maps) are quite abundant nowadays, which makes them great predictor variables in machine learning methods.
+
+Also note that the variety in pedogenetic factors and soil properties comes with an equal variety of data types with variables being numerical (capped like % of clay content, or un-capped like organic matter content), binary (e.g., presence of water at 0-10 cm soil depth), categorical (more than two without an order), ordinal (more than two with an order), or interval (cutting numerical values into intervals). Moreover, this data can come in different data formats. Due to this abundance of data formats and their peculiarities, it is of great importance to properly understand your data. Only when you know your data well, you can pick a suitable statistical model to address your research question.
 
 ## Case-Study: Digital Soil Mapping with Random Forests
 
-In this tutorial, we are look at a specific case of spatial upscaling: digital soil mapping using Random Forests. This means, we want to predict soil properties that are difficult to obtain from more abundant data. Good data science always require domain knowledge. Thus, it is important that you have basic knowledge on soil science. Generally, any soil is the result of five key pedogenetic factors [@jenny1994]. Abbreviated, they can be simply memorized with the mnemonic "CLOPRT": *soil = f(**cl**imate, **o**rganisms, topog**r**aphy, parent material, **t**ime, ... )*. The "*...*" stands for additional factors that may not fall under the CLORPT scheme. *soil* itself can stand for a variety of soil properties like its texture, density, pH, water drainage, organic matter content, etc. Note that especially information on climate, topography, and parent material (think of geological maps) are highly abundant nowadays, which makes them great predictor variables in machine learning methods.
+In this tutorial, we are look at a specific case of spatial upscaling: digital soil mapping using Random Forests. This means that we want to predict soil properties that are difficult and laborious to obtain with a model that predicts such properties smoothly across space by exploiting available spatial data such as climate data. Here's a short check-list, what a good geo-spatial model should do. It should...
 
-Also note that the variety in pedogenetic factors and soil properties comes with an equal variety of data types with variables that can be numerical (capped like % of clay content, or un-capped like organic matter content), binary (e.g., presence of water at 0-10cm soil depth), categorical (more than two without an order), ordinal (more than two with an order), or interval (cutting numerical values into intervals). Moreover, this data can come in different formats such as tables or rasters. Due to this abundance of data types and their peculiarities, it is of great importance to properly understand your data. Only when you know your data well, you can pick a suitable statistical model to address your research question. To create reliable prediction using this data variety, our statistical model should...
-
--   ... capture non-linear relations, because pedogenesis is a non-linear process.
+-   ... capture non-linear relations because pedogenesis is a non-linear process.
 
 -   ... be able to use and predict continuous and categorical variables.
 
--   ... handle multiple correlated variables without the risk of overfitting.
+-   ... handle multiple correlated variables without the risk of over-fitting.
 
--   ... account for spatial auto-correlation (this is a bit tricky, so more on this in @sec-dataprep).
+<!--# -   ... account for spatial auto-correlation (this is a bit tricky, so more on this in @sec-dataprep). -->
 
 -   ... build models with good predictive power.
 
@@ -44,6 +52,6 @@ Also note that the variety in pedogenetic factors and soil properties comes with
 
 -   ... quantify prediction accuracy and uncertainty.
 
-In this tutorial, we use a dataset on basic soil properties from sampling locations across the canton of Bern and pair it up with climatic variables (temperature, precipitation, radiation), terrain attributes (derivatives from digital elevation models like slope, northness, eastness, topographic water index, etc.), geological maps, and soil maps [@nussbaum2017]. The following chapters will cover the preparation of this data (@sec-dataprep), fitting a Random Forest model (@sec-modelfit), and evaluating this model (@sec-modelanalysis). The final @sec-exercise holds the exercise description of this tutorial.
+In this tutorial, we use a dataset on basic soil properties from sampling locations across the canton of Bern and pair it up with climatic variables (temperature, precipitation, radiation), terrain attributes (derivatives from digital elevation models like slope, northness, eastness, topographic water index, etc.), geological maps, and soil maps [@nussbaum2018evaluation]. The following chapters will cover the preparation of this data (@sec-dataprep), fitting a Random Forest model (@sec-modelfit), and evaluating this model (@sec-modelanalysis). The final @sec-exercise holds the exercise description of this tutorial.
 
-If you want to learn more about the underlying theory and similar techniques, we highly recommend the presentations by Madlene Nussbaum given at the summer school of the OpenGeoHub Foundation (see [part 1](https://www.youtube.com/watch?v=NgZ17CbL_xs) and [part 2](https://www.youtube.com/watch?v=idkODq0BpAA)).
+If you want to learn more about the underlying theory and similar techniques, we highly recommend the presentations by Madlene Nussbaum given at the summer school of the OpenGeoHub Foundation (see [part 1](https://www.youtube.com/watch?v=NgZ17CbL_xs) and [part 2](https://www.youtube.com/watch?v=idkODq0BpAA)) and here papers ([@nussbaum2017, @nussbaum2018evaluation]).

@@ -112,18 +112,21 @@ Note that the second plot has different coordinates than the upper one. That is 
 
 This looks already interesting but we can put our data into a bit more context. For example, a larger map background would be useful to get a better orientation of our location. Also, it would be nice to see where our sampling locations are and to differentiate these locations by whether they are part of the calibration or validation dataset. Bringing this all together requires some more understanding of plotting maps in `R`. So, don't worry if you do not understand everything in the code chunk below and enjoy the visualisations:
 
-<!-- TODO: Consider moving these code chunks into sepeare files under ./R -->
+```{r}
+#| code-fold: true
 
-```{r collapse=TRUE}
 # To get our map working correctly, we have to ensure that all the input data
 # is in the same coordinate system. Since our Berne data is in the Swiss 
 # coordinate system, we have to transform the sampling locations to the 
 # World Geodetic System first.
+# To look up EPSG Codes: https://epsg.io/
+# World Geodetic System 1984:  4326
+# Swiss CH1903+ / LV95: 2056
 
 # For the raster:
 r <- terra::project(raster_example, "+init=EPSG:4326")
 
-# For the sampling locations:
+# Let's make a function for transforming the sampling locations:
 change_coords <- function(data, from_CRS, to_CRS) {
   
   # Check if data input is correct
@@ -168,27 +171,25 @@ coord_val <-
 
 ```
 
-```{r collapse=TRUE}
-# Loading packages to improve code readbility to avoid :: notation
+```{r}
+#| code-fold: true
 # Note: This code may only work when installing the development branch of {leaflet}:
 # remotes::install_github('rstudio/leaflet')
-library(leaflet)
-library(terra)
 
 # Let's get a nice color palette now for easy reference
-pal <- colorNumeric(
+pal <- leaflet::colorNumeric(
   "magma",
   values(r),
   na.color = "transparent"
   )
 
 # Next, we build a leaflet map
-leaflet() |> 
+leaflet::leaflet() |> 
   # As base maps, use two provided by ESRI
-  addProviderTiles(providers$Esri.WorldImagery, group = "World Imagery") |>
-  addProviderTiles(providers$Esri.WorldTopoMap, group = "World Topo") |>
+  leaflet::addProviderTiles(providers$Esri.WorldImagery, group = "World Imagery") |>
+  leaflet::addProviderTiles(providers$Esri.WorldTopoMap, group = "World Topo") |>
   # Add our raster file
-  addRasterImage(
+  leaflet::addRasterImage(
     r,
     colors = pal,
     opacity = 0.6,
@@ -210,21 +211,17 @@ leaflet() |>
     color = "red"
   ) |>
   # Add some layout and legend
-  addLayersControl(
+  leaflet::addLayersControl(
     baseGroups = c("World Imagery","World Topo"),
     position = "topleft",
-    options = layersControlOptions(collapsed = FALSE),
+    options = leaflet::layersControlOptions(collapsed = FALSE),
     overlayGroups = c("raster", "training", "validation")
     ) |>
-  addLegend(
+  leaflet::addLegend(
     pal = pal,
-    values = values(r),
+    values = terra::values(r),
     title = "Slope (%)")
 ```
-
-<!--# TODO: For some reason, I could not reproduce Koen's example with the addRasterImage() command... Always got an error that my raster file is not recognised as such. `inherits(x, "RasterLayer") is not TRUE` -->
-
-<!--# TODO: Alternatively, we could also change the projection of the leaflet map instead of changing the CRS of raster and sampling sites. However, that did not work for me... -->
 
 ::: callout-note
 ## Note
@@ -261,26 +258,35 @@ head(merged_data) |> knitr::kable()
 
 Great that worked without problems!
 
-# Spatial correlation
+<!--# # Spatial correlation -->
 
-As touched in @sec-intro, we should find a way to take spatial auto-correlation into account. Currently, our dataset holds spatial information in the x- and y-coordinates. The risk of including these coordinates is that a model learns the spatial features of our study area but not the generalisable underlying processes that drive soil development. For example, if our study area has a tendency to have a given soil type towards the north, a model may just learn this and predict a higher probability of that soil type with increasing y-coordinates. This tendency, however, may not be always true (for more, see @sec-exercise).
+<!--# As touched in @sec-intro, we should find a way to take spatial auto-correlation into account. Currently, our dataset holds spatial information in the x- and y-coordinates. The risk of including these coordinates is that a model learns the spatial features of our study area but not the generalisable underlying processes that drive soil development. For example, if our study area has a tendency to have a given soil type towards the north, a model may just learn this and predict a higher probability of that soil type with increasing y-coordinates. This tendency, however, may not be always true (for more, see @sec-exercise). -->
 
-Another consequence of just using x- and y-coordinates is that, when we use that model for prediction, the final map will most-likely look like a chess-board. Although it does not alleviate the issue of spatial autocorrelation, a quick fix to avoid a chess-board pattern is to add rotated coordinates to your dataset. That means that for every pixel, you rotate its x- and y-coordinates by a certain angle (see Figure @fig-rotcoord).[^02-data_preparation-1] This allows a Random Forest model to not just split across the orthogonal x- and y-coordinates but also along the rotated axes. Here, we are going to shift the coordinate system by 30° and 60° as follows:
+<!--# Another consequence of just using x- and y-coordinates is that, when we use that model for prediction, the final map will most-likely look like a chess-board. Although it does not alleviate the issue of spatial autocorrelation, a quick fix to avoid a chess-board pattern is to add rotated coordinates to your dataset. That means that for every pixel, you rotate its x- and y-coordinates by a certain angle (see Figure @fig-rotcoord).[^02-data_preparation-1] This allows a Random Forest model to not just split across the orthogonal x- and y-coordinates but also along the rotated axes. Here, we are going to shift the coordinate system by 30° and 60° as follows: -->
 
-[^02-data_preparation-1]: For a detailed explanation, see Wikipedia article [on axes rotation](https://en.wikipedia.org/wiki/Rotation_of_axes_in_two_dimensions).
+<!--# [^02-data_preparation-1]: For a detailed explanation, see Wikipedia article [on axes rotation](https://en.wikipedia.org/wiki/Rotation_of_axes_in_two_dimensions). -->
 
-```{r}
-final_data <- 
-  merged_data |> 
-    dplyr::mutate(
-      x30 = x*cos(30/180*pi) - y*sin(30/180*pi), # 30/180*pi = 30°
-      y30 = x*sin(30/180*pi) + y*cos(30/180*pi),
-      x60 = x*cos(60/180*pi) - y*sin(60/180*pi), # 30/180*pi = 60°
-      y60 = x*sin(60/180*pi) + y*cos(60/180*pi)
-    )
-```
+<!--# ```{r} -->
 
-![Visualisation of rotating x- and y-coordinates by 30° and 60°. Figure adapted from work by M. Nussbaum.](images/rotated_coords.png){#fig-rotcoord fig-align="center"}
+<!--# final_data <-  -->
+
+<!--#   merged_data |>  -->
+
+<!--#     dplyr::mutate( -->
+
+<!--#       x30 = x*cos(30/180*pi) - y*sin(30/180*pi), # 30/180*pi = 30° -->
+
+<!--#       y30 = x*sin(30/180*pi) + y*cos(30/180*pi), -->
+
+<!--#       x60 = x*cos(60/180*pi) - y*sin(60/180*pi), # 30/180*pi = 60° -->
+
+<!--#       y60 = x*sin(60/180*pi) + y*cos(60/180*pi) -->
+
+<!--#     ) -->
+
+<!--# ``` -->
+
+<!--# ![Visualisation of rotating x- and y-coordinates by 30° and 60°. Figure adapted from work by M. Nussbaum.](images/rotated_coords.png){#fig-rotcoord fig-align="center"} -->
 
 Note that not all our covariates may be continuous variables and therefore have to be encoded as factors. As an easy check, we can take the original corvariates data and check for the number of unique values in each raster. If the variable is continuous, we expect that there are a lot of different values - at maximum 1052 different values because we have that many entries. So, let's have a look and assume that variables with 10 or less different values are categorical variables.
 

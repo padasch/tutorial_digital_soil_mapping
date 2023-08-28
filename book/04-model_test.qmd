@@ -66,17 +66,23 @@ cov_df <-
                  )
 
 cov_df <- cbind(sampling_xy, cov_df)
+```
 
-# Add rotated coordinates as when preparing training data:
-cov_df <- 
-  cov_df |> 
-    dplyr::mutate(
-      x30 = x*cos(30/180*pi) - y*sin(30/180*pi),
-      y30 = x*sin(30/180*pi) + y*cos(30/180*pi),
-      x60 = x*cos(60/180*pi) - y*sin(60/180*pi),
-      y60 = x*sin(60/180*pi) + y*cos(60/180*pi)
-    )
 
+<!--# ```{r} -->
+<!--# # Add rotated coordinates as when preparing training data: -->
+<!--# cov_df <-  -->
+<!--#   cov_df |>  -->
+<!--#     dplyr::mutate( -->
+<!--#       x30 = x*cos(30/180*pi) - y*sin(30/180*pi), -->
+<!--#       y30 = x*sin(30/180*pi) + y*cos(30/180*pi), -->
+<!--#       x60 = x*cos(60/180*pi) - y*sin(60/180*pi), -->
+<!--#       y60 = x*sin(60/180*pi) + y*cos(60/180*pi) -->
+<!--#     ) -->
+<!--# ``` -->
+
+
+```{r}
 # Attaching reference timeset levels from prepared dataset
 bern_cov <- readRDS(here::here("data/bern_sampling_locations_with_covariates.rds"))
 
@@ -460,17 +466,23 @@ cov_df <-
                  )
 
 cov_df <- cbind(sampling_xy, cov_df)
+```
 
-# Add rotated coordinates as when preparing training data:
-cov_df <- 
-  cov_df |> 
-    dplyr::mutate(
-      x30 = x*cos(30/180*pi) - y*sin(30/180*pi),
-      y30 = x*sin(30/180*pi) + y*cos(30/180*pi),
-      x60 = x*cos(60/180*pi) - y*sin(60/180*pi),
-      y60 = x*sin(60/180*pi) + y*cos(60/180*pi)
-    )
 
+<!--# ```{r} -->
+<!--# # Add rotated coordinates as when preparing training data: -->
+<!--# cov_df <-  -->
+<!--#   cov_df |>  -->
+<!--#     dplyr::mutate( -->
+<!--#       x30 = x*cos(30/180*pi) - y*sin(30/180*pi), -->
+<!--#       y30 = x*sin(30/180*pi) + y*cos(30/180*pi), -->
+<!--#       x60 = x*cos(60/180*pi) - y*sin(60/180*pi), -->
+<!--#       y60 = x*sin(60/180*pi) + y*cos(60/180*pi) -->
+<!--#     ) -->
+<!--# ``` -->
+
+
+```{r}
 # Attaching reference timeset levels from prepared dataset
 bern_cov <- readRDS(here::here("data/bern_sampling_locations_with_covariates.rds"))
 
