@@ -134,7 +134,7 @@ Our model has 98 variables but we have no idea if each of them should really be 
 
 Assessing the variable importance gives us a feeling for what variables we should keep or drop from the dataset. The ranger-model stores this information if we enter a `importance` method. The code below accesses the model's variable importance and sorts the variables with decreasing importance.
 
-```{r fig.height=4, fig.width=12}
+```{r fig.height=6, fig.width=12}
 # Let's run the weighted model again but with recording the variable importance
 rf_weighted <- ranger::ranger( 
   y = data_cal[, response],     # Response variable
