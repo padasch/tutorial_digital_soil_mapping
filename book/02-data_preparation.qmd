@@ -34,7 +34,7 @@ The dataset on soil samples from Bern holds `r dim(bern_data)[2]` variables for 
 
 ### Covariate data
 
-Now, let's load all the covariates that we want to produce our soil maps.
+Now, let's load all the covariates that we want to produce our soil maps with.
 
 ```{r}
 # Get a list with the path to all raster files
@@ -44,9 +44,13 @@ list_raster <-
     full.names = T
   )
 
+# Take a random subset
+set.seed(123)
+list_raster_subset <- list_raster |> sample(15)
+
 # Display data (lapply to clean names)
 lapply(
-  list_raster, 
+  list_raster_subset, 
   function(x) sub(".*/(.*)", "\\1", x)
   ) |> 
   unlist() |> 
@@ -54,14 +58,13 @@ lapply(
   print()
 ```
 
-The output above shows the first five raster files with rather cryptic names. For this tutorial, we do not need to know all of the 91 rasters files that we are loading here but in a scientific context, you should know your data better of course. Let's look at one of these raster files to get a better feeling for our data:
+The output above shows the first five raster files with rather cryptic names. For this tutorial, we do not need to understand all of the 91 rasters files that we are loading here but in a scientific context, you should know your data better of course. Let's look at one of these raster files to get a better feeling for our data. Specifically, let's look at the slope profile at 2m resolution:
 
 ```{r}
 # Load a raster file as example: Picking the slope profile at 2m resolution
 raster_example <- terra::rast(list_raster[74])
 raster_example
 ```
-
 As shown in the output, a raster object has the following properties (among others, see `?terra::rast`):
 
 -   class: The class of the file, here a SpatRaster.
@@ -81,6 +84,10 @@ As shown in the output, a raster object has the following properties (among othe
 -   min value: The lowest value of all cells.
 
 -   max value: The highest value of all cells.
+
+::: callout-tip
+The code chunks filtered for a random sub-sample of 15 variables. As described in @sec-exercise, your task will be to investigate all covariates and find the ones that can best be used for your modelling task.
+:::
 
 # Mapping the study area
 
@@ -107,16 +114,18 @@ ggplot2::ggplot() +
 ```
 
 ::: callout-note
+## Tip
+
 Note that the second plot has different coordinates than the upper one. That is because the data was automatically projected to the World Geodetic System (WGS84, ESPG: 4326).
 :::
 
-This looks already interesting but we can put our data into a bit more context. For example, a larger map background would be useful to get a better orientation of our location. Also, it would be nice to see where our sampling locations are and to differentiate these locations by whether they are part of the calibration or validation dataset. Bringing this all together requires some more understanding of plotting maps in `R`. So, don't worry if you do not understand everything in the code chunk below and enjoy the visualisations:
+This looks already interesting but we can put our data into a bit more context. For example, a larger map background would be useful to get a better orientation of our location. Also, it would be nice to see where our sampling locations are and to differentiate these locations by whether they are part of the calibration or validation dataset. Bringing this all together requires some more understanding of plotting maps in `R`. So, don't worry if you do not understand everything in the code chunk below and enjoy the visualizations:
 
 ```{r}
 #| code-fold: true
 
 # To get our map working correctly, we have to ensure that all the input data
-# is in the same coordinate system. Since our Berne data is in the Swiss 
+# is in the same coordinate system. Since our Bern data is in the Swiss 
 # coordinate system, we have to transform the sampling locations to the 
 # World Geodetic System first.
 # To look up EPSG Codes: https://epsg.io/
@@ -173,21 +182,24 @@ coord_val <-
 
 ```{r}
 #| code-fold: true
-# Note: This code may only work when installing the development branch of {leaflet}:
+# Notes: 
+# - This code may only work when installing the development branch of {leaflet}:
 # remotes::install_github('rstudio/leaflet')
+# - You might have to do library(terra) for R to find functions needed in the backend
+library(terra)
 
 # Let's get a nice color palette now for easy reference
 pal <- leaflet::colorNumeric(
   "magma",
-  values(r),
+  terra::values(r),
   na.color = "transparent"
   )
 
 # Next, we build a leaflet map
 leaflet::leaflet() |> 
   # As base maps, use two provided by ESRI
-  leaflet::addProviderTiles(providers$Esri.WorldImagery, group = "World Imagery") |>
-  leaflet::addProviderTiles(providers$Esri.WorldTopoMap, group = "World Topo") |>
+  leaflet::addProviderTiles(leaflet::providers$Esri.WorldImagery, group = "World Imagery") |>
+  leaflet::addProviderTiles(leaflet::providers$Esri.WorldTopoMap, group = "World Topo") |>
   # Add our raster file
   leaflet::addRasterImage(
     r,
@@ -226,16 +238,16 @@ leaflet::leaflet() |>
 ::: callout-note
 ## Note
 
-This plotting example is based to the one shown in the AGDS 2 tutorial "Handful of Pixels" on phenology and more information on using spatial data in R can be found in the Chapter on [Geospatial data in R](https://geco-bern.github.io/handfull_of_pixels/geospatial_R.html).
+This plotting example is based to the one shown in the AGDS 2 tutorial "Handful of Pixels" on phenology. More information on using spatial data in R can be found there in the Chapter on [Geospatial data in R](https://geco-bern.github.io/handfull_of_pixels/geospatial_R.html).
 :::
 
 That looks great! At first glance, it is a bit crowded but once you scroll in you can investigate our study area quite nicely. You can check whether the slope raster file makes sense by comparing it against the base maps. Can you see how cliffs along the Aare river, hills, and even gravel quarries show high slopes? We also see that our validation dataset is nicely distributed across the area covered by the training dataset.
 
-Now that we have played with a few visualizations, let's get back to preparing our data. The {terra} package comes with the very useful tool to stack multiple raster on top of each other, if they are of the same spatial format. To do so, we just have to feed in the vector of file names `list_raster`:
+Now that we have played with a few visualizations, let's get back to preparing our data. The {terra} package comes with the very useful tool to stack multiple raster on top of each other, if they are of the same spatial format. To do so, we just have to feed in the vector of file names `list_raster_subset`:
 
 ```{r}
 # Load all files as one batch
-all_rasters <- terra::rast(list_raster)
+all_rasters <- terra::rast(list_raster_subset)
 all_rasters
 ```
 
@@ -252,8 +264,8 @@ covar_data <-
                  ID = FALSE    # To not add a default ID column to the output
                  )
 
-merged_data <- cbind(bern_data, covar_data)
-head(merged_data) |> knitr::kable() 
+final_data <- cbind(bern_data, covar_data)
+head(final_data) |> knitr::kable() 
 ```
 
 Great that worked without problems!
@@ -270,7 +282,7 @@ Great that worked without problems!
 
 <!--# final_data <-  -->
 
-<!--#   merged_data |>  -->
+<!--#   cbind(bern_data, covar_data) |>  -->
 
 <!--#     dplyr::mutate( -->
 
@@ -288,7 +300,7 @@ Great that worked without problems!
 
 <!--# ![Visualisation of rotating x- and y-coordinates by 30° and 60°. Figure adapted from work by M. Nussbaum.](images/rotated_coords.png){#fig-rotcoord fig-align="center"} -->
 
-Note that not all our covariates may be continuous variables and therefore have to be encoded as factors. As an easy check, we can take the original corvariates data and check for the number of unique values in each raster. If the variable is continuous, we expect that there are a lot of different values - at maximum 1052 different values because we have that many entries. So, let's have a look and assume that variables with 10 or less different values are categorical variables.
+Now, not all our covariates may be continuous variables and therefore have to be encoded as factors. As an easy check, we can take the original corvariates data and check for the number of unique values in each raster. If the variable is continuous, we expect that there are a lot of different values - at maximum 1052 different values because we have that many entries. So, let's have a look and assume that variables with 10 or less different values are categorical variables.
 
 ```{r}
 cat_vars <- 
@@ -304,7 +316,8 @@ cat_vars <-
   # Extract the names of these variables
   dplyr::pull('variable')
 
-cat("Variables with less than 10 distinct values:", cat_vars)
+cat("Variables with less than 10 distinct values:", 
+    ifelse(length(cat_vars) == 0, "none", cat_vars))
 ```
 
 Now that we have the names of the categorical values, we can mutate these columns in our df using the base function `as.factor()`:
@@ -330,7 +343,7 @@ final_data |>
   tidyr::pivot_longer(dplyr::everything(), 
                       names_to = "variable", 
                       values_to = "n") |>
-  dplyr::mutate(perc_available = round(n/n_rows *100)) |> 
+  dplyr::mutate(perc_available = round(n / n_rows * 100)) |> 
   dplyr::arrange(perc_available) |> 
   head(10) |> 
   knitr::kable()
@@ -342,7 +355,7 @@ This looks good, we have no variable with a substantial amount of missing data. 
 final_data |> visdat::vis_miss()
 ```
 
-Alright, we see that we are not missing a lot of data for any variable and in total only 1% of our data is `NA`. That is good enough! We do not have to modify the dataframe any further and can save it for further analysis.
+Alright, we see that we are not missing any data in the covariate data. Mostly sampled data, specifically pH and timeset data is missing. We also see that this missing data is mostly from the same entry, so if we keep only entries where we have pH data - which is what we are interested here - we have a dataset with pracitally no missing data.
 
 # Save data
 

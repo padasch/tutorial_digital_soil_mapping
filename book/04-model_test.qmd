@@ -68,19 +68,27 @@ cov_df <-
 cov_df <- cbind(sampling_xy, cov_df)
 ```
 
-
 <!--# ```{r} -->
-<!--# # Add rotated coordinates as when preparing training data: -->
-<!--# cov_df <-  -->
-<!--#   cov_df |>  -->
-<!--#     dplyr::mutate( -->
-<!--#       x30 = x*cos(30/180*pi) - y*sin(30/180*pi), -->
-<!--#       y30 = x*sin(30/180*pi) + y*cos(30/180*pi), -->
-<!--#       x60 = x*cos(60/180*pi) - y*sin(60/180*pi), -->
-<!--#       y60 = x*sin(60/180*pi) + y*cos(60/180*pi) -->
-<!--#     ) -->
-<!--# ``` -->
 
+<!--# # Add rotated coordinates as when preparing training data: -->
+
+<!--# cov_df <-  -->
+
+<!--#   cov_df |>  -->
+
+<!--#     dplyr::mutate( -->
+
+<!--#       x30 = x*cos(30/180*pi) - y*sin(30/180*pi), -->
+
+<!--#       y30 = x*sin(30/180*pi) + y*cos(30/180*pi), -->
+
+<!--#       x60 = x*cos(60/180*pi) - y*sin(60/180*pi), -->
+
+<!--#       y60 = x*sin(60/180*pi) + y*cos(60/180*pi) -->
+
+<!--#     ) -->
+
+<!--# ``` -->
 
 ```{r}
 # Attaching reference timeset levels from prepared dataset
@@ -117,11 +125,9 @@ cov_df <-
 head(cov_df) |> knitr::kable()
 ```
 
-
-
 ## Model testing
 
-<!-- TODO: Add some more text and explanation to these sections -->
+To test our model for how well it predicts on data it has not seen before, we first have to load the {ranger} package to load all functionalities to run a Random Forest in the `predict()` function. Alongside our model, we feed our validation data into the function and set its parallelization settings to use all but one of our computer's cores.
 
 ### Make predictions
 
@@ -133,13 +139,15 @@ library(ranger)
 prediction <- 
   predict(rf,                # RF model
           data = data_val,   # Predictor data
-          num.threads = parallel::detectCores()-1)
+          num.threads = parallel::detectCores() - 1)
 
 # Save predictions to validation df
 data_val$pred <- prediction$predictions
 ```
 
 ### Model metrics
+
+Now that we have our predictions ready, we can extract standard metrics for a classification problem (see [AGDS Chapter 8.2.2](https://geco-bern.github.io/agds/regressionclassification.html#regression)).
 
 ```{r}
 # Calculate error
@@ -158,6 +166,9 @@ r2 <- cor(data_val$ph.0.10, data_val$pred, method = "pearson")^2 |> round(2)
 ### Metric plots
 
 ```{r}
+#| label: fig-ph-modobs
+#| fig-cap: "Comparison of observed versus predicted values for top soil pH using a simple Random Forest model."
+
 data_val |> 
   ggplot2::ggplot(ggplot2::aes(x = pred, y = ph.0.10)) +
   ggplot2::geom_point() +
@@ -182,9 +193,11 @@ data_val |>
   )
 ```
 
-<!-- TODO: Add some model interpretation here -->
+The plot shows that our model performs quite well for the fact that we randomly selected 15 covariates and did no model tuning whatsoever. Yet, we can also see that the model tends to overestimate at low pH values, with quite a bit point cloud to the right of the lower end of the 1:1 line.
 
 ## Create prediction maps
+
+Now, we finally come to the probably most interesting part of this tutorial: Creating a map of top soil pH values across our study area. For this, we again make predictions with our Random Forest model but we use our covariates dataframe for the study area, instead of only at the sampling locations as done above.
 
 ```{r}
 # Need to load {ranger} because ranger-object is used in predict()
@@ -194,12 +207,11 @@ library(ranger)
 prediction <- 
   predict(rf,              # RF model
           data = cov_df,   # Predictor data
-          num.threads = parallel::detectCores()-1)
+          num.threads = parallel::detectCores() - 1)
 
 # Attach predictions to dataframe and round them
 cov_df$prediction <- round(prediction$predictions, 2)
 ```
-
 
 ```{r}
 # Extract dataframe with coordinates and predictions
@@ -215,6 +227,9 @@ ra_predictions <-
 ```
 
 ```{r}
+#| label: fig-ph-prediction-map
+#| fig-cap: "Predicted map of top soil pH using a simple Random Forest model."
+
 # Let's have a look at our predictions!
 # To have some more flexibility, we can plot this in the ggplot-style as such:
 ggplot2::ggplot() +
@@ -230,18 +245,16 @@ ggplot2::ggplot() +
   ggplot2::labs(title = "Predicted soil pH (0 - 10cm)")
 ```
 
-<!-- > TODO: Could not find a quick way to change the projected CRS within this ggplot call -->
-
-<!-- > TODO: Add some interpretation here -->
+Interesting, we see that our prediction map does not cover the entire study area. This could be a consequence of using a limited set of covariates for our predictions. Moreover, we see that in this study area, there is a tendency of having more acidic soils towards the south west and more basic soils towards the north east. To interpret this map further, we could map it onto a leaflet map, such as done in @sec-dataprep.
 
 ```{r eval=FALSE}
 # Save raster as .tif file
 terra::writeRaster(
   ra_predictions,
-  "data/ra_predicted_ph0-10.tif",
+  "../data/ra_predicted_ph0-10.tif",
   datatype = "FLT4S",  # FLT4S for floats, INT1U for integers (smaller file)
   filetype = "GTiff",  # GeoTiff format
-  overwrite = "TRUE"   # Overwrite existing file
+  overwrite = TRUE     # Overwrite existing file
 )
 ```
 
@@ -324,7 +337,7 @@ library(ranger)
 prediction <- 
   predict(rf,                # RF model
           data = data_val,   # Predictor data
-          num.threads = parallel::detectCores()-1)
+          num.threads = parallel::detectCores() - 1)
 
 # Save predictions to validation df
 # First row holds probability for reference level
@@ -378,13 +391,13 @@ cat(
 
 These metrics looks quite good! We see that in 93% of all cases, our model predicted the water status of a soil location accurately \[(184+2)/(184+12+2+2) = 0.93\]. The model showed almost no bias when predicting at dry sites but tends to overestiamte at wet sites (predicted 12 times a site is wet when it was dry). But note that this could also be a consequence of our data being skewed towards many more dry than wet sites.
 
-The Perice Skill Score answers the question of "How well did the forecast separate 'yes' events from 'no' events".[^04-model_eval-1] This means how well our model separated dry from wet sites. The score has a range of \[-1, 1\] where 1 means that there is a perfect distinction, -1 means that the model always gets it wrong (so, simply taking the opposite of the prediction always get it right), and 0 means that the model is no better than guessing randomly. We see that our model has a score of 0.44, which means that is certainly better than just random predictions but - in line with the bias - tends to predict dry sites to be wet.
+The Perice Skill Score answers the question of "How well did the forecast separate 'yes' events from 'no' events".[^04-model_test-1] This means how well our model separated dry from wet sites. The score has a range of \[-1, 1\] where 1 means that there is a perfect distinction, -1 means that the model always gets it wrong (so, simply taking the opposite of the prediction always get it right), and 0 means that the model is no better than guessing randomly. We see that our model has a score of 0.44, which means that is certainly better than just random predictions but - in line with the bias - tends to predict dry sites to be wet.
 
-[^04-model_eval-1]: See this useful page on forecast verification: [https://www.cawcr.gov.au/projects/verification/](https://www.cawcr.gov.au/projects/verification/https://www.cawcr.gov.au/projects/verification/)
+[^04-model_test-1]: See this useful page on forecast verification: [https://www.cawcr.gov.au/projects/verification/](https://www.cawcr.gov.au/projects/verification/https://www.cawcr.gov.au/projects/verification/)
 
 > **Note:** The Peirce Skill Score is originally from *Peirce, C. S., 1884: The numerical measure of the success of pre- dictions. Science, 4, 453--454*. But it has been re-discovered several times since, which is why it also often referred to as "Kuipers Skill Score" or "Hanssen-Kuiper Skill Score", or "True Skill Statistic".
 
-<!-- TODO: Could not make sense of this OOB statistics, the object `randomForest.model.pnd` does not exist when loading the respective `.Rdata` file and there is no code for producing it. Is this meant for the pH or waterlog prediction? -->
+<!-- TODO: Unclear from what Maldene wanted to do in her script with the OOB statistics: I could not make sense of this OOB statistics, the object `randomForest.model.pnd` does not exist when loading the respective `.Rdata` file and there is no code for producing it. Is this meant for the pH or waterlog prediction? -->
 
 <!-- ```{r} -->
 
@@ -468,19 +481,27 @@ cov_df <-
 cov_df <- cbind(sampling_xy, cov_df)
 ```
 
-
 <!--# ```{r} -->
-<!--# # Add rotated coordinates as when preparing training data: -->
-<!--# cov_df <-  -->
-<!--#   cov_df |>  -->
-<!--#     dplyr::mutate( -->
-<!--#       x30 = x*cos(30/180*pi) - y*sin(30/180*pi), -->
-<!--#       y30 = x*sin(30/180*pi) + y*cos(30/180*pi), -->
-<!--#       x60 = x*cos(60/180*pi) - y*sin(60/180*pi), -->
-<!--#       y60 = x*sin(60/180*pi) + y*cos(60/180*pi) -->
-<!--#     ) -->
-<!--# ``` -->
 
+<!--# # Add rotated coordinates as when preparing training data: -->
+
+<!--# cov_df <-  -->
+
+<!--#   cov_df |>  -->
+
+<!--#     dplyr::mutate( -->
+
+<!--#       x30 = x*cos(30/180*pi) - y*sin(30/180*pi), -->
+
+<!--#       y30 = x*sin(30/180*pi) + y*cos(30/180*pi), -->
+
+<!--#       x60 = x*cos(60/180*pi) - y*sin(60/180*pi), -->
+
+<!--#       y60 = x*sin(60/180*pi) + y*cos(60/180*pi) -->
+
+<!--#     ) -->
+
+<!--# ``` -->
 
 ```{r}
 # Attaching reference timeset levels from prepared dataset
@@ -526,12 +547,11 @@ library(ranger)
 prediction <- 
   predict(rf,              # RF model
           data = cov_df,   # Predictor data
-          num.threads = parallel::detectCores()-1)
+          num.threads = parallel::detectCores() - 1)
 
 # Attach predictions to dataframe and round them
 cov_df$prediction <- round(prediction$predictions[,1], 2)
 ```
-
 
 ::: callout-tip
 Note the difference to the regression task before: To access the predicted probabilities, we need to use `prediction$predictions[,1]`.

@@ -8,39 +8,30 @@ As taught extensively in [Applied Geodata Science I](https://geco-bern.github.io
 
 ## Your Project
 
-After reading through this tutorial, you should have a solid understanding of how we can use Random Forest models for digital soil mapping. Based on the provided knowledge and code, it is now your task to improve and expand the analysis.
+After reading through this tutorial, you should have a solid understanding of how you can use Random Forest models for digital soil mapping. Based on the provided knowledge and code, it is now your task to improve and expand the analysis. As stated in Chapter @sec-dataprep, the model created in the tutorial picked random covariates for model building. This is of course nonsensical and should be your first step to improve the model. Find a way to create a workflow that filters for the most relevant predictors (do not pick random variables, and do not just add all variables to your final model - do you udnerstand why the latter makes no sense?...). What number of variables do you find to be suitable for your final model?
 
-As a first task and to deepen your understanding, you have to answer the following questions:
+In the [AGDS Book](https://geco-bern.github.io/agds/), we explain how to conduct hyperparameter tuning and cross-validation of RandomForests via the {caret} package. Read up on how to do this and implement your own routine to predict the top layer pH! Moreover, we explain how to use model-agnostic procedures to interpret your model in the [AGDS Book](https://geco-bern.github.io/agds/). Conduct these tests on your model and interpret your findings.
 
--   @sec-intro holds a list of requirements for our statistical model. Here, we picked Random Forests but without explicitly stating why this is a suitable model choice. Your task is to give reasonable answer to why Random Forests are meeting the listed requirements.
+Finally, you should test your model as demonstrated in the tutorial. Give explanations for how and why your model performs differently than the one in this tutorial. Note that this exercise thrives on your curiosity to code! So, if you want to go further, you could also investigate the prediction of other soil properties, or test and compare other machine learning methods.
 
-As a second task, you have to expand the analysis. You are absolutely free to come up with your own ideas but here are a few primers to get you started:
+<!--# ## Additional Exercises -->
 
--   TODO
+<!--# ### Spatial Upscaling -->
 
-## Additional Exercises
+<!--# In @sec-intro and @sec-dataprep, we touched on the topic of spatial auto-correlation. Re-read these sections and solve the problem below. -->
 
-### Spatial Upscaling
+<!--# In the top half of Figure @fig-chessboard, there is a predicted land cover map based on a Random Forest model. The green circles are sampling locations where the land cover was classified by hand as for model training. The different colors denote different the covers. Comparing the prediction to the satellite image used for prediction, we see that, for example, agricultural land is in light green and urban structures are in red. -->
 
-In @sec-intro and @sec-dataprep, we touched on the topic of spatial auto-correlation. Re-read these sections and solve the problem below.
+<!--# Now, we see that there is a lot of miss-classification happening here, and we see this chess-board pattern in the prediction map. Why is this happening? Find two causes of how the underlying data can lead to such miss-classification. -->
 
-In the top half of Figure @fig-chessboard, there is a predicted land cover map based on a Random Forest model. The green circles are sampling locations where the land cover was classified by hand as for model training. The different colors denote different the covers. Comparing the prediction to the satellite image used for prediction, we see that, for example, agricultural land is in light green and urban structures are in red.
+<!--# ```{=html} -->
 
-Now, we see that there is a lot of miss-classification happening here, and we see this chess-board pattern in the prediction map. Why is this happening? Find two causes of how the underlying data can lead to such miss-classification.
+<!--# <!--# Solution: -->
 
-```{=html}
-<!-- Solution:
+<!--# 1. Bad sampling scheme with not-evenly spread locations. Sampling scheme leads to spatially clustered training data. Model just predicts what is nearby and does not learn the information from the picture. -->
 
-1. Bad sampling scheme with not-evenly spread locations. Sampling scheme leads to spatially clustered training data. Model just predicts what is nearby and does not learn the information from the picture.
-2. Not using rotated coordinates as predictors leads to chess-board features. Model learned that there is dark forest to the east, light forest to the south, etc.
+<!--# 2. Not using rotated coordinates as predictors leads to chess-board features. Model learned that there is dark forest to the east, light forest to the south, etc. -->
 
--->
-```
-![Example for chess-board structured prediction map, taken from a GIS stackexchange [post](https://gis.stackexchange.com/questions/111932/classified-images-of-randomforest-classification-look-clustered).](images/chess_board_example.png){#fig-chessboard fig-align="center"}
+<!--# -->
 
----
-## Exercise
-
-In the [AGDS Book](https://geco-bern.github.io/agds/), we explain how to conduct hyperparameter tuning and cross-validation of RandomForests via the {caret} package. Read up on how to do this and implement your own routine to predict the top layer pH - or create an entirely new workflow with another response variable that interests you! Start by doing a preliminary variable selection, compile a tuning grid, and let a RandomForest model run over the grid.
-
-Moreover, we explain how to use model-agnostic procedures to interpret your model in the [AGDS Book](https://geco-bern.github.io/agds/). Conduct these tests on your model and interpret your findings.
+--\> <!--# ``` --> <!--# ![Example for chess-board structured prediction map, taken from a GIS stackexchange [post](https://gis.stackexchange.com/questions/111932/classified-images-of-randomforest-classification-look-clustered).](images/chess_board_example.png){#fig-chessboard fig-align="center"} -->
