@@ -20,3 +20,7 @@ quarto::quarto_render("book")
 ```
 
 Then open the file: `book/_book/index.html`
+
+## Page Deployment
+
+This repository is not rendered through GitHub runners because of the large tiff files required. To update the online deployment with new content, one has to create a fork (important: fork both branches, not just the main branch), get the data as described above, do desired changes, and run the bash command `quarto publish gh-pages`. See more information here: https://quarto.org/docs/publishing/github-pages.html#publish-command
