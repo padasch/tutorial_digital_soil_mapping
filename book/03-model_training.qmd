@@ -220,6 +220,8 @@ predictors_bor <-
   dplyr::pull(variable)
 ```
 
+For this tutorial, we are happy to continue with our most basic Random Forest and save all necessary data as shown below. However, as shown with the model using weights, with the variable selection of the Boruta method, and with applying hyper-parameter tuning and cross-validation for a more robust model, there are many options to create a better model.
+
 ```{r}
 # Save relevant data for model testing in the next chapter.
 # Pick rf to save:
