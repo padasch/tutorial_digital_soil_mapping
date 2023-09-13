@@ -45,7 +45,7 @@ list_raster <-
   )
 
 # Take a random subset
-set.seed(123)
+set.seed(3)
 list_raster_subset <- list_raster |> sample(15)
 
 # Display data (lapply to clean names)
@@ -58,13 +58,14 @@ lapply(
   print()
 ```
 
-The output above shows the first five raster files with rather cryptic names. For this tutorial, we do not need to understand all of the 91 rasters files that we are loading here but in a scientific context, you should know your data better of course. Let's look at one of these raster files to get a better feeling for our data. Specifically, let's look at the slope profile at 2m resolution:
+The output above shows the first five raster files with rather cryptic names. The meaning of all 91 raster files are given in @sec-variables. So, make sure to have a look at the list there as it will help you to interpret your model results later on. Let's look at one of these raster files to get a better feeling for our data. Specifically, let's look at the slope profile at 2m resolution:
 
 ```{r}
 # Load a raster file as example: Picking the slope profile at 2m resolution
 raster_example <- terra::rast(list_raster[74])
 raster_example
 ```
+
 As shown in the output, a raster object has the following properties (among others, see `?terra::rast`):
 
 -   class: The class of the file, here a SpatRaster.

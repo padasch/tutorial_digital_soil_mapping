@@ -17,6 +17,7 @@ book:
     - 03-model_training.qmd
     - 04-model_test.qmd
     - 99-exercise.qmd
+    - 99-variables.qmd
     - references.qmd
   favicon: "figures/favicon.ico"
   twitter-card: true

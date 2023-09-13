@@ -166,7 +166,9 @@ p <-
 p
 ```
 
-What do we see here? The y-axis shows the decrease in model performance when the respective variable is randomly permuted and, therefore, denotes the importance of a variable. The higher the value, the stronger the effect of permutation on the model performance, the more important the variable. Also, we see that a large part of our covariates have practically no power to predict the pH and can therefore be removed from the model. But how do we determine what variable to pick for our final model? Do we want a maximum number of predictors? Do we want a set of the top n predictors that make up a certain percentage of the total variable importance?
+What do we see here? The y-axis shows the decrease in model performance when the respective variable is randomly permuted and, therefore, denotes the importance of a variable. The higher the value, the stronger the effect of permutation on the model performance, the more important the variable. In our randomly picked subset of covariates, we see that the time of sampling, the location (x and y coordinates), and the mean annual precipitation are very strong predictors of soil pH. From a soil-forming perspective, this seems plausible. For example, soil weathering is strongly driven by water. So, the more water a location receives, the more weather a soil is, the more likely it has a low pH. To dig deeper into understanding how the model works, we could further investigate its partial dependence plos.
+
+We can also see that a large part of our covariates have practically no power to predict the pH and can therefore be removed from the model. But how do we determine what variable to pick for our final model? Do we want a maximum number of predictors? Do we want a set of the top n predictors that make up a certain percentage of the total variable importance?
 
 ### Boruta Algorithm
 

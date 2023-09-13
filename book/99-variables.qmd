@@ -1,0 +1,97 @@
+# Variables {#sec-variables}
+
+> Detailed information can be found in folder `resources` on GitHub. Information on the individual metrics can be found online.
+
+| Filename                       | Meaning                                                                                             | Unit                  |
+|---------------|---------------------------------------------|------------|
+| be_gwn25_hdist.tif             | Horizontal distance to water body at 25m resolution                                                 | m                     |
+| be_gwn25_vdist.tif             | Horizontal distance to water body at 25m resolution                                                 | m                     |
+| cindx10_25.tif                 | Convergence index at 25m resolution, taken over a radius of 10 pixels                               | index                 |
+| cindx50_25.tif                 | Convergence index at 25m resolution, taken over a radius of 50 pixels                               | index                 |
+| geo500h1id.tif                 | Geological map 1:500'000 for ground water presence                                                  | categorical           |
+| geo500h3id.tif                 | Geological map 1:500'000 for ground layer                                                           | categorical           |
+| lgm.tif                        | Last glacial maximum                                                                                | categorical, ages ago |
+| lsf.tif                        | Slope length and steepness factor                                                                   | index                 |
+| mrrtf25.tif                    | Multi-resolution ridge top flatness at 25m resolution                                               | index                 |
+| mrvbf25.tif                    | Multi-resolution valley bottom flatness at 25m resolution                                           | index                 |
+| mt_gh_y.tif                    | Mean annual incoming radiation                                                                      | 0.1 W/m2              |
+| mt_rr_y.tif                    | Mean annual precipitation                                                                           | mm                    |
+| mt_td_y.tif                    | Mean annual dew point temperature                                                                   | 0.1 ºC                |
+| mt_tt_y.tif                    | Mean annual temperature                                                                             | 0.1 ºC                |
+| mt_ttvar.tif                   | Temperature variation (= mean temperature in January - mean temperature in Juli)                    | 0.1 ºC                |
+| NegO.tif                       | Topographic negative openness                                                                       | index                 |
+| PosO.tif                       | Topographic positive openness                                                                       | index                 |
+| protindx.tif                   | Morphometric protection index at 25m resolution                                                     | index                 |
+| Se_alti2m_std_50c.tif          | Standard deviation of elevation at 50 pixels resolution                                             | m                     |
+| Se_conv2m.tif                  | Convergence index at 2m resolution                                                                  | degrees               |
+| Se_curv25m.tif                 | Curvature at 25m resolution                                                                         | 1/m                   |
+| Se_curv2m_fmean_50c.tif        | Curvature at 2m resolution, mean over 50 pixels                                                     | 1/m                   |
+| Se_curv2m_fmean_5c.tif         | Curvature at 2m resolution, mean over 5 pixels                                                      | 1/m                   |
+| Se_curv2m_s60.tif              | Curvature at 2m resolution, smoothed over area with radius of 60 pixels                             | 1/m                   |
+| Se_curv2m_std_50c.tif          | Curvature at 2m resolution, standard deviation over 50 pixels                                       | 1/m                   |
+| Se_curv2m_std_5c.tif           | Curvature at 2m resolution, standard deviation over 5 pixels                                        | 1/m                   |
+| Se_curv2m.tif                  | Curvature at 2m resolution                                                                          | 1/m                   |
+| Se_curv50m.tif                 | Curvature at 50m resolution                                                                         | 1/m                   |
+| Se_curv6m.tif                  | Curvature at 6m resolution                                                                          | 1/m                   |
+| Se_curvplan25m.tif             | Curvature plan (planform curvature) at 25m resolution                                               | 1/m                   |
+| Se_curvplan2m_fmean_50c.tif    | Curvature plan (planform curvature) at 2m resolution, mean over 50 pixels                           | 1/m                   |
+| Se_curvplan2m_fmean_5c.tif     | Curvature plan (planform curvature) at 2m resolution, mean over 5 pixels                            | 1/m                   |
+| Se_curvplan2m_s60.tif          | Curvature plan (planform curvature) at 2m resolution, smoothed over area with radius of 60 pixels   | 1/m                   |
+| Se_curvplan2m_s7.tif           | Curvature plan (planform curvature) at 2m resolution, smoothed over area with radius of 7 pixels    | 1/m                   |
+| Se_curvplan2m_std_50c.tif      | Curvature plan (planform curvature) at 2m resolution, standard deviation over 50 pixels             | 1/m                   |
+| Se_curvplan2m_std_5c.tif       | Curvature plan (planform curvature) at 2m resolution, standard deviation over 5 pixels              | 1/m                   |
+| Se_curvplan2m.tif              | Curvature plan (planform curvature) at 2m resolution                                                | 1/m                   |
+| Se_curvplan50m.tif             | Curvature plan (planform curvature) at 50m resolution                                               | 1/m                   |
+| Se_curvprof25m.tif             | Curvature profile (profile curvature) at 25m resolution                                             | 1/m                   |
+| Se_curvprof2m_fmean_50c.tif    | Curvature profile (profile curvature) at 2m resolution, mean over 50 pixels                         | 1/m                   |
+| Se_curvprof2m_fmean_5c.tif     | Curvature profile (profile curvature) at 2m resolution, mean over 5 pixels                          | 1/m                   |
+| Se_curvprof2m_s60.tif          | Curvature profile (profile curvature) at 2m resolution, smoothed over area with radius of 60 pixels | 1/m                   |
+| Se_curvprof2m_s7.tif           | Curvature profile (profile curvature) at 2m resolution, smoothed over area with radius of 7 pixels  | 1/m                   |
+| Se_curvprof2m_std_50c.tif      | Curvature profile (profile curvature) at 2m resolution, standard deviation over 50 pixels           | 1/m                   |
+| Se_curvprof2m_std_5c.tif       | Curvature profile (profile curvature) at 2m resolution, standard deviation over 5 pixels            | 1/m                   |
+| Se_curvprof2m.tif              | Curvature profile (profile curvature) at 2m resolution                                              | 1/m                   |
+| Se_curvprof50m.tif             | Curvature profile (profile curvature) at 50m resolution                                             | 1/m                   |
+| Se_diss2m_50c.tif              | Dissection at 2m resolution over area with radius of 50 pixels                                      | m                     |
+| Se_diss2m_5c.tif               | Dissection at 2m resolution over area with radius of 5 pixels                                       | m                     |
+| Se_e_aspect25m.tif             | Aspect - Eastness at 25m resolution (`E=90º`, `cos(Aspect in Rad.)`)                                | degrees               |
+| Se_e_aspect2m_5c.tif           | Aspect - Eastness at 2m resolution, mean over area with radius of 5 pixels                          | degrees               |
+| Se_e_aspect2m.tif              | Aspect - Eastness at 2m resolution                                                                  | degrees               |
+| Se_e_aspect50m.tif             | Aspect - Eastness at 50m resolution                                                                 | degrees               |
+| Se_MRRTF2m.tif                 | Multi-resolution ridge top flatness at 2m resolution                                                | index                 |
+| Se_MRVBF2m.tif                 | Multi-resolution valley bottom flatness at 2m resolution                                            | index                 |
+| Se_n_aspect2m_50c.tif          | Aspect - Northness at 2m resolution, mean over area with radius of 50 pixels                        | degrees               |
+| Se_n_aspect2m_5c.tif           | Aspect - Northness at 2m resolution, mean over area with radius of 5 pixels                         | degrees               |
+| Se_n_aspect2m.tif              | Aspect - Northness at 2m resolution (`N=90º`, `sin(Aspect in Rad.)`)                                | degrees               |
+| Se_n_aspect50m.tif             | Aspect - Northness at 50m resolution                                                                | degrees               |
+| Se_n_aspect6m.tif              | Aspect - Northness at 6m resolution                                                                 | degrees               |
+| Se_NO2m_r500.tif               | Topographic negative openness at 2m resolution, over area with radius of 500 pixels                 | index                 |
+| Se_PO2m_r500.tif               | Topographic positive openness at 2m resolution, over area with radius of 500 pixels                 | index                 |
+| Se_rough2m_10c.tif             | Roughness at 2m resolution, over area of with radius of 10 pixels                                   | m                     |
+| Se_rough2m_5c.tif              | Roughness at 2m resolution, over area of with radius of 5 pixels                                    | m                     |
+| Se_rough2m_rect3c.tif          | Roughness at 2m resolution, over rectangular area of 3 pixels                                       | m                     |
+| Se_SAR2m.tif                   | Surface area ratio at 2m resolution                                                                 | ratio                 |
+| Se_SCA2m.tif                   | Specific catchment area (contributing area, multi-flow) at 2m resolution                            | sqm                   |
+| Se_slope2m_fmean_50c.tif       | Slope at 2m resolution, smoothed mean over 50 pixels                                                | degree                |
+| Se_slope2m_fmean_5c.tif        | Slope at 2m resolution, smoothed mean over 5 pixels                                                 | degree                |
+| Se_slope2m_s60.tif             | Slope at 2m resolution, weighted smoothing over area with radius of 60 pixels                       | degree                |
+| Se_slope2m_s7.tif              | Slope at 2m resolution, weighted smoothing over area with radius of 7 pixels                        | degree                |
+| Se_slope2m_std_50c.tif         | Slope at 2m resolution, standard deviation over 50 pixels                                           | degree                |
+| Se_slope2m_std_5c.tif          | Slope at 2m resolution, standard deviation over 5 pixels                                            | degree                |
+| Se_slope2m.tif                 | Slope at 2m resolution                                                                              | degree                |
+| Se_slope50m.tif                | Slope at 50m resolution                                                                             | degree                |
+| Se_slope6m.tif                 | Slope at 6m resolution                                                                              | degree                |
+| Se_toposcale2m_r3_r50_i10s.tif | Toposcale at 2m resolution with intervals of 10 pixels                                              | index                 |
+| Se_tpi_2m_50c.tif              | Topographic position index at 2m resolution, taken over area with radius of 50 pixels               | index                 |
+| Se_tpi_2m_5c.tif               | Topographic position index at 2m resolution, taken over area with radius of 5 pixels                | index                 |
+| Se_tri2m_altern_3c.tif         | Terrain ruggedness index at 2m resolution, taken over rectangular area of 3x3 pixels                | index                 |
+| Se_tsc10_2m.tif                | Terrain surface convexity at 2m resolution, taken over radius of 15 pixels                          | index                 |
+| Se_TWI2m_s15.tif               | Topographic wetness index at 2m resolution, taken over radius of 15 pixels                          | index                 |
+| Se_TWI2m_s60.tif               | Topographic wetness index at 2m resolution, taken over radius of 60 pixels                          | index                 |
+| Se_TWI2m.tif                   | Topographic wetness index at 2m resolution                                                          | index                 |
+| Se_vrm2m_r10c.tif              | Vector ruggedness measure at 2m resolution, taken over radius of 10 pixels                          | none                  |
+| Se_vrm2m.tif                   | Vector ruggedness measure at 2m resolution                                                          | none                  |
+| terrTextur.tif                 | Terrain texture at 2m resolution                                                                    | na                    |
+| tsc25_18.tif                   | Surface convexity at 25m resolution                                                                 | index                 |
+| tsc25_40.tif                   | Surface convexity at 25m resolution                                                                 | index                 |
+| vdcn25.tif                     | Vertical distance to drainage to channel networks at 25m resolution                                 | m                     |
+| vszone.tif                     | Drainage zones at 25m resolution                                                                    | categorical           |
