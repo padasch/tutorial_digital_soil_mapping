@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>AGDS 2: Digital Soil Mapping - 5&nbsp; Exercise</title>
+<title>AGDS 2: Digital Soil Mapping - 6&nbsp; Variables</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -30,8 +30,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./99-variables.html" rel="next">
-<link href="./04-model_test.html" rel="prev">
+<link href="./references.html" rel="next">
+<link href="./99-exercise.html" rel="prev">
 <link href="./figures/favicon.ico" rel="icon">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -66,8 +66,7 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 
 
-<meta name="twitter:title" content="AGDS 2: Digital Soil Mapping - 5&nbsp; Exercise">
-<meta name="twitter:description" content="">
+<meta name="twitter:title" content="AGDS 2: Digital Soil Mapping - 6&nbsp; Variables">
 <meta name="twitter:card" content="summary">
 </head>
 
@@ -129,7 +128,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./99-exercise.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Exercise</span></a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./99-variables.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Variables</span></a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -181,13 +180,13 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./99-exercise.html" class="sidebar-item-text sidebar-link active">
+  <a href="./99-exercise.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Exercise</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./99-variables.html" class="sidebar-item-text sidebar-link">
+  <a href="./99-variables.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Variables</span></span></a>
   </div>
 </li>
@@ -203,20 +202,14 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Table of contents</h2>
-   
-  <ul>
-  <li><a href="#your-project" id="toc-your-project" class="nav-link active" data-scroll-target="#your-project"><span class="header-section-number">5.1</span> Your Project</a></li>
-  </ul>
-</nav>
+        
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span id="sec-exercise" class="quarto-section-identifier"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Exercise</span></span></h1>
+<h1 class="title"><span id="sec-variables" class="quarto-section-identifier"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Variables</span></span></h1>
 </div>
 
 
@@ -231,39 +224,482 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-A note on reproducibility
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>As taught extensively in <a href="https://geco-bern.github.io/agds/">Applied Geodata Science I</a>, we value reproducible and open workflows. Therefore, we strongly advice you to create a suitable work environment. This includes proper version control of your code via git and GitHub, package version control via {renv}, and general best-practices in organizing your files and code.</p>
-</div>
-</div>
-<section id="your-project" class="level2" data-number="5.1">
-<h2 data-number="5.1" class="anchored" data-anchor-id="your-project"><span class="header-section-number">5.1</span> Your Project</h2>
-<p>After reading through this tutorial, you should have a solid understanding of how you can use Random Forest models for digital soil mapping. Based on the provided knowledge and code, it is now your task to improve and expand the analysis. As stated in Chapter <a href="02-data_preparation.html"><span>Chapter&nbsp;2</span></a>, the model created in the tutorial picked random covariates for model building. This is of course nonsensical and should be your first step to improve the model. Find a way to create a workflow that filters for the most relevant predictors (do not pick random variables, and do not just add all variables to your final model - do you udnerstand why the latter makes no sense?…). What number of variables do you find to be suitable for your final model?</p>
-<p>In the <a href="https://geco-bern.github.io/agds/">AGDS Book</a>, we explain how to conduct hyperparameter tuning and cross-validation of RandomForests via the {caret} package. Read up on how to do this and implement your own routine to predict the top layer pH! Moreover, we explain how to use model-agnostic procedures to interpret your model in the <a href="https://geco-bern.github.io/agds/">AGDS Book</a>. Conduct these tests on your model and interpret your findings.</p>
-<p>Finally, you should test your model as demonstrated in the tutorial. Give explanations for how and why your model performs differently than the one in this tutorial. Note that this exercise thrives on your curiosity to code! So, if you want to go further, you could also investigate the prediction of other soil properties, or test and compare other machine learning methods.</p>
-<!--# ## Additional Exercises -->
-<!--# ### Spatial Upscaling -->
-<!--# In @sec-intro and @sec-dataprep, we touched on the topic of spatial auto-correlation. Re-read these sections and solve the problem below. -->
-<!--# In the top half of Figure @fig-chessboard, there is a predicted land cover map based on a Random Forest model. The green circles are sampling locations where the land cover was classified by hand as for model training. The different colors denote different the covers. Comparing the prediction to the satellite image used for prediction, we see that, for example, agricultural land is in light green and urban structures are in red. -->
-<!--# Now, we see that there is a lot of miss-classification happening here, and we see this chess-board pattern in the prediction map. Why is this happening? Find two causes of how the underlying data can lead to such miss-classification. -->
-<!--# ```{=html} -->
-<!--# <!--# Solution: -->
-<!--# 1. Bad sampling scheme with not-evenly spread locations. Sampling scheme leads to spatially clustered training data. Model just predicts what is nearby and does not learn the information from the picture. -->
-<!--# 2. Not using rotated coordinates as predictors leads to chess-board features. Model learned that there is dark forest to the east, light forest to the south, etc. -->
-<!--# -->
-<!--# ``` -->
-<!--# ![Example for chess-board structured prediction map, taken from a GIS stackexchange [post](https://gis.stackexchange.com/questions/111932/classified-images-of-randomforest-classification-look-clustered).](images/chess_board_example.png){#fig-chessboard fig-align="center"} -->
+<blockquote class="blockquote">
+<p>Detailed information can be found in folder <code>resources</code> on GitHub. Information on the individual metrics can be found online.</p>
+</blockquote>
+<table class="table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 62%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Filename</th>
+<th>Meaning</th>
+<th>Unit</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>be_gwn25_hdist.tif</td>
+<td>Horizontal distance to water body at 25m resolution</td>
+<td>m</td>
+</tr>
+<tr class="even">
+<td>be_gwn25_vdist.tif</td>
+<td>Horizontal distance to water body at 25m resolution</td>
+<td>m</td>
+</tr>
+<tr class="odd">
+<td>cindx10_25.tif</td>
+<td>Convergence index at 25m resolution, taken over a radius of 10 pixels</td>
+<td>index</td>
+</tr>
+<tr class="even">
+<td>cindx50_25.tif</td>
+<td>Convergence index at 25m resolution, taken over a radius of 50 pixels</td>
+<td>index</td>
+</tr>
+<tr class="odd">
+<td>geo500h1id.tif</td>
+<td>Geological map 1:500’000 for ground water presence</td>
+<td>categorical</td>
+</tr>
+<tr class="even">
+<td>geo500h3id.tif</td>
+<td>Geological map 1:500’000 for ground layer</td>
+<td>categorical</td>
+</tr>
+<tr class="odd">
+<td>lgm.tif</td>
+<td>Last glacial maximum</td>
+<td>categorical, ages ago</td>
+</tr>
+<tr class="even">
+<td>lsf.tif</td>
+<td>Slope length and steepness factor</td>
+<td>index</td>
+</tr>
+<tr class="odd">
+<td>mrrtf25.tif</td>
+<td>Multi-resolution ridge top flatness at 25m resolution</td>
+<td>index</td>
+</tr>
+<tr class="even">
+<td>mrvbf25.tif</td>
+<td>Multi-resolution valley bottom flatness at 25m resolution</td>
+<td>index</td>
+</tr>
+<tr class="odd">
+<td>mt_gh_y.tif</td>
+<td>Mean annual incoming radiation</td>
+<td>0.1 W/m2</td>
+</tr>
+<tr class="even">
+<td>mt_rr_y.tif</td>
+<td>Mean annual precipitation</td>
+<td>mm</td>
+</tr>
+<tr class="odd">
+<td>mt_td_y.tif</td>
+<td>Mean annual dew point temperature</td>
+<td>0.1 ºC</td>
+</tr>
+<tr class="even">
+<td>mt_tt_y.tif</td>
+<td>Mean annual temperature</td>
+<td>0.1 ºC</td>
+</tr>
+<tr class="odd">
+<td>mt_ttvar.tif</td>
+<td>Temperature variation (= mean temperature in January - mean temperature in Juli)</td>
+<td>0.1 ºC</td>
+</tr>
+<tr class="even">
+<td>NegO.tif</td>
+<td>Topographic negative openness</td>
+<td>index</td>
+</tr>
+<tr class="odd">
+<td>PosO.tif</td>
+<td>Topographic positive openness</td>
+<td>index</td>
+</tr>
+<tr class="even">
+<td>protindx.tif</td>
+<td>Morphometric protection index at 25m resolution</td>
+<td>index</td>
+</tr>
+<tr class="odd">
+<td>Se_alti2m_std_50c.tif</td>
+<td>Standard deviation of elevation at 50 pixels resolution</td>
+<td>m</td>
+</tr>
+<tr class="even">
+<td>Se_conv2m.tif</td>
+<td>Convergence index at 2m resolution</td>
+<td>degrees</td>
+</tr>
+<tr class="odd">
+<td>Se_curv25m.tif</td>
+<td>Curvature at 25m resolution</td>
+<td>1/m</td>
+</tr>
+<tr class="even">
+<td>Se_curv2m_fmean_50c.tif</td>
+<td>Curvature at 2m resolution, mean over 50 pixels</td>
+<td>1/m</td>
+</tr>
+<tr class="odd">
+<td>Se_curv2m_fmean_5c.tif</td>
+<td>Curvature at 2m resolution, mean over 5 pixels</td>
+<td>1/m</td>
+</tr>
+<tr class="even">
+<td>Se_curv2m_s60.tif</td>
+<td>Curvature at 2m resolution, smoothed over area with radius of 60 pixels</td>
+<td>1/m</td>
+</tr>
+<tr class="odd">
+<td>Se_curv2m_std_50c.tif</td>
+<td>Curvature at 2m resolution, standard deviation over 50 pixels</td>
+<td>1/m</td>
+</tr>
+<tr class="even">
+<td>Se_curv2m_std_5c.tif</td>
+<td>Curvature at 2m resolution, standard deviation over 5 pixels</td>
+<td>1/m</td>
+</tr>
+<tr class="odd">
+<td>Se_curv2m.tif</td>
+<td>Curvature at 2m resolution</td>
+<td>1/m</td>
+</tr>
+<tr class="even">
+<td>Se_curv50m.tif</td>
+<td>Curvature at 50m resolution</td>
+<td>1/m</td>
+</tr>
+<tr class="odd">
+<td>Se_curv6m.tif</td>
+<td>Curvature at 6m resolution</td>
+<td>1/m</td>
+</tr>
+<tr class="even">
+<td>Se_curvplan25m.tif</td>
+<td>Curvature plan (planform curvature) at 25m resolution</td>
+<td>1/m</td>
+</tr>
+<tr class="odd">
+<td>Se_curvplan2m_fmean_50c.tif</td>
+<td>Curvature plan (planform curvature) at 2m resolution, mean over 50 pixels</td>
+<td>1/m</td>
+</tr>
+<tr class="even">
+<td>Se_curvplan2m_fmean_5c.tif</td>
+<td>Curvature plan (planform curvature) at 2m resolution, mean over 5 pixels</td>
+<td>1/m</td>
+</tr>
+<tr class="odd">
+<td>Se_curvplan2m_s60.tif</td>
+<td>Curvature plan (planform curvature) at 2m resolution, smoothed over area with radius of 60 pixels</td>
+<td>1/m</td>
+</tr>
+<tr class="even">
+<td>Se_curvplan2m_s7.tif</td>
+<td>Curvature plan (planform curvature) at 2m resolution, smoothed over area with radius of 7 pixels</td>
+<td>1/m</td>
+</tr>
+<tr class="odd">
+<td>Se_curvplan2m_std_50c.tif</td>
+<td>Curvature plan (planform curvature) at 2m resolution, standard deviation over 50 pixels</td>
+<td>1/m</td>
+</tr>
+<tr class="even">
+<td>Se_curvplan2m_std_5c.tif</td>
+<td>Curvature plan (planform curvature) at 2m resolution, standard deviation over 5 pixels</td>
+<td>1/m</td>
+</tr>
+<tr class="odd">
+<td>Se_curvplan2m.tif</td>
+<td>Curvature plan (planform curvature) at 2m resolution</td>
+<td>1/m</td>
+</tr>
+<tr class="even">
+<td>Se_curvplan50m.tif</td>
+<td>Curvature plan (planform curvature) at 50m resolution</td>
+<td>1/m</td>
+</tr>
+<tr class="odd">
+<td>Se_curvprof25m.tif</td>
+<td>Curvature profile (profile curvature) at 25m resolution</td>
+<td>1/m</td>
+</tr>
+<tr class="even">
+<td>Se_curvprof2m_fmean_50c.tif</td>
+<td>Curvature profile (profile curvature) at 2m resolution, mean over 50 pixels</td>
+<td>1/m</td>
+</tr>
+<tr class="odd">
+<td>Se_curvprof2m_fmean_5c.tif</td>
+<td>Curvature profile (profile curvature) at 2m resolution, mean over 5 pixels</td>
+<td>1/m</td>
+</tr>
+<tr class="even">
+<td>Se_curvprof2m_s60.tif</td>
+<td>Curvature profile (profile curvature) at 2m resolution, smoothed over area with radius of 60 pixels</td>
+<td>1/m</td>
+</tr>
+<tr class="odd">
+<td>Se_curvprof2m_s7.tif</td>
+<td>Curvature profile (profile curvature) at 2m resolution, smoothed over area with radius of 7 pixels</td>
+<td>1/m</td>
+</tr>
+<tr class="even">
+<td>Se_curvprof2m_std_50c.tif</td>
+<td>Curvature profile (profile curvature) at 2m resolution, standard deviation over 50 pixels</td>
+<td>1/m</td>
+</tr>
+<tr class="odd">
+<td>Se_curvprof2m_std_5c.tif</td>
+<td>Curvature profile (profile curvature) at 2m resolution, standard deviation over 5 pixels</td>
+<td>1/m</td>
+</tr>
+<tr class="even">
+<td>Se_curvprof2m.tif</td>
+<td>Curvature profile (profile curvature) at 2m resolution</td>
+<td>1/m</td>
+</tr>
+<tr class="odd">
+<td>Se_curvprof50m.tif</td>
+<td>Curvature profile (profile curvature) at 50m resolution</td>
+<td>1/m</td>
+</tr>
+<tr class="even">
+<td>Se_diss2m_50c.tif</td>
+<td>Dissection at 2m resolution over area with radius of 50 pixels</td>
+<td>m</td>
+</tr>
+<tr class="odd">
+<td>Se_diss2m_5c.tif</td>
+<td>Dissection at 2m resolution over area with radius of 5 pixels</td>
+<td>m</td>
+</tr>
+<tr class="even">
+<td>Se_e_aspect25m.tif</td>
+<td>Aspect - Eastness at 25m resolution (<code>E=90º</code>, <code>cos(Aspect in Rad.)</code>)</td>
+<td>degrees</td>
+</tr>
+<tr class="odd">
+<td>Se_e_aspect2m_5c.tif</td>
+<td>Aspect - Eastness at 2m resolution, mean over area with radius of 5 pixels</td>
+<td>degrees</td>
+</tr>
+<tr class="even">
+<td>Se_e_aspect2m.tif</td>
+<td>Aspect - Eastness at 2m resolution</td>
+<td>degrees</td>
+</tr>
+<tr class="odd">
+<td>Se_e_aspect50m.tif</td>
+<td>Aspect - Eastness at 50m resolution</td>
+<td>degrees</td>
+</tr>
+<tr class="even">
+<td>Se_MRRTF2m.tif</td>
+<td>Multi-resolution ridge top flatness at 2m resolution</td>
+<td>index</td>
+</tr>
+<tr class="odd">
+<td>Se_MRVBF2m.tif</td>
+<td>Multi-resolution valley bottom flatness at 2m resolution</td>
+<td>index</td>
+</tr>
+<tr class="even">
+<td>Se_n_aspect2m_50c.tif</td>
+<td>Aspect - Northness at 2m resolution, mean over area with radius of 50 pixels</td>
+<td>degrees</td>
+</tr>
+<tr class="odd">
+<td>Se_n_aspect2m_5c.tif</td>
+<td>Aspect - Northness at 2m resolution, mean over area with radius of 5 pixels</td>
+<td>degrees</td>
+</tr>
+<tr class="even">
+<td>Se_n_aspect2m.tif</td>
+<td>Aspect - Northness at 2m resolution (<code>N=90º</code>, <code>sin(Aspect in Rad.)</code>)</td>
+<td>degrees</td>
+</tr>
+<tr class="odd">
+<td>Se_n_aspect50m.tif</td>
+<td>Aspect - Northness at 50m resolution</td>
+<td>degrees</td>
+</tr>
+<tr class="even">
+<td>Se_n_aspect6m.tif</td>
+<td>Aspect - Northness at 6m resolution</td>
+<td>degrees</td>
+</tr>
+<tr class="odd">
+<td>Se_NO2m_r500.tif</td>
+<td>Topographic negative openness at 2m resolution, over area with radius of 500 pixels</td>
+<td>index</td>
+</tr>
+<tr class="even">
+<td>Se_PO2m_r500.tif</td>
+<td>Topographic positive openness at 2m resolution, over area with radius of 500 pixels</td>
+<td>index</td>
+</tr>
+<tr class="odd">
+<td>Se_rough2m_10c.tif</td>
+<td>Roughness at 2m resolution, over area of with radius of 10 pixels</td>
+<td>m</td>
+</tr>
+<tr class="even">
+<td>Se_rough2m_5c.tif</td>
+<td>Roughness at 2m resolution, over area of with radius of 5 pixels</td>
+<td>m</td>
+</tr>
+<tr class="odd">
+<td>Se_rough2m_rect3c.tif</td>
+<td>Roughness at 2m resolution, over rectangular area of 3 pixels</td>
+<td>m</td>
+</tr>
+<tr class="even">
+<td>Se_SAR2m.tif</td>
+<td>Surface area ratio at 2m resolution</td>
+<td>ratio</td>
+</tr>
+<tr class="odd">
+<td>Se_SCA2m.tif</td>
+<td>Specific catchment area (contributing area, multi-flow) at 2m resolution</td>
+<td>sqm</td>
+</tr>
+<tr class="even">
+<td>Se_slope2m_fmean_50c.tif</td>
+<td>Slope at 2m resolution, smoothed mean over 50 pixels</td>
+<td>degree</td>
+</tr>
+<tr class="odd">
+<td>Se_slope2m_fmean_5c.tif</td>
+<td>Slope at 2m resolution, smoothed mean over 5 pixels</td>
+<td>degree</td>
+</tr>
+<tr class="even">
+<td>Se_slope2m_s60.tif</td>
+<td>Slope at 2m resolution, weighted smoothing over area with radius of 60 pixels</td>
+<td>degree</td>
+</tr>
+<tr class="odd">
+<td>Se_slope2m_s7.tif</td>
+<td>Slope at 2m resolution, weighted smoothing over area with radius of 7 pixels</td>
+<td>degree</td>
+</tr>
+<tr class="even">
+<td>Se_slope2m_std_50c.tif</td>
+<td>Slope at 2m resolution, standard deviation over 50 pixels</td>
+<td>degree</td>
+</tr>
+<tr class="odd">
+<td>Se_slope2m_std_5c.tif</td>
+<td>Slope at 2m resolution, standard deviation over 5 pixels</td>
+<td>degree</td>
+</tr>
+<tr class="even">
+<td>Se_slope2m.tif</td>
+<td>Slope at 2m resolution</td>
+<td>degree</td>
+</tr>
+<tr class="odd">
+<td>Se_slope50m.tif</td>
+<td>Slope at 50m resolution</td>
+<td>degree</td>
+</tr>
+<tr class="even">
+<td>Se_slope6m.tif</td>
+<td>Slope at 6m resolution</td>
+<td>degree</td>
+</tr>
+<tr class="odd">
+<td>Se_toposcale2m_r3_r50_i10s.tif</td>
+<td>Toposcale at 2m resolution with intervals of 10 pixels</td>
+<td>index</td>
+</tr>
+<tr class="even">
+<td>Se_tpi_2m_50c.tif</td>
+<td>Topographic position index at 2m resolution, taken over area with radius of 50 pixels</td>
+<td>index</td>
+</tr>
+<tr class="odd">
+<td>Se_tpi_2m_5c.tif</td>
+<td>Topographic position index at 2m resolution, taken over area with radius of 5 pixels</td>
+<td>index</td>
+</tr>
+<tr class="even">
+<td>Se_tri2m_altern_3c.tif</td>
+<td>Terrain ruggedness index at 2m resolution, taken over rectangular area of 3x3 pixels</td>
+<td>index</td>
+</tr>
+<tr class="odd">
+<td>Se_tsc10_2m.tif</td>
+<td>Terrain surface convexity at 2m resolution, taken over radius of 15 pixels</td>
+<td>index</td>
+</tr>
+<tr class="even">
+<td>Se_TWI2m_s15.tif</td>
+<td>Topographic wetness index at 2m resolution, taken over radius of 15 pixels</td>
+<td>index</td>
+</tr>
+<tr class="odd">
+<td>Se_TWI2m_s60.tif</td>
+<td>Topographic wetness index at 2m resolution, taken over radius of 60 pixels</td>
+<td>index</td>
+</tr>
+<tr class="even">
+<td>Se_TWI2m.tif</td>
+<td>Topographic wetness index at 2m resolution</td>
+<td>index</td>
+</tr>
+<tr class="odd">
+<td>Se_vrm2m_r10c.tif</td>
+<td>Vector ruggedness measure at 2m resolution, taken over radius of 10 pixels</td>
+<td>none</td>
+</tr>
+<tr class="even">
+<td>Se_vrm2m.tif</td>
+<td>Vector ruggedness measure at 2m resolution</td>
+<td>none</td>
+</tr>
+<tr class="odd">
+<td>terrTextur.tif</td>
+<td>Terrain texture at 2m resolution</td>
+<td>na</td>
+</tr>
+<tr class="even">
+<td>tsc25_18.tif</td>
+<td>Surface convexity at 25m resolution</td>
+<td>index</td>
+</tr>
+<tr class="odd">
+<td>tsc25_40.tif</td>
+<td>Surface convexity at 25m resolution</td>
+<td>index</td>
+</tr>
+<tr class="even">
+<td>vdcn25.tif</td>
+<td>Vertical distance to drainage to channel networks at 25m resolution</td>
+<td>m</td>
+</tr>
+<tr class="odd">
+<td>vszone.tif</td>
+<td>Drainage zones at 25m resolution</td>
+<td>categorical</td>
+</tr>
+</tbody>
+</table>
 
 
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -616,13 +1052,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./04-model_test.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Model Analysis</span></span>
+      <a href="./99-exercise.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Exercise</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./99-variables.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Variables</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./references.html" class="pagination-link">
+        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
